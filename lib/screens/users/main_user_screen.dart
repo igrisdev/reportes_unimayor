@@ -7,34 +7,15 @@ class MainUserScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      // backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: Center(
-          child: Text(
-            'Reportes UniMayor',
-            style: TextStyle(fontSize: 19, fontWeight: FontWeight.w500),
-          ),
+        centerTitle: true,
+        title: Text(
+          'Reportes UniMayor',
+          style: TextStyle(fontSize: 19, fontWeight: FontWeight.w500),
         ),
       ),
-      drawer: Drawer(
-        child: Column(
-          children: [
-            DrawerHeader(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Center(
-                    child: Image.asset(
-                      'assets/icons/logo_unimayor.png',
-                      width: 80,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+      drawer: drawerUser(),
       body: Column(children: []),
       bottomNavigationBar: BottomAppBar(
         color: Colors.transparent,
@@ -57,6 +38,28 @@ class MainUserScreen extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Drawer drawerUser() {
+    return Drawer(
+      child: Column(
+        children: [
+          DrawerHeader(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(
+                  child: Image.asset(
+                    'assets/icons/logo_unimayor.png',
+                    width: 80,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
