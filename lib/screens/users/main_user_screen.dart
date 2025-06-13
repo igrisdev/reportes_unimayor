@@ -7,6 +7,7 @@ class MainUserScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         title: Center(
           child: Text(
@@ -15,7 +16,9 @@ class MainUserScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: Center(child: Text('MainUserScreen')),
+      body: Column(children: [
+        ],
+      ),
       bottomNavigationBar: BottomAppBar(
         color: Colors.transparent,
         elevation: 0,
