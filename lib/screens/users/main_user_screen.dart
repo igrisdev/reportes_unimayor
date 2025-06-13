@@ -16,9 +16,26 @@ class MainUserScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: Column(children: [
-        ],
+      drawer: Drawer(
+        child: Column(
+          children: [
+            DrawerHeader(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Center(
+                    child: Image.asset(
+                      'assets/icons/logo_unimayor.png',
+                      width: 80,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
+      body: Column(children: []),
       bottomNavigationBar: BottomAppBar(
         color: Colors.transparent,
         elevation: 0,
