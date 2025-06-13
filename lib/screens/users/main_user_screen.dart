@@ -64,18 +64,50 @@ class MainUserScreen extends StatelessWidget {
       child: Column(
         children: [
           DrawerHeader(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Center(
-                  child: Image.asset(
-                    'assets/icons/logo_unimayor.png',
-                    width: 80,
-                  ),
-                ),
-              ],
+            child: Center(
+              child: Image.asset('assets/icons/logo_unimayor.png', width: 80),
             ),
           ),
+
+          ListTile(
+            leading: const Icon(Icons.home),
+            title: Text(
+              'Inicio',
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w500,
+                fontSize: 18,
+              ),
+            ),
+            onTap: () {},
+          ),
+
+          ListTile(
+            leading: const Icon(Icons.history),
+            title: Text(
+              'Historial',
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w500,
+                fontSize: 18,
+              ),
+            ),
+            onTap: () {},
+          ),
+
+          Expanded(child: Container(height: double.infinity)),
+
+          ListTile(
+            leading: const Icon(Icons.logout),
+            title: Text(
+              'Cerrar Sesión',
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w500,
+                fontSize: 18,
+              ),
+            ),
+            onTap: () {},
+          ),
+
+          SizedBox(height: 20),
         ],
       ),
     );
