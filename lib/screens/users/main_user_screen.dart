@@ -67,11 +67,10 @@ class MainUserScreen extends StatelessWidget {
     );
   }
 
-  Container textNoReports(BuildContext context) {
-    return Container(
+  SizedBox textNoReports() {
+    return SizedBox(
       width: double.infinity,
       height: double.infinity,
-      decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface),
       child: Center(
         child: Text(
           "Sin Reporte",
