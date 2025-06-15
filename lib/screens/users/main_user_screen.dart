@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:reportes_unimayor/components/app_bar_user.dart';
 import 'package:reportes_unimayor/components/card_report.dart';
 import 'package:reportes_unimayor/screens/users/history_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/view_report_user_screen.dart';
@@ -12,13 +13,7 @@ class MainUserScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       // backgroundColor: lightMode.colorScheme.surface,
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(
-          'Reportes UniMayor',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 18),
-        ),
-      ),
+      appBar: AppBarUser(),
       drawer: drawerUser(context),
       body: Padding(
         padding: const EdgeInsets.only(left: 18, right: 18, top: 10),
@@ -33,7 +28,18 @@ class MainUserScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 16),
-            Column(children: [CardReport()]),
+            Column(
+              children: [
+                CardReport(
+                  redirectTo: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ViewReportUserScreen(),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
