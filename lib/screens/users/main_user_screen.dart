@@ -8,7 +8,7 @@ class MainUserScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      // backgroundColor: lightMode.colorScheme.surface,
       appBar: AppBar(
         centerTitle: true,
         title: Text(
@@ -17,43 +17,135 @@ class MainUserScreen extends StatelessWidget {
         ),
       ),
       drawer: drawerUser(),
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface),
-        child: Center(
-          child: Text(
-            "Sin Reporte",
-            style: GoogleFonts.poppins(
-              fontWeight: FontWeight.bold,
-              fontSize: 30,
+      body: Padding(
+        padding: const EdgeInsets.only(left: 18, right: 18, top: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Reporte En Curso',
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w600,
+                fontSize: 18,
+              ),
             ),
-          ),
+            SizedBox(height: 16),
+            Column(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: lightMode.colorScheme.surfaceDim,
+                    borderRadius: BorderRadius.circular(5),
+                    border: Border.all(
+                      color: lightMode.colorScheme.primaryFixedDim,
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'Sede Encarnación - Salón 202',
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                              ),
+                            ),
+                            Spacer(),
+                            Text(
+                              '6:20 PM',
+                              style: GoogleFonts.poppins(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          "lorem fa ipsum r sit amet consectetur adipisicing elit. dolor sit amet consectetur adipisicing elit. Voluptate, quia",
+                          style: GoogleFonts.poppins(fontSize: 14),
+                        ),
+                        SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                color: lightMode.colorScheme.secondary,
+                                borderRadius: BorderRadius.circular(100),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  left: 20,
+                                  right: 20,
+                                  top: 5,
+                                  bottom: 5,
+                                ),
+                                child: Text(
+                                  'En Proceso',
+                                  style: GoogleFonts.poppins(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Spacer(),
+                            Text(
+                              '23 - mayo - 2025',
+                              style: GoogleFonts.poppins(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
-      bottomNavigationBar: BottomAppBar(
-        color: Colors.transparent,
-        elevation: 0,
-        height: 90,
-        child: Container(
-          decoration: BoxDecoration(
-            color: lightMode.colorScheme.secondary,
-            borderRadius: BorderRadius.circular(100),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Realizar Reporte",
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
+      bottomNavigationBar: bottomAppBarMain(),
+    );
+  }
+
+  BottomAppBar bottomAppBarMain() {
+    return BottomAppBar(
+      color: Colors.transparent,
+      elevation: 0,
+      height: 90,
+      child: Container(
+        decoration: BoxDecoration(
+          color: lightMode.colorScheme.secondary,
+          borderRadius: BorderRadius.circular(100),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Realizar Reporte",
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
               ),
-              IconButton(icon: const Icon(Icons.send), onPressed: () {}),
-            ],
-          ),
+            ),
+            IconButton(icon: const Icon(Icons.send), onPressed: () {}),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Container textNoReports(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface),
+      child: Center(
+        child: Text(
+          "Sin Reporte",
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 30),
         ),
       ),
     );
