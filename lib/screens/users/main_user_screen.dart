@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/components/card_report.dart';
+import 'package:reportes_unimayor/screens/users/view_report_user_screen.dart';
 import 'package:reportes_unimayor/themes/light.theme.dart';
 
 class MainUserScreen extends StatelessWidget {
@@ -17,7 +18,7 @@ class MainUserScreen extends StatelessWidget {
           style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 18),
         ),
       ),
-      drawer: drawerUser(),
+      drawer: drawerUser(context),
       body: Padding(
         padding: const EdgeInsets.only(left: 18, right: 18, top: 10),
         child: Column(
@@ -80,7 +81,7 @@ class MainUserScreen extends StatelessWidget {
     );
   }
 
-  Drawer drawerUser() {
+  Drawer drawerUser(BuildContext context) {
     return Drawer(
       child: Column(
         children: [
@@ -99,7 +100,12 @@ class MainUserScreen extends StatelessWidget {
                 fontSize: 18,
               ),
             ),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const MainUserScreen()),
+              );
+            },
           ),
 
           ListTile(
