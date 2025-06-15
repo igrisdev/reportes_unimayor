@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/components/card_report.dart';
+import 'package:reportes_unimayor/screens/users/history_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/view_report_user_screen.dart';
 import 'package:reportes_unimayor/themes/light.theme.dart';
 
@@ -117,7 +118,14 @@ class MainUserScreen extends StatelessWidget {
                 fontSize: 18,
               ),
             ),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const HistoryUserScreen(),
+                ),
+              );
+            },
           ),
 
           Expanded(child: Container(height: double.infinity)),
