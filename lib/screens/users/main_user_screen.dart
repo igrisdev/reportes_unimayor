@@ -13,7 +13,6 @@ class MainUserScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: lightMode.colorScheme.surface,
       appBar: AppBarUser(),
       drawer: DrawerUser(context: context),
       body: Padding(
@@ -48,39 +47,38 @@ class MainUserScreen extends StatelessWidget {
     );
   }
 
-  GestureDetector bottomAppBarMain(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const CreateReportUserScreen(),
-          ),
-        );
-      },
-      child: BottomAppBar(
-        color: Colors.transparent,
-        elevation: 0,
-        height: 90,
-        child: Container(
-          decoration: BoxDecoration(
-            color: lightMode.colorScheme.secondary,
-            borderRadius: BorderRadius.circular(100),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Realizar Reporte",
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
+  BottomAppBar bottomAppBarMain(BuildContext context) {
+    return BottomAppBar(
+      color: Colors.transparent,
+      elevation: 0,
+      height: 90,
+      child: Material(
+        color: lightMode.colorScheme.secondary,
+        borderRadius: BorderRadius.circular(100),
+        child: InkWell(
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const CreateReportUserScreen(),
               ),
-              SizedBox(width: 10),
-              Icon(Icons.send),
-            ],
+            );
+          },
+          child: Center(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Realizar Reporte",
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: lightMode.colorScheme.secondaryFixed,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Icon(Icons.send, color: lightMode.colorScheme.secondaryFixed),
+              ],
+            ),
           ),
         ),
       ),

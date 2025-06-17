@@ -128,7 +128,7 @@ class _CreateReportUserScreenState extends State<CreateReportUserScreen> {
                 padding: const EdgeInsets.only(bottom: 20),
                 child: SizedBox(
                   width: double.infinity,
-                  height: 70,
+                  height: 60,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: lightMode.colorScheme.secondary,
