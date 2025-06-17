@@ -15,7 +15,12 @@ class HistoryUserScreen extends StatelessWidget {
       appBar: AppBarUser(),
       drawer: DrawerUser(context: context),
       body: Padding(
-        padding: const EdgeInsets.only(left: 18, right: 18, top: 10),
+        padding: const EdgeInsets.only(
+          left: 18,
+          right: 18,
+          top: 10,
+          bottom: 10,
+        ),
         child: ListView(
           children: [
             Text(

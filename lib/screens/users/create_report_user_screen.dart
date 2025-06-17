@@ -12,11 +12,16 @@ class _CreateReportUserScreenState extends State<CreateReportUserScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final List<String> _headquarters = ['Bicentenario', 'Encarnación'];
-
   final List<String> _buildings = ['Edificio 1'];
+  // final List<String> _rooms = ['Salón 201', 'Salon 202'];
+  final List<Map<String, String>> _locations = [
+    {'idLocation': '1', 'location': 'Salón 201'},
+    {'idLocation': '2', 'location': 'Salón 202'},
+  ];
 
   String? _selectedHeadquarter;
   String? _selectedBuilding;
+  String? _selectedLocation;
   String? _description;
 
   @override
@@ -74,10 +79,35 @@ class _CreateReportUserScreenState extends State<CreateReportUserScreen> {
                 },
               ),
               const SizedBox(height: 20),
+              DropdownButtonFormField(
+                value: _selectedLocation,
+                decoration: const InputDecoration(
+                  labelText: 'Seleccionar Salón o Lugar Mas Cercano',
+                ),
+                items: _locations.map((location) {
+                  return DropdownMenuItem(
+                    value: location['idLocation'],
+                    child: Text(location['location']!),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedLocation = value;
+                  });
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor seleccione una opción';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
               TextFormField(
-                maxLines: 4,
+                maxLines: 7,
                 decoration: const InputDecoration(
                   labelText: 'Descripción del reporte',
+                  alignLabelWithHint: true,
                   border: OutlineInputBorder(),
                 ),
                 onChanged: (value) {
