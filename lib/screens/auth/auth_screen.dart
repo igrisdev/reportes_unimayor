@@ -55,8 +55,9 @@ class _AuthScreenState extends State<AuthScreen> {
                   ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        // TODO: Enviar datos a la API
-                        print('Enviando datos a la API');
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Processing Data')),
+                        );
                       }
                     },
                     child: Text('Iniciar sesión'),
