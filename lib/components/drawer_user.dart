@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:reportes_unimayor/screens/auth/auth_screen.dart';
 import 'package:reportes_unimayor/screens/users/history_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/main_user_screen.dart';
 
@@ -55,7 +56,7 @@ class DrawerUser extends StatelessWidget {
             },
           ),
 
-          Expanded(child: Container(height: double.infinity)),
+          Spacer(),
 
           ListTile(
             leading: const Icon(Icons.logout),
@@ -66,7 +67,12 @@ class DrawerUser extends StatelessWidget {
                 fontSize: 18,
               ),
             ),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AuthScreen()),
+              );
+            },
           ),
 
           SizedBox(height: 20),
