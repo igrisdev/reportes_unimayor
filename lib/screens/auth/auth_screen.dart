@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:reportes_unimayor/services/api_auth_service.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -9,6 +10,16 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   final _formKey = GlobalKey<FormState>();
+
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +38,7 @@ class _AuthScreenState extends State<AuthScreen> {
               child: Column(
                 children: [
                   TextFormField(
+                    controller: _emailController,
                     decoration: InputDecoration(
                       labelText: 'Email',
                       hintText: 'Email',
@@ -40,6 +52,8 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                   SizedBox(height: 20),
                   TextFormField(
+                    controller: _passwordController,
+                    obscureText: true,
                     decoration: InputDecoration(
                       labelText: 'Contraseña',
                       hintText: 'Contraseña',
@@ -55,9 +69,14 @@ class _AuthScreenState extends State<AuthScreen> {
                   ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
+                        final email = _emailController.text;
+                        final password = _passwordController.text;
+
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Processing Data')),
+                          const SnackBar(content: Text('Procesando datos...')),
                         );
+
+                        ApiAuthService().login(email, password);
                       }
                     },
                     child: Text('Iniciar sesión'),
