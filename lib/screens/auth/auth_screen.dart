@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:reportes_unimayor/screens/users/main_user_screen.dart';
 import 'package:reportes_unimayor/services/api_auth_service.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -72,11 +73,29 @@ class _AuthScreenState extends State<AuthScreen> {
                         final email = _emailController.text;
                         final password = _passwordController.text;
 
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Procesando datos...')),
-                        );
-
-                        ApiAuthService().login(email, password);
+                        ApiAuthService().login(email, password).then((value) {
+                          if (value == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Error al iniciar sesión'),
+                              ),
+                            );
+                          } else {
+                            ApiAuthService().userType(value).then((userType) {
+                              if (userType) {
+                                print('User is a brigadista');
+                              } else {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const MainUserScreen(),
+                                  ),
+                                );
+                              }
+                            });
+                          }
+                        });
                       }
                     },
                     child: Text('Iniciar sesión'),
