@@ -1,6 +1,5 @@
+import 'package:reportes_unimayor/routes/routes.dart';
 import 'package:flutter/material.dart';
-import 'package:reportes_unimayor/screens/auth/auth_screen.dart';
-// import 'package:reportes_unimayor/screens/users/main_user_screen.dart';
 
 void main() {
   runApp(const MainApp());
@@ -11,10 +10,9 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      // home: MainUserScreen(),
-      home: AuthScreen(),
+      routerConfig: router,
     );
   }
 }
