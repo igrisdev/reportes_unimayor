@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:reportes_unimayor/screens/users/main_user_screen.dart';
 import 'package:reportes_unimayor/services/api_auth_service.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -11,6 +10,8 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
+  bool _isLoading = false;
+
   final _formKey = GlobalKey<FormState>();
 
   final _emailController = TextEditingController();
@@ -21,6 +22,18 @@ class _AuthScreenState extends State<AuthScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  void _showError(String message) {
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 
   @override
@@ -69,34 +82,44 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                   SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        final email = _emailController.text;
-                        final password = _passwordController.text;
+                    onPressed: _isLoading
+                        ? null
+                        : () async {
+                            if (!_formKey.currentState!.validate()) return;
 
-                        GoRouter.of(context).push('/user');
+                            final router = GoRouter.of(context);
 
-                        // context.go('user');
+                            setState(() => _isLoading = true);
 
-                        // ApiAuthService().login(email, password).then((value) {
-                        //   if (value == null) {
-                        //     // ScaffoldMessenger.of(context).showSnackBar(
-                        //     //   const SnackBar(
-                        //     //     content: Text('Error al iniciar sesión'),
-                        //     //   ),
-                        //     // );
-                        //   } else {
-                        //     ApiAuthService().userType(value).then((userType) {
-                        //       if (userType) {
-                        //         print('User is a brigadista');
-                        //       } else {
-                        //         context.go('user');
-                        //       }
-                        //     });
-                        //   }
-                        // });
-                      }
-                    },
+                            try {
+                              final email = _emailController.text.trim();
+                              final password = _passwordController.text;
+
+                              final token = await ApiAuthService().login(
+                                email,
+                                password,
+                              );
+
+                              if (token == null) {
+                                _showError('Credenciales incorrectas');
+                                return;
+                              }
+
+                              final userType = await ApiAuthService().userType(
+                                token,
+                              );
+
+                              if (userType) {
+                                print('User is a brigadista');
+                              } else {
+                                router.push('/user');
+                              }
+                            } catch (e) {
+                              _showError('Error, Intenta nuevamente.');
+                            } finally {
+                              setState(() => _isLoading = false);
+                            }
+                          },
                     child: Text('Iniciar sesión'),
                   ),
                 ],
