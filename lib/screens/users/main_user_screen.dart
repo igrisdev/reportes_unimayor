@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/components/app_bar_user.dart';
 import 'package:reportes_unimayor/components/card_report.dart';
 import 'package:reportes_unimayor/components/drawer_user.dart';
 import 'package:reportes_unimayor/screens/users/create_report_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/view_report_user_screen.dart';
+import 'package:reportes_unimayor/stores/auth_store.dart';
 import 'package:reportes_unimayor/themes/light.theme.dart';
 
-class MainUserScreen extends StatelessWidget {
+class MainUserScreen extends ConsumerWidget {
   const MainUserScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final String token = ref.watch(tokenStoreProvider);
+
     return Scaffold(
       appBar: AppBarUser(),
       drawer: DrawerUser(context: context),
