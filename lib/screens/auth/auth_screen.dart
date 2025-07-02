@@ -118,11 +118,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                                   .read(authStoreProvider.notifier)
                                   .setToken(newToken);
 
-                              // Agregar esta línea para verificar
-                              print(
-                                'Token guardado: ${ref.read(authStoreProvider).token}',
-                              );
-
                               final userType = await ApiAuthService().userType(
                                 token,
                               );
