@@ -10,9 +10,9 @@ TokenUserModel tokenUserModelFromJson(String str) =>
 String tokenUserModelToJson(TokenUserModel data) => json.encode(data.toJson());
 
 class TokenUserModel {
-  String token;
+  String? token;
 
-  TokenUserModel({required this.token});
+  TokenUserModel({this.token});
 
   TokenUserModel copyWith({String? token}) =>
       TokenUserModel(token: token ?? this.token);

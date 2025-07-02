@@ -1,21 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:reportes_unimayor/models/token_user_model.dart';
 import 'package:reportes_unimayor/services/api_auth_service.dart';
+import 'package:reportes_unimayor/stores/auth_store.dart';
 
-class AuthScreen extends StatefulWidget {
+class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key});
 
   @override
-  State<AuthScreen> createState() => _AuthScreenState();
+  createState() => _AuthScreenState();
 }
 
-class _AuthScreenState extends State<AuthScreen> {
+class _AuthScreenState extends ConsumerState<AuthScreen> {
   bool _isLoading = false;
 
   final _formKey = GlobalKey<FormState>();
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    ref.read(authStoreProvider);
+  }
 
   @override
   void dispose() {
@@ -95,15 +104,24 @@ class _AuthScreenState extends State<AuthScreen> {
                               final email = _emailController.text.trim();
                               final password = _passwordController.text;
 
-                              final token = await ApiAuthService().login(
-                                email,
-                                password,
-                              );
+                              final String? token = await ApiAuthService()
+                                  .login(email, password);
 
                               if (token == null) {
                                 _showError('Credenciales incorrectas');
                                 return;
                               }
+
+                              final newToken = TokenUserModel(token: token);
+
+                              ref
+                                  .read(authStoreProvider.notifier)
+                                  .setToken(newToken);
+
+                              // Agregar esta línea para verificar
+                              print(
+                                'Token guardado: ${ref.read(authStoreProvider).token}',
+                              );
 
                               final userType = await ApiAuthService().userType(
                                 token,
@@ -112,7 +130,7 @@ class _AuthScreenState extends State<AuthScreen> {
                               if (userType) {
                                 print('User is a brigadista');
                               } else {
-                                router.push('/user');
+                                router.go('/user');
                               }
                             } catch (e) {
                               _showError('Error, Intenta nuevamente.');

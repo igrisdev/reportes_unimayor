@@ -6,7 +6,6 @@ import 'package:reportes_unimayor/components/card_report.dart';
 import 'package:reportes_unimayor/components/drawer_user.dart';
 import 'package:reportes_unimayor/screens/users/create_report_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/view_report_user_screen.dart';
-import 'package:reportes_unimayor/stores/auth_store.dart';
 import 'package:reportes_unimayor/themes/light.theme.dart';
 
 class MainUserScreen extends ConsumerWidget {
@@ -14,7 +13,7 @@ class MainUserScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final String token = ref.watch(tokenStoreProvider);
+    // final tokenModel = ref.watch(authStoreProvider);
 
     return Scaffold(
       appBar: AppBarUser(),
