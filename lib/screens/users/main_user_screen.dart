@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/components/app_bar_user.dart';
 import 'package:reportes_unimayor/components/card_report.dart';
 import 'package:reportes_unimayor/components/drawer_user.dart';
+import 'package:reportes_unimayor/providers/token_provider.dart';
 import 'package:reportes_unimayor/screens/users/create_report_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/view_report_user_screen.dart';
 import 'package:reportes_unimayor/themes/light.theme.dart';
@@ -13,7 +14,7 @@ class MainUserScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final tokenModel = ref.watch(authStoreProvider);
+    final token = ref.watch(tokenProvider);
 
     return Scaffold(
       appBar: AppBarUser(),
@@ -34,12 +35,15 @@ class MainUserScreen extends ConsumerWidget {
             Column(
               children: [
                 CardReport(
-                  redirectTo: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ViewReportUserScreen(),
-                    ),
-                  ),
+                  // redirectTo: () => Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => const ViewReportUserScreen(),
+                  //   ),
+                  // ),
+                  redirectTo: () {
+                    print('Redirecting to ViewReportUserScreen');
+                  },
                 ),
               ],
             ),
