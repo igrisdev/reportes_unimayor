@@ -20,12 +20,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   final _passwordController = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-    ref.read(tokenProvider);
-  }
-
-  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
