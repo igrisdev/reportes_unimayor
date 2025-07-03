@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppBarBrigadier extends StatelessWidget implements PreferredSizeWidget {
@@ -9,6 +10,7 @@ class AppBarBrigadier extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final router = GoRouter.of(context);
     return AppBar(
       centerTitle: true,
       title: Text(
@@ -17,9 +19,16 @@ class AppBarBrigadier extends StatelessWidget implements PreferredSizeWidget {
       ),
       actions: [
         IconButton(
-          icon: Icon(Icons.change_circle),
+          style: IconButton.styleFrom(
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          icon: Icon(Icons.engineering),
           onPressed: () {
-            print('Botón de perfil presionado');
+            router.push('/user');
           },
         ),
       ],

@@ -15,14 +15,14 @@ class ApiAuthService extends BaseDioService {
     }
   }
 
-  Future<bool> userType(String? token) async {
-    if (token == null || token.isEmpty) {
+  bool userType(String? token) {
+    if (token == null || token.isEmpty) return false;
+
+    try {
+      final jwt = JWT.decode(token);
+      return bool.parse(jwt.payload['EsBrigadista']);
+    } catch (e) {
       return false;
     }
-
-    final jwt = JWT.decode(token);
-    final esBrigadista = jwt.payload['EsBrigadista'];
-
-    return bool.parse(esBrigadista.toString());
   }
 }
