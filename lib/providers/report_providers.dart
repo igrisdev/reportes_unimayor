@@ -1,3 +1,4 @@
+import 'package:go_router/go_router.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/token_provider.dart';
 import 'package:reportes_unimayor/services/api_reports_service.dart';
@@ -25,6 +26,28 @@ Future<List<ReportsModel>> reportList(ReportListRef ref) async {
 }
 
 @riverpod
+Future<List<ReportsModel>> reportListPending(ReportListPendingRef ref) async {
+  final token = ref.watch(tokenProvider);
+
+  if (token.isEmpty) {
+    return []; // o throw Exception('Token no disponible');
+  }
+
+  try {
+    final apiService = ApiReportsService();
+    final reports = await apiService.getReports(token);
+
+    final pendingReports = reports
+        .where((report) => report.estado != 'Finalizado')
+        .toList();
+    return pendingReports;
+  } catch (e) {
+    print('Error en report provider: $e');
+    throw e; // Riverpod manejará el error
+  }
+}
+
+@riverpod
 Future<ReportsModel> getReportById(GetReportByIdRef ref, String id) async {
   final token = ref.watch(tokenProvider);
 
@@ -37,6 +60,38 @@ Future<ReportsModel> getReportById(GetReportByIdRef ref, String id) async {
     final report = await apiService.getReportById(token, id);
 
     return report;
+  } catch (e) {
+    print('Error en report provider: $e');
+    throw e; // Riverpod manejará el error
+  }
+}
+
+@riverpod
+Future<bool> createReport(
+  CreateReportRef ref,
+  String idUbicacion,
+  String descripcion,
+) async {
+  final token = ref.watch(tokenProvider);
+
+  if (token.isEmpty) {
+    throw Exception('Token no disponible');
+  }
+
+  try {
+    final apiService = ApiReportsService();
+    final response = await apiService.createReport(
+      token,
+      idUbicacion,
+      descripcion,
+    );
+
+    if (response) {
+      ref.invalidate(reportListPendingProvider);
+      return true;
+    }
+
+    return false;
   } catch (e) {
     print('Error en report provider: $e');
     throw e; // Riverpod manejará el error

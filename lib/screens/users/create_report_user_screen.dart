@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/components/app_bar_user.dart';
+import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/themes/light.theme.dart';
 
-class CreateReportUserScreen extends StatefulWidget {
+class CreateReportUserScreen extends ConsumerStatefulWidget {
   const CreateReportUserScreen({super.key});
 
   @override
-  State<CreateReportUserScreen> createState() => _CreateReportUserScreenState();
+  createState() => _CreateReportUserScreenState();
 }
 
-class _CreateReportUserScreenState extends State<CreateReportUserScreen> {
+class _CreateReportUserScreenState
+    extends ConsumerState<CreateReportUserScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final List<String> _headquarters = ['Bicentenario', 'Encarnación'];
@@ -28,6 +32,8 @@ class _CreateReportUserScreenState extends State<CreateReportUserScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final router = GoRouter.of(context);
+
     return Scaffold(
       appBar: AppBarUser(),
       body: Form(
@@ -137,11 +143,19 @@ class _CreateReportUserScreenState extends State<CreateReportUserScreen> {
                         borderRadius: BorderRadius.circular(100),
                       ),
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Processing Data')),
+                        final response = await ref.read(
+                          createReportProvider(
+                            _selectedLocation!,
+                            _description!,
+                          ).future,
                         );
+
+                        if (response == true) {
+                          router.push('/user');
+                          return;
+                        }
                       }
                     },
                     child: Row(

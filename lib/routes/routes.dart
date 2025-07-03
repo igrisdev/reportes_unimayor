@@ -19,9 +19,5 @@ final router = GoRouter(
         ),
       ],
     ),
-    // GoRoute(
-    //   path: '/report',
-    //   builder: (context, state) => ViewReportUserScreen(),
-    // ),
   ],
 );

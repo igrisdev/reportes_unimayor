@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/components/app_bar_user.dart';
-import 'package:reportes_unimayor/components/card_report.dart';
 import 'package:reportes_unimayor/components/drawer_user.dart';
-import 'package:reportes_unimayor/screens/users/view_report_user_screen.dart';
 
 class HistoryUserScreen extends StatelessWidget {
   const HistoryUserScreen({super.key});

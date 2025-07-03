@@ -37,10 +37,27 @@ class ApiReportsService extends BaseDioService {
 
       final ReportsModel report = ReportsModel.fromJson(json);
 
-      print('________________________________________________________');
-      print('Reporte obtenido: $report');
-
       return report;
+    } catch (e) {
+      print('Error en ApiReportsService: $e');
+      rethrow; // Re-lanzar el error para que lo maneje el provider
+    }
+  }
+
+  Future<bool> createReport(String token, String id, String description) async {
+    try {
+      dio.options.headers["Authorization"] = "Bearer $token";
+      final response = await dio.post(
+        '/reportes',
+        data: {'idUbicacion': id, 'descripcion': description},
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Error al crear el reporte');
+      }
+
+      print('Reporte creado exitosamente');
+      return true;
     } catch (e) {
       print('Error en ApiReportsService: $e');
       rethrow; // Re-lanzar el error para que lo maneje el provider

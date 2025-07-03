@@ -15,7 +15,7 @@ class MainUserScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final reportsAsync = ref.watch(reportListProvider);
+    final reportsAsync = ref.watch(reportListPendingProvider);
 
     return Scaffold(
       appBar: AppBarUser(),
