@@ -82,8 +82,7 @@ class MainUserScreen extends ConsumerWidget {
                 '${report.horaCreacion.split(':').first}:${report.horaCreacion.split(':')[1]}',
             location:
                 '${report.ubicacion.edificio} - ${report.ubicacion.salon}',
-            // redirectTo: () => router.go('/report/${report.id}'),
-            redirectTo: () => router.push('/report'),
+            redirectTo: () => router.push('/user/report/${report.idReporte}'),
           ),
         );
       },

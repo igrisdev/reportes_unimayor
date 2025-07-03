@@ -8,10 +8,20 @@ final router = GoRouter(
   initialLocation: '/auth',
   routes: [
     GoRoute(path: '/auth', builder: (context, state) => AuthScreen()),
-    GoRoute(path: '/user', builder: (context, state) => MainUserScreen()),
     GoRoute(
-      path: '/report',
-      builder: (context, state) => ViewReportUserScreen(),
+      path: '/user',
+      builder: (context, state) => MainUserScreen(),
+      routes: [
+        GoRoute(
+          path: '/report/:id',
+          builder: (context, state) =>
+              ViewReportUserScreen(id: state.pathParameters['id']!),
+        ),
+      ],
     ),
+    // GoRoute(
+    //   path: '/report',
+    //   builder: (context, state) => ViewReportUserScreen(),
+    // ),
   ],
 );

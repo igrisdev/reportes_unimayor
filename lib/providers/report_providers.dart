@@ -6,27 +6,39 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'report_providers.g.dart';
 
 @riverpod
-class ReportList extends _$ReportList {
-  @override
-  Future<List<ReportsModel>> build() async {
-    final token = ref.watch(tokenProvider);
+Future<List<ReportsModel>> reportList(ReportListRef ref) async {
+  final token = ref.watch(tokenProvider);
 
-    if (token.isEmpty) {
-      return []; // o throw Exception('Token no disponible');
-    }
+  if (token.isEmpty) {
+    return []; // o throw Exception('Token no disponible');
+  }
 
-    try {
-      final apiService = ApiReportsService();
-      final reports = await apiService.getReports(token);
+  try {
+    final apiService = ApiReportsService();
+    final reports = await apiService.getReports(token);
 
-      print('________________________________________________________');
-      print('Reportes obtenidos: ${reports.length}');
-      print('________________________________________________________');
+    return reports;
+  } catch (e) {
+    print('Error en report provider: $e');
+    throw e; // Riverpod manejará el error
+  }
+}
 
-      return reports;
-    } catch (e) {
-      print('Error en report provider: $e');
-      throw e; // Riverpod manejará el error
-    }
+@riverpod
+Future<ReportsModel> getReportById(GetReportByIdRef ref, String id) async {
+  final token = ref.watch(tokenProvider);
+
+  if (token.isEmpty) {
+    throw Exception('Token no disponible');
+  }
+
+  try {
+    final apiService = ApiReportsService();
+    final report = await apiService.getReportById(token, id);
+
+    return report;
+  } catch (e) {
+    print('Error en report provider: $e');
+    throw e; // Riverpod manejará el error
   }
 }

@@ -23,4 +23,27 @@ class ApiReportsService extends BaseDioService {
       rethrow; // Re-lanzar el error para que lo maneje el provider
     }
   }
+
+  Future<ReportsModel> getReportById(String token, String id) async {
+    try {
+      dio.options.headers["Authorization"] = "Bearer $token";
+      final response = await dio.get('/reportes/$id');
+
+      if (response.data == null) {
+        throw Exception('Reporte no encontrado');
+      }
+
+      final Map<String, dynamic> json = response.data as Map<String, dynamic>;
+
+      final ReportsModel report = ReportsModel.fromJson(json);
+
+      print('________________________________________________________');
+      print('Reporte obtenido: $report');
+
+      return report;
+    } catch (e) {
+      print('Error en ApiReportsService: $e');
+      rethrow; // Re-lanzar el error para que lo maneje el provider
+    }
+  }
 }
