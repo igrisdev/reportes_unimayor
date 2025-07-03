@@ -32,52 +32,77 @@ class HistoryUserScreen extends StatelessWidget {
             ),
             SizedBox(height: 16),
             Column(
-              children: [
-                CardReport(
-                  redirectTo: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ViewReportUserScreen(),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10),
-                CardReport(
-                  redirectTo: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ViewReportUserScreen(),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10),
-                CardReport(
-                  redirectTo: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ViewReportUserScreen(),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10),
-                CardReport(
-                  redirectTo: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ViewReportUserScreen(),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10),
-                CardReport(
-                  redirectTo: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ViewReportUserScreen(),
-                    ),
-                  ),
-                ),
-              ],
+              // children: [
+              //   CardReport(
+              //     title: "Reporte de Emergencia #001",
+              //     description: "Situación de emergencia en el campus principal",
+              //     status: "En Proceso",
+              //     date: "23/05/2025",
+              //     location: "Campus Principal",
+              //     redirectTo: () => Navigator.push(
+              //       context,
+              //       MaterialPageRoute(
+              //         builder: (context) => const ViewReportUserScreen(),
+              //       ),
+              //     ),
+              //   ),
+              //   SizedBox(height: 10),
+              //   CardReport(
+              //     title: "Reporte de Emergencia #002",
+              //     description: "Incidente reportado en la biblioteca",
+              //     status: "Pendiente",
+              //     date: "22/05/2025",
+              //     location: "Biblioteca Central",
+              //     redirectTo: () => Navigator.push(
+              //       context,
+              //       MaterialPageRoute(
+              //         builder: (context) => const ViewReportUserScreen(),
+              //       ),
+              //     ),
+              //   ),
+              //   SizedBox(height: 10),
+              //   CardReport(
+              //     title: "Reporte de Emergencia #003",
+              //     description: "Problema de seguridad en el estacionamiento",
+              //     status: "Resuelto",
+              //     date: "21/05/2025",
+              //     location: "Estacionamiento A",
+              //     redirectTo: () => Navigator.push(
+              //       context,
+              //       MaterialPageRoute(
+              //         builder: (context) => const ViewReportUserScreen(),
+              //       ),
+              //     ),
+              //   ),
+              //   SizedBox(height: 10),
+              //   CardReport(
+              //     title: "Reporte de Emergencia #004",
+              //     description: "Mantenimiento requerido en laboratorio",
+              //     status: "En Proceso",
+              //     date: "20/05/2025",
+              //     location: "Laboratorio de Sistemas",
+              //     redirectTo: () => Navigator.push(
+              //       context,
+              //       MaterialPageRoute(
+              //         builder: (context) => const ViewReportUserScreen(),
+              //       ),
+              //     ),
+              //   ),
+              //   SizedBox(height: 10),
+              //   CardReport(
+              //     title: "Reporte de Emergencia #005",
+              //     description: "Evacuación por alarma de incendio",
+              //     status: "Cerrado",
+              //     date: "19/05/2025",
+              //     location: "Edificio Administrativo",
+              //     redirectTo: () => Navigator.push(
+              //       context,
+              //       MaterialPageRoute(
+              //         builder: (context) => const ViewReportUserScreen(),
+              //       ),
+              //     ),
+              //   ),
+              // ],
             ),
           ],
         ),

@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/components/app_bar_user.dart';
+import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/themes/light.theme.dart';
 
-class ViewReportUserScreen extends StatelessWidget {
+class ViewReportUserScreen extends ConsumerWidget {
   const ViewReportUserScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final report = ref.watch(reportListProvider.notifier);
+
     return Scaffold(
       appBar: AppBarUser(),
       body: Padding(
@@ -15,15 +19,17 @@ class ViewReportUserScreen extends StatelessWidget {
         child: Column(
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Sede Encarnación - Salón 202',
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 17,
+                Expanded(
+                  child: Text(
+                    'Sede Encarnación - Salón 202',
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 17,
+                    ),
                   ),
                 ),
-                Spacer(),
                 Container(
                   decoration: BoxDecoration(
                     color: lightMode.colorScheme.secondary,
@@ -66,6 +72,13 @@ class ViewReportUserScreen extends StatelessWidget {
                   style: GoogleFonts.poppins(fontSize: 14),
                 ),
               ],
+            ),
+
+            ElevatedButton(
+              onPressed: () {
+                // report.getReport();
+              },
+              child: Text('Ver Reporte'),
             ),
           ],
         ),

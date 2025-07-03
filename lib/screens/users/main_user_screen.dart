@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/components/app_bar_user.dart';
 import 'package:reportes_unimayor/components/card_report.dart';
 import 'package:reportes_unimayor/components/drawer_user.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
-import 'package:reportes_unimayor/providers/report_provider.dart';
+import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/screens/users/create_report_user_screen.dart';
-import 'package:reportes_unimayor/screens/users/view_report_user_screen.dart';
 import 'package:reportes_unimayor/themes/light.theme.dart';
 
 class MainUserScreen extends ConsumerWidget {
@@ -15,7 +15,7 @@ class MainUserScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final reportsAsync = ref.watch(reportProvider);
+    final reportsAsync = ref.watch(reportListProvider);
 
     return Scaffold(
       appBar: AppBarUser(),
@@ -25,16 +25,23 @@ class MainUserScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Reportes En Curso',
-              style: GoogleFonts.poppins(
-                fontWeight: FontWeight.w600,
-                fontSize: 18,
-              ),
+            reportsAsync.maybeWhen(
+              data: (reports) => reports.isNotEmpty
+                  ? Column(
+                      children: [
+                        Text(
+                          'Reportes En Curso',
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 18,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                    )
+                  : const SizedBox.shrink(),
+              orElse: () => const SizedBox.shrink(),
             ),
-            const SizedBox(height: 16),
-
-            // Manejo de estados del AsyncValue
             Expanded(
               child: reportsAsync.when(
                 data: (reports) => _buildReportsList(reports, context),
@@ -45,11 +52,16 @@ class MainUserScreen extends ConsumerWidget {
           ],
         ),
       ),
-      bottomNavigationBar: bottomAppBarMain(context),
+      bottomNavigationBar: reportsAsync.maybeWhen(
+        data: (reports) => reports.isEmpty ? bottomAppBarMain(context) : null,
+        orElse: () => null, // Por defecto no mostrar
+      ),
     );
   }
 
   Widget _buildReportsList(List<ReportsModel> reports, BuildContext context) {
+    final router = GoRouter.of(context);
+
     if (reports.isEmpty) {
       return textNoReports();
     }
@@ -61,21 +73,17 @@ class MainUserScreen extends ConsumerWidget {
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
           child: CardReport(
-            // Pasar los datos del reporte al CardReport
-            // title: report.ubicacion.nombre,
-            // description: report.descripcion,
-            // status: report.estado,
-            // date: report.fechaCreacion,
-            // location:
-            //     '${report.ubicacion.edificio} - ${report.ubicacion.salon}',
-            redirectTo: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ViewReportUserScreen(
-                  // report: report, // Pasar el reporte completo
-                ),
-              ),
-            ),
+            title: report.ubicacion.nombre,
+            description: report.descripcion,
+            status: report.estado,
+            date:
+                '${report.fechaCreacion.day.toString()} - ${report.fechaCreacion.month} - ${report.fechaCreacion.year.toString()}',
+            hour:
+                '${report.horaCreacion.split(':').first}:${report.horaCreacion.split(':')[1]}',
+            location:
+                '${report.ubicacion.edificio} - ${report.ubicacion.salon}',
+            // redirectTo: () => router.go('/report/${report.id}'),
+            redirectTo: () => router.push('/report'),
           ),
         );
       },
@@ -103,12 +111,6 @@ class MainUserScreen extends ConsumerWidget {
             style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
           ),
           const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {
-              ref.read(reportProvider.notifier).refresh();
-            },
-            child: const Text('Reintentar'),
-          ),
         ],
       ),
     );

@@ -3,10 +3,10 @@ import 'package:reportes_unimayor/providers/token_provider.dart';
 import 'package:reportes_unimayor/services/api_reports_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'report_provider.g.dart';
+part 'report_providers.g.dart';
 
 @riverpod
-class Report extends _$Report {
+class ReportList extends _$ReportList {
   @override
   Future<List<ReportsModel>> build() async {
     final token = ref.watch(tokenProvider);
@@ -28,16 +28,5 @@ class Report extends _$Report {
       print('Error en report provider: $e');
       throw e; // Riverpod manejará el error
     }
-  }
-
-  // Método para refrescar los reportes
-  Future<void> refresh() async {
-    ref.invalidateSelf();
-  }
-
-  // Método para agregar un nuevo reporte (opcional)
-  void addReport(ReportsModel newReport) {
-    final currentState = state.valueOrNull ?? [];
-    state = AsyncValue.data([...currentState, newReport]);
   }
 }

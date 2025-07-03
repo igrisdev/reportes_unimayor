@@ -4,8 +4,23 @@ import 'package:reportes_unimayor/themes/light.theme.dart';
 
 class CardReport extends StatelessWidget {
   final GestureTapCallback? redirectTo;
+  final String title;
+  final String description;
+  final String status;
+  final String date;
+  final String hour;
+  final String location;
 
-  const CardReport({super.key, this.redirectTo});
+  const CardReport({
+    super.key,
+    this.redirectTo,
+    required this.title,
+    required this.description,
+    required this.status,
+    required this.date,
+    required this.hour,
+    required this.location,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,23 +35,26 @@ class CardReport extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(11),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Sede Encarnación - Salón 202',
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
-                  Spacer(),
-                  Text('6:20 PM', style: GoogleFonts.poppins(fontSize: 16)),
+                  Text(hour, style: GoogleFonts.poppins(fontSize: 16)),
                 ],
               ),
               SizedBox(height: 13),
               Text(
-                "lorem fa ipsum r sit amet consectetur adipisicing elit. dolor sit amet consectetur adipisicing elit. Voluptate, quia lorem fa ipsum r sit amet consectetur adipisicing elit. dolor sit amet consectetur adipisicing elit. Voluptate, quia",
+                description.trim(),
                 style: GoogleFonts.poppins(fontSize: 14),
               ),
               SizedBox(height: 13),
@@ -55,7 +73,7 @@ class CardReport extends StatelessWidget {
                         bottom: 5,
                       ),
                       child: Text(
-                        'En Proceso',
+                        status,
                         style: GoogleFonts.poppins(
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
@@ -64,10 +82,7 @@ class CardReport extends StatelessWidget {
                     ),
                   ),
                   Spacer(),
-                  Text(
-                    '23 - mayo - 2025',
-                    style: GoogleFonts.poppins(fontSize: 16),
-                  ),
+                  Text(date, style: GoogleFonts.poppins(fontSize: 16)),
                 ],
               ),
             ],
