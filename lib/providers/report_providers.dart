@@ -26,6 +26,37 @@ Future<List<ReportsModel>> reportList(ReportListRef ref) async {
 }
 
 @riverpod
+Future<List<ReportsModel>> reportListBrigadier(
+  ReportListBrigadierRef ref,
+) async {
+  final token = ref.watch(tokenProvider);
+
+  if (token.isEmpty) {
+    return []; // o throw Exception('Token no disponible');
+  }
+
+  try {
+    final apiService = ApiReportsService();
+
+    final reportAcepted = await apiService.getReportsBrigadierAssigned(token);
+
+    final reports = reportAcepted
+        .where((element) => element.estado == 'En proceso')
+        .toList();
+
+    print('Reports: $reports');
+    if (reports.isEmpty) {
+      return await apiService.getReportsBrigadierPending(token);
+    }
+
+    return reports;
+  } catch (e) {
+    print('Error en report provider: $e');
+    throw e; // Riverpod manejará el error
+  }
+}
+
+@riverpod
 Future<List<ReportsModel>> reportListPending(ReportListPendingRef ref) async {
   final token = ref.watch(tokenProvider);
 
@@ -70,6 +101,35 @@ Future<ReportsModel> getReportById(GetReportByIdRef ref, String id) async {
 }
 
 @riverpod
+Future<ReportsModel> getReportByIdBrigadier(
+  GetReportByIdBrigadierRef ref,
+  String id,
+) async {
+  final token = ref.watch(tokenProvider);
+
+  if (token.isEmpty) {
+    throw Exception('Token no disponible');
+  }
+
+  try {
+    final apiService = ApiReportsService();
+    final reports = await apiService.getReportsBrigadierPending(token);
+
+    final report = reports.where((report) => report.idReporte.toString() == id);
+
+    if (report.isEmpty) {
+      final report = await apiService.getReportsBrigadierAssigned(token);
+      return report.firstWhere((report) => report.idReporte.toString() == id);
+    }
+
+    return report.first;
+  } catch (e) {
+    print('Error en report provider: $e');
+    throw e; // Riverpod manejará el error
+  }
+}
+
+@riverpod
 Future<bool> createReport(
   CreateReportRef ref,
   String idUbicacion,
@@ -90,7 +150,7 @@ Future<bool> createReport(
     );
 
     if (response) {
-      invalidateAllProviders(ref);
+      invalidateAllProvidersUser(ref);
       return true;
     }
 
@@ -114,7 +174,7 @@ Future<bool> cancelReport(CancelReportRef ref, int id) async {
     final response = await apiService.cancelReport(token, id);
 
     if (response) {
-      invalidateAllProviders(ref);
+      invalidateAllProvidersUser(ref);
       return true;
     }
 
@@ -125,8 +185,63 @@ Future<bool> cancelReport(CancelReportRef ref, int id) async {
   }
 }
 
-void invalidateAllProviders(ref) {
+@riverpod
+Future<bool> acceptReport(AcceptReportRef ref, int id) async {
+  final token = ref.watch(tokenProvider);
+
+  if (token.isEmpty) {
+    throw Exception('Token no disponible');
+  }
+
+  try {
+    final apiService = ApiReportsService();
+    final response = await apiService.acceptReport(token, id);
+
+    if (response) {
+      invalidateAllProvidersBrigadier(ref);
+      ref.invalidate(reportListBrigadierProvider);
+      return true;
+    }
+
+    return false;
+  } catch (e) {
+    print('Error en report provider: $e');
+    throw e; // Riverpod manejará el error
+  }
+}
+
+@riverpod
+Future<bool> endReport(EndReportRef ref, int id) async {
+  final token = ref.watch(tokenProvider);
+
+  if (token.isEmpty) {
+    throw Exception('Token no disponible');
+  }
+
+  try {
+    final apiService = ApiReportsService();
+    final response = await apiService.endReport(token, id);
+
+    if (response) {
+      invalidateAllProvidersBrigadier(ref);
+      return true;
+    }
+
+    return false;
+  } catch (e) {
+    print('Error en report provider: $e');
+    throw e; // Riverpod manejará el error
+  }
+}
+
+void invalidateAllProvidersUser(ref) {
   ref.invalidate(reportListPendingProvider);
   ref.invalidate(reportListProvider);
   ref.invalidate(isBrigadierProvider);
+}
+
+void invalidateAllProvidersBrigadier(ref) {
+  invalidateAllProvidersUser(ref);
+  ref.invalidate(reportListBrigadierProvider);
+  ref.invalidate(getReportByIdBrigadierProvider);
 }

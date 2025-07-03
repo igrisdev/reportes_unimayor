@@ -13,7 +13,7 @@ class MainBrigadierScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final reportsAsync = ref.watch(reportListProvider);
+    final reportsAsync = ref.watch(reportListBrigadierProvider);
 
     return Scaffold(
       appBar: AppBarBrigadier(),
@@ -76,7 +76,8 @@ class MainBrigadierScreen extends ConsumerWidget {
                 '${report.horaCreacion.split(':').first}:${report.horaCreacion.split(':')[1]}',
             location:
                 '${report.ubicacion.edificio} - ${report.ubicacion.salon}',
-            redirectTo: () => router.push('/user/report/${report.idReporte}'),
+            redirectTo: () =>
+                router.push('/brigadier/report/${report.idReporte}'),
           ),
         );
       },
