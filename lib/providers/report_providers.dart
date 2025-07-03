@@ -1,4 +1,3 @@
-import 'package:go_router/go_router.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/token_provider.dart';
 import 'package:reportes_unimayor/services/api_reports_service.dart';
@@ -91,6 +90,7 @@ Future<bool> createReport(
 
     if (response) {
       ref.invalidate(reportListPendingProvider);
+      ref.invalidate(reportListProvider);
       return true;
     }
 
@@ -115,6 +115,7 @@ Future<bool> cancelReport(CancelReportRef ref, int id) async {
 
     if (response) {
       ref.invalidate(reportListPendingProvider);
+      ref.invalidate(reportListProvider);
       return true;
     }
 
