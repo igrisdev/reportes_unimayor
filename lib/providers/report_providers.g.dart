@@ -24,7 +24,7 @@ final reportListProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef ReportListRef = AutoDisposeFutureProviderRef<List<ReportsModel>>;
-String _$reportListPendingHash() => r'ae25200b718667a82eaa6b5f1cd22af015a18600';
+String _$reportListPendingHash() => r'cb6b9a2f7de771c8bce752c3a3163ac03ebbecc2';
 
 /// See also [reportListPending].
 @ProviderFor(reportListPending)
@@ -313,6 +313,126 @@ class _CreateReportProviderElement
   String get idUbicacion => (origin as CreateReportProvider).idUbicacion;
   @override
   String get descripcion => (origin as CreateReportProvider).descripcion;
+}
+
+String _$cancelReportHash() => r'd7c7ee721f44a47755df138a66617c735a7ef103';
+
+/// See also [cancelReport].
+@ProviderFor(cancelReport)
+const cancelReportProvider = CancelReportFamily();
+
+/// See also [cancelReport].
+class CancelReportFamily extends Family<AsyncValue<bool>> {
+  /// See also [cancelReport].
+  const CancelReportFamily();
+
+  /// See also [cancelReport].
+  CancelReportProvider call(int id) {
+    return CancelReportProvider(id);
+  }
+
+  @override
+  CancelReportProvider getProviderOverride(
+    covariant CancelReportProvider provider,
+  ) {
+    return call(provider.id);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'cancelReportProvider';
+}
+
+/// See also [cancelReport].
+class CancelReportProvider extends AutoDisposeFutureProvider<bool> {
+  /// See also [cancelReport].
+  CancelReportProvider(int id)
+    : this._internal(
+        (ref) => cancelReport(ref as CancelReportRef, id),
+        from: cancelReportProvider,
+        name: r'cancelReportProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$cancelReportHash,
+        dependencies: CancelReportFamily._dependencies,
+        allTransitiveDependencies:
+            CancelReportFamily._allTransitiveDependencies,
+        id: id,
+      );
+
+  CancelReportProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.id,
+  }) : super.internal();
+
+  final int id;
+
+  @override
+  Override overrideWith(
+    FutureOr<bool> Function(CancelReportRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: CancelReportProvider._internal(
+        (ref) => create(ref as CancelReportRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        id: id,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<bool> createElement() {
+    return _CancelReportProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CancelReportProvider && other.id == id;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, id.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin CancelReportRef on AutoDisposeFutureProviderRef<bool> {
+  /// The parameter `id` of this provider.
+  int get id;
+}
+
+class _CancelReportProviderElement
+    extends AutoDisposeFutureProviderElement<bool>
+    with CancelReportRef {
+  _CancelReportProviderElement(super.provider);
+
+  @override
+  int get id => (origin as CancelReportProvider).id;
 }
 
 // ignore_for_file: type=lint

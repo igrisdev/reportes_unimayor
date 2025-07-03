@@ -63,4 +63,21 @@ class ApiReportsService extends BaseDioService {
       rethrow; // Re-lanzar el error para que lo maneje el provider
     }
   }
+
+  Future<bool> cancelReport(String token, int id) async {
+    try {
+      dio.options.headers["Authorization"] = "Bearer $token";
+      final response = await dio.put('/reportes/cancelar/$id');
+
+      if (response.statusCode != 200) {
+        throw Exception('Error al cancelar el reporte');
+      }
+
+      print('Reporte cancelado exitosamente');
+      return true;
+    } catch (e) {
+      print('Error en ApiReportsService: $e');
+      rethrow; // Re-lanzar el error para que lo maneje el provider
+    }
+  }
 }

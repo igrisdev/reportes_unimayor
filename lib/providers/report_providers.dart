@@ -38,7 +38,10 @@ Future<List<ReportsModel>> reportListPending(ReportListPendingRef ref) async {
     final reports = await apiService.getReports(token);
 
     final pendingReports = reports
-        .where((report) => report.estado != 'Finalizado')
+        .where(
+          (report) =>
+              report.estado != 'Finalizado' && report.estado != 'Cancelado',
+        )
         .toList();
     return pendingReports;
   } catch (e) {
@@ -85,6 +88,30 @@ Future<bool> createReport(
       idUbicacion,
       descripcion,
     );
+
+    if (response) {
+      ref.invalidate(reportListPendingProvider);
+      return true;
+    }
+
+    return false;
+  } catch (e) {
+    print('Error en report provider: $e');
+    throw e; // Riverpod manejará el error
+  }
+}
+
+@riverpod
+Future<bool> cancelReport(CancelReportRef ref, int id) async {
+  final token = ref.watch(tokenProvider);
+
+  if (token.isEmpty) {
+    throw Exception('Token no disponible');
+  }
+
+  try {
+    final apiService = ApiReportsService();
+    final response = await apiService.cancelReport(token, id);
 
     if (response) {
       ref.invalidate(reportListPendingProvider);

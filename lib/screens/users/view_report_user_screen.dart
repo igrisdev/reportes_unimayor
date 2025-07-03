@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/components/app_bar_user.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
@@ -23,6 +24,52 @@ class ViewReportUserScreen extends ConsumerWidget {
           data: (report) => infoReport(report),
           error: (error, stackTrace) => Center(child: Text(error.toString())),
           loading: () => const Center(child: CircularProgressIndicator()),
+        ),
+      ),
+      bottomNavigationBar: asyncReport.maybeWhen(
+        data: (report) => report.estado == 'Pendiente'
+            ? bottomAppBarMain(context, ref, report.idReporte)
+            : null,
+        orElse: () => null, // Por defecto no mostrar
+      ),
+    );
+  }
+
+  BottomAppBar bottomAppBarMain(BuildContext context, WidgetRef ref, int id) {
+    final router = GoRouter.of(context);
+    return BottomAppBar(
+      color: Colors.transparent,
+      elevation: 0,
+      height: 90,
+      child: Material(
+        color: lightMode.colorScheme.errorContainer,
+        borderRadius: BorderRadius.circular(100),
+        child: InkWell(
+          onTap: () async {
+            final response = await ref.read(CancelReportProvider(id).future);
+
+            if (response == true) {
+              router.push('/user');
+              return;
+            }
+          },
+          child: Center(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Cancelar Reporte",
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: lightMode.colorScheme.tertiary,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Icon(Icons.cancel, color: lightMode.colorScheme.tertiary),
+              ],
+            ),
+          ),
         ),
       ),
     );
