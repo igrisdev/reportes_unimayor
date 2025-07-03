@@ -183,7 +183,7 @@ class _GetReportByIdProviderElement
   String get id => (origin as GetReportByIdProvider).id;
 }
 
-String _$createReportHash() => r'4d22c78c4e21ef05c10c5f87cf7344a285e168dd';
+String _$createReportHash() => r'32bda4572ad1b5a55ec260f93b285a2b9fac2d17';
 
 /// See also [createReport].
 @ProviderFor(createReport)
@@ -315,7 +315,7 @@ class _CreateReportProviderElement
   String get descripcion => (origin as CreateReportProvider).descripcion;
 }
 
-String _$cancelReportHash() => r'19e3ea8f94c60cfa81a966207d9467ea5a0293e2';
+String _$cancelReportHash() => r'4d3e4912123530eb5edaa3177ebe4fba8b147f42';
 
 /// See also [cancelReport].
 @ProviderFor(cancelReport)

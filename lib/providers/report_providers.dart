@@ -1,4 +1,5 @@
 import 'package:reportes_unimayor/models/reports_model.dart';
+import 'package:reportes_unimayor/providers/is_brigadier_provider.dart';
 import 'package:reportes_unimayor/providers/token_provider.dart';
 import 'package:reportes_unimayor/services/api_reports_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -89,8 +90,7 @@ Future<bool> createReport(
     );
 
     if (response) {
-      ref.invalidate(reportListPendingProvider);
-      ref.invalidate(reportListProvider);
+      invalidateAllProviders(ref);
       return true;
     }
 
@@ -114,8 +114,7 @@ Future<bool> cancelReport(CancelReportRef ref, int id) async {
     final response = await apiService.cancelReport(token, id);
 
     if (response) {
-      ref.invalidate(reportListPendingProvider);
-      ref.invalidate(reportListProvider);
+      invalidateAllProviders(ref);
       return true;
     }
 
@@ -124,4 +123,10 @@ Future<bool> cancelReport(CancelReportRef ref, int id) async {
     print('Error en report provider: $e');
     throw e; // Riverpod manejará el error
   }
+}
+
+void invalidateAllProviders(ref) {
+  ref.invalidate(reportListPendingProvider);
+  ref.invalidate(reportListProvider);
+  ref.invalidate(isBrigadierProvider);
 }
