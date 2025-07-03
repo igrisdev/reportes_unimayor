@@ -16,17 +16,12 @@ class HistoryUserScreen extends ConsumerWidget {
     final reportsAsync = ref.watch(reportListProvider);
 
     return Scaffold(
-      // backgroundColor: lightMode.colorScheme.surface,
       appBar: AppBarUser(),
       drawer: DrawerUser(context: context),
       body: Padding(
-        padding: const EdgeInsets.only(
-          left: 18,
-          right: 18,
-          top: 10,
-          bottom: 10,
-        ),
-        child: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Historial de Reportes',
@@ -35,18 +30,18 @@ class HistoryUserScreen extends ConsumerWidget {
                 fontSize: 18,
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Expanded(
               child: reportsAsync.when(
                 data: (reports) => _buildReportsList(reports, context),
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, stack) => Text('Error al cargar los reportes'),
+                error: (error, stack) =>
+                    Center(child: Text('Error al cargar los reportes: $error')),
               ),
             ),
           ],
         ),
       ),
-      //   SizedBox(height: 10),
     );
   }
 
@@ -54,44 +49,31 @@ class HistoryUserScreen extends ConsumerWidget {
     final router = GoRouter.of(context);
 
     if (reports.isEmpty) {
-      return textNoReports();
+      return const Center(
+        child: Text(
+          "Sin Reportes",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+        ),
+      );
     }
 
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+    return ListView.separated(
       itemCount: reports.length,
+      separatorBuilder: (context, index) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final report = reports[index];
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: CardReport(
-            title: report.ubicacion.nombre,
-            description: report.descripcion,
-            status: report.estado,
-            date:
-                '${report.fechaCreacion.day.toString()} - ${report.fechaCreacion.month} - ${report.fechaCreacion.year.toString()}',
-            hour:
-                '${report.horaCreacion.split(':').first}:${report.horaCreacion.split(':')[1]}',
-            location:
-                '${report.ubicacion.edificio} - ${report.ubicacion.salon}',
-            redirectTo: () => router.push('/user/report/${report.idReporte}'),
-          ),
+        return CardReport(
+          title: report.ubicacion.nombre,
+          description: report.descripcion,
+          status: report.estado,
+          date:
+              '${report.fechaCreacion.day} - ${report.fechaCreacion.month} - ${report.fechaCreacion.year}',
+          hour:
+              '${report.horaCreacion.split(':').first}:${report.horaCreacion.split(':')[1]}',
+          location: '${report.ubicacion.edificio} - ${report.ubicacion.salon}',
+          redirectTo: () => router.push('/user/report/${report.idReporte}'),
         );
       },
-    );
-  }
-
-  SizedBox textNoReports() {
-    return SizedBox(
-      width: double.infinity,
-      height: double.infinity,
-      child: Center(
-        child: Text(
-          "Sin Reporte",
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 30),
-        ),
-      ),
     );
   }
 }
