@@ -112,7 +112,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                               );
 
                               if (userType) {
-                                print('User is a brigadista');
+                                router.go('/brigadier');
                               } else {
                                 router.go('/user');
                               }

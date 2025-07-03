@@ -4,10 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/providers/token_provider.dart';
 
-class DrawerUser extends ConsumerWidget {
+class DrawerBrigadier extends ConsumerWidget {
   final BuildContext context;
 
-  const DrawerUser({super.key, required this.context});
+  const DrawerBrigadier({super.key, required this.context});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -32,24 +32,23 @@ class DrawerUser extends ConsumerWidget {
               ),
             ),
             onTap: () {
-              router.push('/user');
+              router.push('/brigadier');
             },
           ),
 
-          ListTile(
-            leading: const Icon(Icons.history),
-            title: Text(
-              'Historial',
-              style: GoogleFonts.poppins(
-                fontWeight: FontWeight.w500,
-                fontSize: 18,
-              ),
-            ),
-            onTap: () {
-              router.push('/user/history');
-            },
-          ),
-
+          // ListTile(
+          //   leading: const Icon(Icons.history),
+          //   title: Text(
+          //     'Historial',
+          //     style: GoogleFonts.poppins(
+          //       fontWeight: FontWeight.w500,
+          //       fontSize: 18,
+          //     ),
+          //   ),
+          //   onTap: () {
+          //     router.push('/user/history');
+          //   },
+          // ),
           Spacer(),
 
           ListTile(
