@@ -66,64 +66,70 @@ class ReportsModel {
 
 class Ubicacion {
   int idUbicacion;
-  String nombre;
   String descripcion;
   String sede;
   String edificio;
   String salon;
-  String informacionAdicional;
+  String piso;
+  dynamic informacionAdicional;
+  dynamic rutaQr;
   dynamic reportes;
 
   Ubicacion({
     required this.idUbicacion,
-    required this.nombre,
     required this.descripcion,
     required this.sede,
     required this.edificio,
     required this.salon,
+    required this.piso,
     required this.informacionAdicional,
+    required this.rutaQr,
     required this.reportes,
   });
 
   Ubicacion copyWith({
     int? idUbicacion,
-    String? nombre,
     String? descripcion,
     String? sede,
     String? edificio,
     String? salon,
-    String? informacionAdicional,
+    String? piso,
+    dynamic informacionAdicional,
+    dynamic rutaQr,
     dynamic reportes,
   }) => Ubicacion(
     idUbicacion: idUbicacion ?? this.idUbicacion,
-    nombre: nombre ?? this.nombre,
     descripcion: descripcion ?? this.descripcion,
     sede: sede ?? this.sede,
     edificio: edificio ?? this.edificio,
     salon: salon ?? this.salon,
+    piso: piso ?? this.piso,
     informacionAdicional: informacionAdicional ?? this.informacionAdicional,
+    rutaQr: rutaQr ?? this.rutaQr,
     reportes: reportes ?? this.reportes,
   );
 
   factory Ubicacion.fromJson(Map<String, dynamic> json) => Ubicacion(
     idUbicacion: json["idUbicacion"],
-    nombre: json["nombre"],
     descripcion: json["descripcion"],
     sede: json["sede"],
     edificio: json["edificio"],
     salon: json["salon"],
+    piso: json["piso"],
     informacionAdicional: json["informacionAdicional"],
+    rutaQr: json["rutaQr"],
     reportes: json["reportes"],
   );
 
   Map<String, dynamic> toJson() => {
     "idUbicacion": idUbicacion,
-    "nombre": nombre,
     "descripcion": descripcion,
     "sede": sede,
     "edificio": edificio,
     "salon": salon,
+    "piso": piso,
     "informacionAdicional": informacionAdicional,
+    "rutaQr": rutaQr,
     "reportes": reportes,
   };
 }

@@ -1,8 +1,10 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/providers/token_provider.dart';
+import 'package:reportes_unimayor/services/api_token_device_service.dart';
 
 class DrawerUser extends ConsumerWidget {
   final BuildContext context;
@@ -61,10 +63,21 @@ class DrawerUser extends ConsumerWidget {
                 fontSize: 18,
               ),
             ),
-            onTap: () {
-              ref.read(tokenProvider.notifier).removeToken();
+            onTap: () async {
+              String? deviceToken = await FirebaseMessaging.instance.getToken();
+              String? token = ref.read(tokenProvider);
 
-              router.go('/auth');
+              if (deviceToken != null) {
+                final res = await ApiTokenDeviceService().deleteTokenDevice(
+                  deviceToken,
+                  token!,
+                );
+
+                ref.read(tokenProvider.notifier).removeToken();
+                if (res) {
+                  router.go('/auth');
+                }
+              }
             },
           ),
 

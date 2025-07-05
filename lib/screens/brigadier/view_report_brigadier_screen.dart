@@ -134,7 +134,7 @@ class ViewReportBrigadierScreen extends ConsumerWidget {
           children: [
             Expanded(
               child: Text(
-                report.ubicacion.nombre,
+                report.ubicacion.salon,
                 style: GoogleFonts.poppins(
                   fontWeight: FontWeight.w600,
                   fontSize: 17,

@@ -84,7 +84,7 @@ class ViewReportUserScreen extends ConsumerWidget {
           children: [
             Expanded(
               child: Text(
-                report.ubicacion.nombre,
+                report.ubicacion.sede,
                 style: GoogleFonts.poppins(
                   fontWeight: FontWeight.w600,
                   fontSize: 17,

@@ -114,6 +114,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                               if (deviceToken != null) {
                                 await ApiTokenDeviceService().setTokenDevice(
                                   deviceToken,
+                                  token,
                                 );
                               }
 

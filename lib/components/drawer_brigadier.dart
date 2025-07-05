@@ -63,15 +63,16 @@ class DrawerBrigadier extends ConsumerWidget {
               ),
             ),
             onTap: () async {
-              ref.read(tokenProvider.notifier).removeToken();
-
               String? deviceToken = await FirebaseMessaging.instance.getToken();
+              String? token = ref.read(tokenProvider);
 
               if (deviceToken != null) {
                 final res = await ApiTokenDeviceService().deleteTokenDevice(
                   deviceToken,
+                  token!,
                 );
 
+                ref.read(tokenProvider.notifier).removeToken();
                 if (res) {
                   router.go('/auth');
                 }

@@ -63,7 +63,7 @@ class HistoryUserScreen extends ConsumerWidget {
       itemBuilder: (context, index) {
         final report = reports[index];
         return CardReport(
-          title: report.ubicacion.nombre,
+          title: report.ubicacion.salon,
           description: report.descripcion,
           status: report.estado,
           date:

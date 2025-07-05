@@ -73,7 +73,7 @@ class MainUserScreen extends ConsumerWidget {
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
           child: CardReport(
-            title: report.ubicacion.nombre,
+            title: report.ubicacion.salon,
             description: report.descripcion,
             status: report.estado,
             date:
