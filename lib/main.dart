@@ -2,10 +2,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reportes_unimayor/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart'; // 👈 importante
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'firebase_options.dart';
 
-/// 🔔 Handler para mensajes recibidos cuando la app está en segundo plano o terminada
+@pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('📥 [Background] Notificación recibida:');
   print('🔔 Título: ${message.notification?.title}');
@@ -17,7 +17,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // 🔔 Registrar el handler en background
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   runApp(ProviderScope(child: MainApp()));
