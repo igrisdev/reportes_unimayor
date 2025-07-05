@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:reportes_unimayor/providers/is_brigadier_provider.dart';
 import 'package:reportes_unimayor/providers/token_provider.dart';
 import 'package:reportes_unimayor/services/api_auth_service.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:reportes_unimayor/services/api_token_device_service.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key});
@@ -14,7 +16,6 @@ class AuthScreen extends ConsumerStatefulWidget {
 
 class _AuthScreenState extends ConsumerState<AuthScreen> {
   bool _isLoading = false;
-
   final _formKey = GlobalKey<FormState>();
 
   final _emailController = TextEditingController();
@@ -104,6 +105,16 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                               if (token == null) {
                                 _showError('Credenciales incorrectas');
                                 return;
+                              }
+
+                              String? deviceToken = await FirebaseMessaging
+                                  .instance
+                                  .getToken();
+
+                              if (deviceToken != null) {
+                                await ApiTokenDeviceService().setTokenDevice(
+                                  deviceToken,
+                                );
                               }
 
                               ref.read(tokenProvider.notifier).setToken(token);

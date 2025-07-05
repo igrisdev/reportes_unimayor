@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1059278596054",
+    "project_id": "prototipoemergencias",
+    "storage_bucket": "prototipoemergencias.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1059278596054:android:8c0fbf4f50555e727da677",
+        "android_client_info": {
+          "package_name": "com.example.reportes_unimayor"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmDe_lTKIBT5_mUjfqU7crZ3fI9kM5J3c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

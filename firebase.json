@@ -1,0 +1,21 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "prototipoemergencias",
+          "appId": "1:1059278596054:android:8c0fbf4f50555e727da677",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "prototipoemergencias",
+          "configurations": {
+            "android": "1:1059278596054:android:8c0fbf4f50555e727da677"
+          }
+        }
+      }
+    }
+  }
+}

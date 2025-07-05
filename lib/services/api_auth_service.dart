@@ -3,14 +3,19 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 
 class ApiAuthService extends BaseDioService {
   Future<String?> login(String email, String password) async {
-    final response = await dio.post(
-      '/auth/login',
-      data: {'correoInstitucional': email, 'contraseña': password},
-    );
+    try {
+      final response = await dio.post(
+        '/auth/login',
+        data: {'correoInstitucional': email, 'contraseña': password},
+      );
 
-    if (response.statusCode == 200) {
-      return response.data['token'];
-    } else {
+      if (response.statusCode == 200) {
+        return response.data['token'];
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print(e);
       return null;
     }
   }
