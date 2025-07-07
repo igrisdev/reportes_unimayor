@@ -59,4 +59,5 @@ class DefaultFirebaseOptions {
     projectId: 'prototipoemergencias',
     storageBucket: 'prototipoemergencias.firebasestorage.app',
   );
+
 }

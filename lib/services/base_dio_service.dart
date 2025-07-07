@@ -4,8 +4,8 @@ import 'package:dio/io.dart';
 
 class BaseDioService {
   static final optionsDio = BaseOptions(
-    baseUrl: 'https://10.0.2.2:7208/api',
-    // baseUrl: 'http://10.0.2.2:7208/api',
+    baseUrl: 'http://10.0.2.2:5217/api',
+    // baseUrl: 'https://10.0.2.2:7208/api',
     connectTimeout: Duration(seconds: 5),
     receiveTimeout: Duration(seconds: 3),
   );
