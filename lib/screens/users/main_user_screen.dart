@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
-import 'package:reportes_unimayor/screens/users/create_report_user_screen.dart';
 import 'package:reportes_unimayor/themes/light.theme.dart';
 import 'package:reportes_unimayor/widgets/app_bar_user.dart';
 import 'package:reportes_unimayor/widgets/card_report.dart';
@@ -116,6 +115,7 @@ class MainUserScreen extends ConsumerWidget {
   }
 
   BottomAppBar bottomAppBarMain(BuildContext context) {
+    final router = GoRouter.of(context);
     return BottomAppBar(
       color: Colors.transparent,
       elevation: 0,
@@ -125,11 +125,7 @@ class MainUserScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(100),
         child: InkWell(
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const CreateReportUserScreen(),
-              ),
-            );
+            router.push('/user/create-report');
           },
           child: Center(
             child: Row(
