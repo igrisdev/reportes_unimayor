@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:reportes_unimayor/providers/id_location_qr_scanner.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/themes/light.theme.dart';
 import 'package:reportes_unimayor/widgets/app_bar_user.dart';
@@ -36,6 +37,8 @@ class _CreateReportUserScreenState
   Widget build(BuildContext context) {
     final router = GoRouter.of(context);
 
+    final idLocationQrScanner = ref.watch(idLocationQrScannerProvider);
+
     return Scaffold(
       appBar: AppBarUser(),
       body: Form(
@@ -64,7 +67,9 @@ class _CreateReportUserScreenState
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
+                        border: _buttonSelectLocation == 'Qr'
+                            ? Border.all(color: Colors.grey)
+                            : null,
                         borderRadius: BorderRadius.circular(5),
                       ),
                       foregroundDecoration: BoxDecoration(
@@ -77,7 +82,7 @@ class _CreateReportUserScreenState
                           top: 8,
                           bottom: 8,
                         ),
-                        child: Text('Scanner Qr'),
+                        child: Text('Escáner QR'),
                       ),
                     ),
                   ),
@@ -92,7 +97,9 @@ class _CreateReportUserScreenState
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
+                        border: _buttonSelectLocation == 'Seleccionar'
+                            ? Border.all(color: Colors.grey)
+                            : null,
                         borderRadius: BorderRadius.circular(5),
                       ),
                       foregroundDecoration: BoxDecoration(
@@ -132,7 +139,9 @@ class _CreateReportUserScreenState
                             });
                           },
                           validator: (value) {
-                            if (value == null || value.isEmpty) {
+                            if (value == null ||
+                                value.isEmpty &&
+                                    _buttonSelectLocation == 'Seleccionar') {
                               return 'Por favor seleccione una opción';
                             }
                             return null;
@@ -156,7 +165,9 @@ class _CreateReportUserScreenState
                             });
                           },
                           validator: (value) {
-                            if (value == null || value.isEmpty) {
+                            if (value == null ||
+                                value.isEmpty &&
+                                    _buttonSelectLocation == 'Seleccionar') {
                               return 'Por favor seleccione una opción';
                             }
                             return null;
@@ -180,7 +191,9 @@ class _CreateReportUserScreenState
                             });
                           },
                           validator: (value) {
-                            if (value == null || value.isEmpty) {
+                            if (value == null ||
+                                value.isEmpty &&
+                                    _buttonSelectLocation == 'Seleccionar') {
                               return 'Por favor seleccione una opción';
                             }
                             return null;
@@ -190,7 +203,7 @@ class _CreateReportUserScreenState
                     )
                   : GestureDetector(
                       onTap: () {
-                        // Implement your logic here
+                        router.push('/user/create-report/qr-scanner');
                       },
                       child: Container(
                         decoration: BoxDecoration(
@@ -199,12 +212,23 @@ class _CreateReportUserScreenState
                         ),
                         width: double.infinity,
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text('Scannear Qr', style: GoogleFonts.poppins()),
+                              idLocationQrScanner.isNotEmpty
+                                  ? Text(
+                                      'Id de ubicación escaneada: $idLocationQrScanner',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    )
+                                  : Text(
+                                      'Escanear QR',
+                                      style: GoogleFonts.poppins(),
+                                    ),
                               SizedBox(height: 10),
                               Icon(Icons.qr_code_scanner, size: 50),
                               SizedBox(height: 10),
@@ -264,6 +288,10 @@ class _CreateReportUserScreenState
                     ),
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
+                        if (idLocationQrScanner.isNotEmpty) {
+                          _selectedLocation = idLocationQrScanner;
+                        }
+
                         final response = await ref.read(
                           createReportProvider(
                             _selectedLocation!,
@@ -272,6 +300,9 @@ class _CreateReportUserScreenState
                         );
 
                         if (response == true) {
+                          ref
+                              .read(idLocationQrScannerProvider.notifier)
+                              .removeIdLocationQrScanner();
                           router.push('/user');
                           return;
                         }

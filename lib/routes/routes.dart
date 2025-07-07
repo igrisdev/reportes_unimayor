@@ -6,6 +6,7 @@ import 'package:reportes_unimayor/screens/users/create_report_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/history_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/main_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/view_report_user_screen.dart';
+import 'package:reportes_unimayor/widgets/qr_scanner.dart';
 
 // GoRouter configuration
 final router = GoRouter(
@@ -28,6 +29,12 @@ final router = GoRouter(
         GoRoute(
           path: '/create-report',
           builder: (context, state) => CreateReportUserScreen(),
+          routes: [
+            GoRoute(
+              path: '/qr-scanner',
+              builder: (context, state) => QrScanner(),
+            ),
+          ],
         ),
       ],
     ),
@@ -40,10 +47,6 @@ final router = GoRouter(
           builder: (context, state) =>
               ViewReportBrigadierScreen(id: state.pathParameters['id']!),
         ),
-        //   GoRoute(
-        //     path: '/history',
-        //     builder: (context, state) => HistoryBrigadierScreen(),
-        //   ),
       ],
     ),
   ],

@@ -44,7 +44,7 @@ final reportListBrigadierProvider =
 // ignore: unused_element
 typedef ReportListBrigadierRef =
     AutoDisposeFutureProviderRef<List<ReportsModel>>;
-String _$reportListPendingHash() => r'cb6b9a2f7de771c8bce752c3a3163ac03ebbecc2';
+String _$reportListPendingHash() => r'803e5d42719705aa49bb887df00d38b32b37a7c5';
 
 /// See also [reportListPending].
 @ProviderFor(reportListPending)
