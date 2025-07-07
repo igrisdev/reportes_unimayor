@@ -56,18 +56,18 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin
-      >()
-      ?.createNotificationChannel(
-        const AndroidNotificationChannel(
-          'default_channel',
-          'General',
-          description: 'Canal de notificaciones de la app',
-          importance: Importance.high,
-        ),
-      );
+  // await flutterLocalNotificationsPlugin
+  //     .resolvePlatformSpecificImplementation<
+  //       AndroidFlutterLocalNotificationsPlugin
+  //     >()
+  //     ?.createNotificationChannel(
+  //       const AndroidNotificationChannel(
+  //         'default_channel',
+  //         'General',
+  //         description: 'Canal de notificaciones de la app',
+  //         importance: Importance.high,
+  //       ),
+  //     );
 
   await flutterLocalNotificationsPlugin.initialize(
     const InitializationSettings(
