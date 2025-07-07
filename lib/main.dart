@@ -94,9 +94,6 @@ class _MainAppState extends State<MainApp> {
     requestNotificationPermission();
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print(
-        '📥 [Foreground] Notificación recibida: ${message.notification?.title}',
-      );
       _showNotification(message);
     });
   }
@@ -110,37 +107,3 @@ class _MainAppState extends State<MainApp> {
     );
   }
 }
-
-
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return MaterialApp(
-  //     title: 'Reportes Unimayor',
-  //     debugShowCheckedModeBanner: false,
-  //     home: Scaffold(
-  //       appBar: AppBar(title: const Text('Inicio')),
-  //       body: const Center(child: Text('App de Reportes')),
-  //       floatingActionButton: FloatingActionButton(
-  //         onPressed: testNotification,
-  //         child: const Icon(Icons.notifications),
-  //       ),
-  //     ),
-  //   );
-  // }
-// Future<void> testNotification() async {
-//   await flutterLocalNotificationsPlugin.show(
-//     0,
-//     'Notificación de prueba',
-//     'Esto es un test local',
-//     const NotificationDetails(
-//       android: AndroidNotificationDetails(
-//         'default_channel',
-//         'General',
-//         channelDescription: 'Canal de notificaciones de la app',
-//         importance: Importance.max,
-//         priority: Priority.high,
-//       ),
-//     ),
-//   );
-// }

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:reportes_unimayor/components/app_bar_user.dart';
-import 'package:reportes_unimayor/components/card_report.dart';
-import 'package:reportes_unimayor/components/drawer_user.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
+import 'package:reportes_unimayor/widgets/app_bar_user.dart';
+import 'package:reportes_unimayor/widgets/card_report.dart';
+import 'package:reportes_unimayor/widgets/drawer_user.dart';
 
 class HistoryUserScreen extends ConsumerWidget {
   const HistoryUserScreen({super.key});
