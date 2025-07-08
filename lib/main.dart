@@ -14,19 +14,20 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await _showNotification(message);
 }
 
-// void requestNotificationPermission() async {
-//   final messaging = FirebaseMessaging.instance;
-//   final settings = await messaging.requestPermission();
+void requestNotificationPermission() async {
+  final messaging = FirebaseMessaging.instance;
+  await messaging.requestPermission();
+  // final settings = await messaging.requestPermission();
 
-//   if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-//     print('✅ Permiso concedido');
-//   } else if (settings.authorizationStatus == AuthorizationStatus.denied) {
-//     print('🚫 Permiso denegado');
-//   } else if (settings.authorizationStatus ==
-//       AuthorizationStatus.notDetermined) {
-//     print('❓ Permiso no determinado');
-//   }
-// }
+  // if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+  //   print('✅ Permiso concedido');
+  // } else if (settings.authorizationStatus == AuthorizationStatus.denied) {
+  //   print('🚫 Permiso denegado');
+  // } else if (settings.authorizationStatus ==
+  //     AuthorizationStatus.notDetermined) {
+  //   print('❓ Permiso no determinado');
+  // }
+}
 
 Future<void> _showNotification(RemoteMessage message) async {
   const AndroidNotificationDetails androidPlatformChannelSpecifics =
@@ -78,7 +79,7 @@ class _MainAppState extends State<MainApp> {
   @override
   void initState() {
     super.initState();
-    // requestNotificationPermission();
+    requestNotificationPermission();
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       _showNotification(message);

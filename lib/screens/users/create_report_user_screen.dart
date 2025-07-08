@@ -41,200 +41,201 @@ class _CreateReportUserScreenState
 
     return Scaffold(
       appBar: AppBarUser(),
+      // La configuración por defecto de resizeToAvoidBottomInset está en true.
       body: Form(
         key: _formKey,
         child: Padding(
           padding: const EdgeInsets.only(left: 18, right: 18, top: 10),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Ubicación',
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      buttonSelect('Escáner Qr', 'Qr'),
-                      SizedBox(width: 10),
-                      buttonSelect('Seleccionar', 'Seleccionar'),
-                    ],
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-              _buttonSelectLocation == 'Seleccionar'
-                  ? Column(
-                      children: [
-                        DropdownButtonFormField<String>(
-                          value: _selectedHeadquarter,
-                          decoration: const InputDecoration(
-                            labelText: 'Seleccionar Sede',
-                          ),
-                          items: _headquarters.map((headquarter) {
-                            return DropdownMenuItem<String>(
-                              value: headquarter,
-                              child: Text(headquarter),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedHeadquarter = value;
-                            });
-                          },
-                          validator: (value) {
-                            if (value == null ||
-                                value.isEmpty &&
-                                    _buttonSelectLocation == 'Seleccionar') {
-                              return 'Por favor seleccione una opción';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 20),
-                        DropdownButtonFormField<String>(
-                          value: _selectedBuilding,
-                          decoration: const InputDecoration(
-                            labelText: 'Seleccionar Edificio',
-                          ),
-                          items: _buildings.map((build) {
-                            return DropdownMenuItem(
-                              value: build,
-                              child: Text(build),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedBuilding = value;
-                            });
-                          },
-                          validator: (value) {
-                            if (value == null ||
-                                value.isEmpty &&
-                                    _buttonSelectLocation == 'Seleccionar') {
-                              return 'Por favor seleccione una opción';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 20),
-                        DropdownButtonFormField(
-                          value: _selectedLocation,
-                          decoration: const InputDecoration(
-                            labelText: 'Seleccionar Salón o Lugar Mas Cercano',
-                          ),
-                          items: _locations.map((location) {
-                            return DropdownMenuItem(
-                              value: location['idLocation'],
-                              child: Text(location['location']!),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedLocation = value;
-                            });
-                          },
-                          validator: (value) {
-                            if (value == null ||
-                                value.isEmpty &&
-                                    _buttonSelectLocation == 'Seleccionar') {
-                              return 'Por favor seleccione una opción';
-                            }
-                            return null;
-                          },
-                        ),
-                      ],
-                    )
-                  : buttonScannerQr(router, idLocationQrScanner),
-
-              SizedBox(height: 20),
-              Row(
-                children: [
-                  Text(
-                    'Descripción',
-                    style: GoogleFonts.poppins(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-              TextFormField(
-                maxLines: 7,
-                decoration: const InputDecoration(
-                  labelText: 'Descripción del reporte',
-                  alignLabelWithHint: true,
-                  border: OutlineInputBorder(),
-                ),
-                onChanged: (value) {
-                  _description = value;
-                },
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Por favor escriba una descripción';
-                  }
-                  return null;
-                },
-              ),
-              Spacer(),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 70,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: lightMode.colorScheme.secondary,
-                      foregroundColor: lightMode.colorScheme.secondaryFixed,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(100),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Ubicación',
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
-                        if (idLocationQrScanner.isNotEmpty) {
-                          _selectedLocation = idLocationQrScanner;
-                        }
-
-                        final response = await ref.read(
-                          createReportProvider(
-                            _selectedLocation!,
-                            _description!,
-                          ).future,
-                        );
-
-                        if (response == true) {
-                          ref
-                              .read(idLocationQrScannerProvider.notifier)
-                              .removeIdLocationQrScanner();
-                          router.push('/user');
-                          return;
-                        }
-                      }
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    Row(
                       children: [
-                        Text(
-                          'Enviar',
-                          style: GoogleFonts.poppins(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        buttonSelect('Escáner Qr', 'Qr'),
                         SizedBox(width: 10),
-                        const Icon(Icons.send, size: 24),
+                        buttonSelect('Seleccionar', 'Seleccionar'),
                       ],
                     ),
+                  ],
+                ),
+                SizedBox(height: 20),
+                _buttonSelectLocation == 'Seleccionar'
+                    ? Column(
+                        children: [
+                          DropdownButtonFormField<String>(
+                            value: _selectedHeadquarter,
+                            decoration: const InputDecoration(
+                              labelText: 'Seleccionar Sede',
+                            ),
+                            items: _headquarters.map((headquarter) {
+                              return DropdownMenuItem<String>(
+                                value: headquarter,
+                                child: Text(headquarter),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedHeadquarter = value;
+                              });
+                            },
+                            validator: (value) {
+                              if (value == null ||
+                                  value.isEmpty &&
+                                      _buttonSelectLocation == 'Seleccionar') {
+                                return 'Por favor seleccione una opción';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          DropdownButtonFormField<String>(
+                            value: _selectedBuilding,
+                            decoration: const InputDecoration(
+                              labelText: 'Seleccionar Edificio',
+                            ),
+                            items: _buildings.map((build) {
+                              return DropdownMenuItem(
+                                value: build,
+                                child: Text(build),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedBuilding = value;
+                              });
+                            },
+                            validator: (value) {
+                              if (value == null ||
+                                  value.isEmpty &&
+                                      _buttonSelectLocation == 'Seleccionar') {
+                                return 'Por favor seleccione una opción';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          DropdownButtonFormField(
+                            value: _selectedLocation,
+                            decoration: const InputDecoration(
+                              labelText:
+                                  'Seleccionar Salón o Lugar Mas Cercano',
+                            ),
+                            items: _locations.map((location) {
+                              return DropdownMenuItem(
+                                value: location['idLocation'],
+                                child: Text(location['location']!),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedLocation = value;
+                              });
+                            },
+                            validator: (value) {
+                              if (value == null ||
+                                  value.isEmpty &&
+                                      _buttonSelectLocation == 'Seleccionar') {
+                                return 'Por favor seleccione una opción';
+                              }
+                              return null;
+                            },
+                          ),
+                        ],
+                      )
+                    : buttonScannerQr(router, idLocationQrScanner),
+                SizedBox(height: 20),
+                Text(
+                  'Descripción',
+                  style: GoogleFonts.poppins(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
+                SizedBox(height: 20),
+                TextFormField(
+                  maxLines: 7,
+                  decoration: const InputDecoration(
+                    labelText: 'Descripción del reporte',
+                    alignLabelWithHint: true,
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    _description = value;
+                  },
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Por favor escriba una descripción';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 20),
+              ],
+            ),
+          ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(20),
+        child: SizedBox(
+          height: 70,
+          width: double.infinity,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: lightMode.colorScheme.secondary,
+              foregroundColor: lightMode.colorScheme.secondaryFixed,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(100),
               ),
-            ],
+            ),
+            onPressed: () async {
+              if (_formKey.currentState!.validate()) {
+                if (idLocationQrScanner.isNotEmpty) {
+                  _selectedLocation = idLocationQrScanner;
+                }
+
+                final response = await ref.read(
+                  createReportProvider(
+                    _selectedLocation!,
+                    _description!,
+                  ).future,
+                );
+
+                if (response == true) {
+                  ref
+                      .read(idLocationQrScannerProvider.notifier)
+                      .removeIdLocationQrScanner();
+
+                  router.push('/user');
+                  return;
+                }
+              }
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Enviar',
+                  style: GoogleFonts.poppins(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(width: 10),
+                const Icon(Icons.send, size: 24),
+              ],
+            ),
           ),
         ),
       ),
