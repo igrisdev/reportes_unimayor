@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/providers/token_provider.dart';
 import 'package:reportes_unimayor/services/api_token_device_service.dart';
+import 'package:reportes_unimayor/utils/local_storage.dart';
 
 class DrawerUser extends ConsumerWidget {
   final BuildContext context;
@@ -72,6 +73,8 @@ class DrawerUser extends ConsumerWidget {
                   deviceToken,
                   token!,
                 );
+
+                await deleteTokenStorage('token');
 
                 ref.read(tokenProvider.notifier).removeToken();
                 if (res) {

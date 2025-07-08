@@ -7,6 +7,7 @@ import 'package:reportes_unimayor/providers/token_provider.dart';
 import 'package:reportes_unimayor/services/api_auth_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:reportes_unimayor/services/api_token_device_service.dart';
+import 'package:reportes_unimayor/utils/local_storage.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key});
@@ -171,6 +172,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         _showError('Credenciales incorrectas');
         return;
       }
+
+      await writeTokenStorage('token', token);
 
       String? deviceToken = await FirebaseMessaging.instance.getToken();
 
