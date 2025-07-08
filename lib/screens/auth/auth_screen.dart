@@ -23,6 +23,40 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  bool _isLoadingCheckIfLoggedIn = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkIfLoggedIn();
+  }
+
+  Future<void> _checkIfLoggedIn() async {
+    setState(() {
+      _isLoadingCheckIfLoggedIn = true;
+    });
+
+    final token = await readTokenStorage('token');
+
+    if (token != null && mounted) {
+      ref.read(tokenProvider.notifier).setToken(token);
+
+      final userType = ref.read(isBrigadierProvider);
+
+      if (userType) {
+        context.go('/brigadier');
+      } else {
+        context.go('/user');
+      }
+    } else {
+      if (mounted) {
+        setState(() {
+          _isLoadingCheckIfLoggedIn = false;
+        });
+      }
+    }
+  }
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -48,73 +82,87 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Image.asset('assets/icons/logo_unimayor.png', height: 100),
-                const SizedBox(height: 20),
-                Text(
-                  'Bienvenido',
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Inicia sesión para continuar',
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-                const SizedBox(height: 40),
-                Form(
-                  key: _formKey,
+      body: _isLoadingCheckIfLoggedIn
+          ? circularProgress()
+          : SafeArea(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      TextFormField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: decorationTextForm('Email'),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor, introduce un email';
-                          }
-                          // if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
-                          //   return 'Por favor, introduce un email válido';
-                          // }
-                          return null;
-                        },
+                      Image.asset(
+                        'assets/icons/logo_unimayor.png',
+                        height: 100,
                       ),
                       const SizedBox(height: 20),
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: true,
-                        decoration: decorationTextForm('Contraseña'),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor, introduce una contraseña';
-                          }
-                          return null;
-                        },
+                      Text(
+                        'Bienvenido',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.poppins(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                      const SizedBox(height: 25),
-                      buttonLogin(),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Inicia sesión para continuar',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            TextFormField(
+                              controller: _emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              decoration: decorationTextForm('Email'),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Por favor, introduce un email';
+                                }
+                                // if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
+                                //   return 'Por favor, introduce un email válido';
+                                // }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 20),
+                            TextFormField(
+                              controller: _passwordController,
+                              obscureText: true,
+                              decoration: decorationTextForm('Contraseña'),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Por favor, introduce una contraseña';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 25),
+                            buttonLogin(),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
+    );
+  }
+
+  Center circularProgress() {
+    return Center(
+      child: CircularProgressIndicator(
+        color: const Color.fromARGB(255, 0, 0, 0),
+        strokeWidth: 3,
       ),
     );
   }
