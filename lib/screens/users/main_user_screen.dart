@@ -25,20 +25,8 @@ class MainUserScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             reportsAsync.maybeWhen(
-              data: (reports) => reports.isNotEmpty
-                  ? Column(
-                      children: [
-                        Text(
-                          'Reportes En Curso',
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 18,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                      ],
-                    )
-                  : const SizedBox.shrink(),
+              data: (reports) =>
+                  reports.isNotEmpty ? textReports() : const SizedBox.shrink(),
               orElse: () => const SizedBox.shrink(),
             ),
             Expanded(
@@ -88,7 +76,7 @@ class MainUserScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildErrorWidget(Object error, WidgetRef ref) {
+  Center _buildErrorWidget(Object error, WidgetRef ref) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -116,10 +104,11 @@ class MainUserScreen extends ConsumerWidget {
 
   BottomAppBar bottomAppBarMain(BuildContext context) {
     final router = GoRouter.of(context);
+
     return BottomAppBar(
       color: Colors.transparent,
       elevation: 0,
-      height: 90,
+      height: 110,
       child: Material(
         color: lightMode.colorScheme.secondary,
         borderRadius: BorderRadius.circular(100),
@@ -135,7 +124,7 @@ class MainUserScreen extends ConsumerWidget {
                   "Realizar Reporte",
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                    fontSize: 20,
                     color: lightMode.colorScheme.secondaryFixed,
                   ),
                 ),
@@ -149,7 +138,7 @@ class MainUserScreen extends ConsumerWidget {
     );
   }
 
-  Widget textNoReports() {
+  Center textNoReports() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -171,6 +160,18 @@ class MainUserScreen extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Column textReports() {
+    return Column(
+      children: [
+        Text(
+          'Reportes En Curso',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 18),
+        ),
+        const SizedBox(height: 16),
+      ],
     );
   }
 }

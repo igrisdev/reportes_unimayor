@@ -245,7 +245,7 @@ class _CreateReportUserScreenState
               Row(
                 children: [
                   Text(
-                    'Ubicación',
+                    'Descripción',
                     style: GoogleFonts.poppins(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,

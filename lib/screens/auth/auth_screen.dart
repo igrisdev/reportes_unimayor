@@ -106,7 +106,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 25),
                       buttonLogin(),
                     ],
                   ),
@@ -119,36 +119,31 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     );
   }
 
-  ConstrainedBox buttonLogin() {
-    return ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 200),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          backgroundColor: const Color(0xFF003366), // Azul oscuro
-          foregroundColor: Colors.white,
-        ),
-        onPressed: _isLoading ? null : _login,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Iniciar sesión', style: GoogleFonts.poppins(fontSize: 16)),
-            if (_isLoading) const SizedBox(width: 20),
-            if (_isLoading)
-              SizedBox(
-                height: 24,
-                width: 24,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 3,
-                ),
+  ElevatedButton buttonLogin() {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        backgroundColor: const Color(0xFF003366), // Azul oscuro
+        foregroundColor: Colors.white,
+      ),
+      onPressed: _isLoading ? null : _login,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('Iniciar sesión', style: GoogleFonts.poppins(fontSize: 16)),
+          if (_isLoading) const SizedBox(width: 20),
+          if (_isLoading)
+            SizedBox(
+              height: 24,
+              width: 24,
+              child: CircularProgressIndicator(
+                color: Colors.white,
+                strokeWidth: 3,
               ),
-          ],
-        ),
+            ),
+        ],
       ),
     );
   }
