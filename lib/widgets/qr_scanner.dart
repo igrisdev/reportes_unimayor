@@ -66,7 +66,7 @@ class _QrScannerState extends ConsumerState<QrScanner> {
                   .read(idLocationQrScannerProvider.notifier)
                   .setIdLocationQrScanner(barcode.rawValue!);
 
-              router.push('/user/create-report');
+              router.go('/user/create-report');
               break;
             }
           }
