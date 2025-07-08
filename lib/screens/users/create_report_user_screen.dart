@@ -46,7 +46,6 @@ class _CreateReportUserScreenState
         child: Padding(
           padding: const EdgeInsets.only(left: 18, right: 18, top: 10),
           child: Column(
-            spacing: 20,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -59,14 +58,15 @@ class _CreateReportUserScreenState
                     ),
                   ),
                   Row(
-                    spacing: 10,
                     children: [
                       buttonSelect('Escáner Qr', 'Qr'),
+                      SizedBox(width: 10),
                       buttonSelect('Seleccionar', 'Seleccionar'),
                     ],
                   ),
                 ],
               ),
+              SizedBox(height: 20),
               _buttonSelectLocation == 'Seleccionar'
                   ? Column(
                       children: [
@@ -150,6 +150,8 @@ class _CreateReportUserScreenState
                       ],
                     )
                   : buttonScannerQr(router, idLocationQrScanner),
+
+              SizedBox(height: 20),
               Row(
                 children: [
                   Text(
@@ -161,6 +163,7 @@ class _CreateReportUserScreenState
                   ),
                 ],
               ),
+              SizedBox(height: 20),
               TextFormField(
                 maxLines: 7,
                 decoration: const InputDecoration(
@@ -183,7 +186,7 @@ class _CreateReportUserScreenState
                 padding: const EdgeInsets.only(bottom: 20),
                 child: SizedBox(
                   width: double.infinity,
-                  height: 60,
+                  height: 70,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: lightMode.colorScheme.secondary,
@@ -220,12 +223,12 @@ class _CreateReportUserScreenState
                         Text(
                           'Enviar',
                           style: GoogleFonts.poppins(
-                            fontSize: 16,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        const Icon(Icons.send),
+                        SizedBox(width: 10),
+                        const Icon(Icons.send, size: 24),
                       ],
                     ),
                   ),
@@ -249,6 +252,7 @@ class _CreateReportUserScreenState
           borderRadius: BorderRadius.circular(4),
         ),
         width: double.infinity,
+        // color: Colors.white,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
           child: Row(
@@ -256,7 +260,6 @@ class _CreateReportUserScreenState
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 4,
                 children: [
                   idLocationQrScanner.isNotEmpty
                       ? Text(
@@ -276,6 +279,7 @@ class _CreateReportUserScreenState
                   Text('Presionar para escanear', style: GoogleFonts.poppins()),
                 ],
               ),
+              SizedBox(height: 10),
               Icon(Icons.qr_code_scanner, size: 50),
             ],
           ),
