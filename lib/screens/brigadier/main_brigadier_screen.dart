@@ -42,7 +42,13 @@ class MainBrigadierScreen extends ConsumerWidget {
             ),
             Expanded(
               child: reportsAsync.when(
-                data: (reports) => _buildReportsList(reports, context),
+                // data: (reports) => _buildReportsList(reports, context),
+                data: (reports) => RefreshIndicator(
+                  onRefresh: () async {
+                    ref.invalidate(reportListBrigadierProvider);
+                  },
+                  child: _buildReportsList(reports, context),
+                ),
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (error, stack) => _buildErrorWidget(error, ref),
               ),
@@ -61,6 +67,7 @@ class MainBrigadierScreen extends ConsumerWidget {
     }
 
     return ListView.builder(
+      physics: const AlwaysScrollableScrollPhysics(),
       itemCount: reports.length,
       itemBuilder: (context, index) {
         final report = reports[index];

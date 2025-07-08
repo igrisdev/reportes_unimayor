@@ -21,7 +21,16 @@ class ViewReportBrigadierScreen extends ConsumerWidget {
       body: Padding(
         padding: const EdgeInsets.only(left: 18, right: 18, top: 10),
         child: asyncReport.when(
-          data: (report) => infoReport(report),
+          // data: (report) => infoReport(report),
+          data: (report) => RefreshIndicator(
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: infoReport(report),
+            ),
+            onRefresh: () async {
+              ref.invalidate(getReportByIdBrigadierProvider(id));
+            },
+          ),
           error: (error, stackTrace) => Center(child: Text(error.toString())),
           loading: () => const Center(child: CircularProgressIndicator()),
         ),
