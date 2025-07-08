@@ -249,6 +249,9 @@ class _CreateReportUserScreenState
       },
       child: Container(
         decoration: BoxDecoration(
+          color: idLocationQrScanner.isNotEmpty
+              ? Colors.green.withValues(alpha: 0.1)
+              : null,
           border: Border.all(color: Colors.grey),
           borderRadius: BorderRadius.circular(4),
         ),
