@@ -23,13 +23,13 @@ class ViewReportBrigadierScreen extends ConsumerWidget {
         child: asyncReport.when(
           // data: (report) => infoReport(report),
           data: (report) => RefreshIndicator(
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: infoReport(report),
-            ),
             onRefresh: () async {
               ref.invalidate(getReportByIdBrigadierProvider(id));
             },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: infoReport(report, context),
+            ),
           ),
           error: (error, stackTrace) => Center(child: Text(error.toString())),
           loading: () => const Center(child: CircularProgressIndicator()),
@@ -134,66 +134,72 @@ class ViewReportBrigadierScreen extends ConsumerWidget {
     );
   }
 
-  Column infoReport(ReportsModel report) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Text(
-                report.ubicacion.salon,
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 17,
-                ),
-              ),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                color: lightMode.colorScheme.secondary,
-                borderRadius: BorderRadius.circular(100),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  left: 20,
-                  right: 20,
-                  top: 5,
-                  bottom: 5,
-                ),
+  SizedBox infoReport(ReportsModel report, BuildContext context) {
+    return SizedBox(
+      height: MediaQueryData.fromView(View.of(context)).size.height * 0.7,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
                 child: Text(
-                  report.estado,
+                  report.ubicacion.salon,
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w600,
-                    fontSize: 14,
+                    fontSize: 17,
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-        SizedBox(height: 10),
-        Row(
-          children: [
-            Text(
-              '${report.horaCreacion.split(':').first}:${report.horaCreacion.split(':')[1]}',
-              style: GoogleFonts.poppins(fontSize: 16),
-            ),
-            Text('  |  ', style: GoogleFonts.poppins(fontSize: 16)),
-            Text(
-              '${report.fechaCreacion.day.toString()} - ${report.fechaCreacion.month} - ${report.fechaCreacion.year.toString()}',
-              style: GoogleFonts.poppins(fontSize: 16),
-            ),
-          ],
-        ),
-        SizedBox(height: 13),
-        Column(
-          children: [
-            Text(report.descripcion, style: GoogleFonts.poppins(fontSize: 14)),
-          ],
-        ),
-      ],
+              Container(
+                decoration: BoxDecoration(
+                  color: lightMode.colorScheme.secondary,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    left: 20,
+                    right: 20,
+                    top: 5,
+                    bottom: 5,
+                  ),
+                  child: Text(
+                    report.estado,
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 10),
+          Row(
+            children: [
+              Text(
+                '${report.horaCreacion.split(':').first}:${report.horaCreacion.split(':')[1]}',
+                style: GoogleFonts.poppins(fontSize: 16),
+              ),
+              Text('  |  ', style: GoogleFonts.poppins(fontSize: 16)),
+              Text(
+                '${report.fechaCreacion.day.toString()} - ${report.fechaCreacion.month} - ${report.fechaCreacion.year.toString()}',
+                style: GoogleFonts.poppins(fontSize: 16),
+              ),
+            ],
+          ),
+          SizedBox(height: 13),
+          Column(
+            children: [
+              Text(
+                report.descripcion,
+                style: GoogleFonts.poppins(fontSize: 14),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
