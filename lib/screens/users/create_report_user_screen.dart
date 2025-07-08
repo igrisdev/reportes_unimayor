@@ -46,79 +46,27 @@ class _CreateReportUserScreenState
         child: Padding(
           padding: const EdgeInsets.only(left: 18, right: 18, top: 10),
           child: Column(
+            spacing: 20,
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     'Ubicación',
                     style: GoogleFonts.poppins(
-                      fontSize: 20,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        if (_buttonSelectLocation != 'Qr') {
-                          _buttonSelectLocation = 'Qr';
-                        }
-                      });
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: _buttonSelectLocation == 'Qr'
-                            ? Border.all(color: Colors.grey)
-                            : null,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      foregroundDecoration: BoxDecoration(
-                        color: Colors.grey.withValues(alpha: 0.1),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          left: 16,
-                          right: 16,
-                          top: 8,
-                          bottom: 8,
-                        ),
-                        child: Text('Escáner QR'),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        if (_buttonSelectLocation != 'Seleccionar') {
-                          _buttonSelectLocation = 'Seleccionar';
-                        }
-                      });
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: _buttonSelectLocation == 'Seleccionar'
-                            ? Border.all(color: Colors.grey)
-                            : null,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      foregroundDecoration: BoxDecoration(
-                        color: Colors.grey.withValues(alpha: 0.1),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          left: 16,
-                          right: 16,
-                          top: 8,
-                          bottom: 8,
-                        ),
-                        child: Text('Seleccionar'),
-                      ),
-                    ),
+                  Row(
+                    spacing: 10,
+                    children: [
+                      buttonSelect('Escáner Qr', 'Qr'),
+                      buttonSelect('Seleccionar', 'Seleccionar'),
+                    ],
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
               _buttonSelectLocation == 'Seleccionar'
                   ? Column(
                       children: [
@@ -201,47 +149,7 @@ class _CreateReportUserScreenState
                         ),
                       ],
                     )
-                  : GestureDetector(
-                      onTap: () {
-                        router.push('/user/create-report/qr-scanner');
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(90),
-                        ),
-                        width: double.infinity,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              idLocationQrScanner.isNotEmpty
-                                  ? Text(
-                                      'Id de ubicación escaneada: $idLocationQrScanner',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    )
-                                  : Text(
-                                      'Escanear QR',
-                                      style: GoogleFonts.poppins(),
-                                    ),
-                              SizedBox(height: 10),
-                              Icon(Icons.qr_code_scanner, size: 50),
-                              SizedBox(height: 10),
-                              Text(
-                                'Presionar para escanear',
-                                style: GoogleFonts.poppins(),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-              const SizedBox(height: 20),
+                  : buttonScannerQr(router, idLocationQrScanner),
               Row(
                 children: [
                   Text(
@@ -253,7 +161,6 @@ class _CreateReportUserScreenState
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
               TextFormField(
                 maxLines: 7,
                 decoration: const InputDecoration(
@@ -271,7 +178,6 @@ class _CreateReportUserScreenState
                   return null;
                 },
               ),
-              const SizedBox(height: 20),
               Spacer(),
               Padding(
                 padding: const EdgeInsets.only(bottom: 20),
@@ -326,6 +232,87 @@ class _CreateReportUserScreenState
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  GestureDetector buttonScannerQr(GoRouter router, String idLocationQrScanner) {
+    return GestureDetector(
+      onTap: () {
+        router.push('/user/create-report/qr-scanner');
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        width: double.infinity,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 4,
+                children: [
+                  idLocationQrScanner.isNotEmpty
+                      ? Text(
+                          'Id de ubicación escaneada: $idLocationQrScanner',
+                          style: GoogleFonts.poppins(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        )
+                      : Text(
+                          'Escanear QR',
+                          style: GoogleFonts.poppins(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                  Text('Presionar para escanear', style: GoogleFonts.poppins()),
+                ],
+              ),
+              Icon(Icons.qr_code_scanner, size: 50),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  GestureDetector buttonSelect(String text, String value) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          if (_buttonSelectLocation != value) {
+            _buttonSelectLocation = value;
+          }
+        });
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          border: _buttonSelectLocation == value
+              ? Border.all(color: Colors.grey)
+              : null,
+          borderRadius: BorderRadius.circular(5),
+        ),
+        foregroundDecoration: BoxDecoration(
+          color: Colors.grey.withValues(alpha: 0.1),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(
+            left: 16,
+            right: 16,
+            top: 8,
+            bottom: 8,
+          ),
+          child: Text(
+            text,
+            style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
           ),
         ),
       ),
