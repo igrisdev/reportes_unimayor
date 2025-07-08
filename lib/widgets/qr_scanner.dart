@@ -28,7 +28,9 @@ class _QrScannerState extends ConsumerState<QrScanner> {
             color: Colors.white,
             icon: Icon(
               _isTorchOn ? Icons.flash_on : Icons.flash_off,
-              color: _isTorchOn ? Colors.yellow : Colors.grey,
+              color: _isTorchOn
+                  ? const Color.fromARGB(255, 41, 41, 41)
+                  : const Color.fromARGB(255, 240, 64, 64),
             ),
             iconSize: 32.0,
             onPressed: () async {
@@ -40,7 +42,10 @@ class _QrScannerState extends ConsumerState<QrScanner> {
           ),
           IconButton(
             color: Colors.white,
-            icon: Icon(_isBackCamera ? Icons.camera_rear : Icons.camera_front),
+            icon: Icon(
+              _isBackCamera ? Icons.camera_rear : Icons.camera_front,
+              color: const Color.fromARGB(255, 41, 41, 41),
+            ),
             iconSize: 32.0,
             onPressed: () async {
               await cameraController.switchCamera();
