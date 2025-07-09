@@ -31,7 +31,14 @@ class MainUserScreen extends ConsumerWidget {
             ),
             Expanded(
               child: reportsAsync.when(
-                data: (reports) => _buildReportsList(reports, context),
+                // data: (reports) => _buildReportsList(reports, context),
+                data: (reports) => RefreshIndicator(
+                  onRefresh: () async {
+                    ref.invalidate(reportListPendingProvider);
+                  },
+                  child: _buildReportsList(reports, context, ref),
+                ),
+
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (error, stack) => _buildErrorWidget(error, ref),
               ),
@@ -46,14 +53,19 @@ class MainUserScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildReportsList(List<ReportsModel> reports, BuildContext context) {
+  Widget _buildReportsList(
+    List<ReportsModel> reports,
+    BuildContext context,
+    WidgetRef ref,
+  ) {
     final router = GoRouter.of(context);
 
     if (reports.isEmpty) {
-      return textNoReports();
+      return textNoReports(ref, context);
     }
 
     return ListView.builder(
+      physics: const AlwaysScrollableScrollPhysics(),
       itemCount: reports.length,
       itemBuilder: (context, index) {
         final report = reports[index];
@@ -138,27 +150,45 @@ class MainUserScreen extends ConsumerWidget {
     );
   }
 
-  Center textNoReports() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.assignment_outlined, size: 64, color: Colors.grey[400]),
-          const SizedBox(height: 16),
-          Text(
-            "Sin Reportes",
-            style: GoogleFonts.poppins(
-              fontWeight: FontWeight.bold,
-              fontSize: 24,
-              color: Colors.grey[600],
+  Widget textNoReports(WidgetRef ref, BuildContext context) {
+    return RefreshIndicator(
+      onRefresh: () async {
+        ref.invalidate(reportListPendingProvider);
+      },
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: SizedBox(
+          height: MediaQueryData.fromView(View.of(context)).size.height * 0.7,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.assignment_outlined,
+                  size: 64,
+                  color: Colors.grey[400],
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  "Sin Reportes",
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "No tienes reportes creados aún",
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    color: Colors.grey[500],
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            "No tienes reportes creados aún",
-            style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[500]),
-          ),
-        ],
+        ),
       ),
     );
   }
