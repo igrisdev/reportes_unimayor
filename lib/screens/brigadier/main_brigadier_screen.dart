@@ -163,8 +163,9 @@ class MainBrigadierScreen extends ConsumerWidget {
 
     // router.push('/brigadier/report/${report.idReporte}'),
 
-    return ListView.builder(
+    return ListView.separated(
       physics: const AlwaysScrollableScrollPhysics(),
+      separatorBuilder: (context, index) => const SizedBox(height: 0),
       itemCount: reports.length,
       itemBuilder: (context, index) {
         final report = reports[index];
