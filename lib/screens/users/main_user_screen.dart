@@ -7,8 +7,10 @@ import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/themes/light.theme.dart';
 import 'package:reportes_unimayor/widgets/app_bar_user.dart';
 import 'package:reportes_unimayor/widgets/big_badge_view_progress.dart';
+import 'package:reportes_unimayor/widgets/date_and_hour_container.dart';
 import 'package:reportes_unimayor/widgets/drawer_user.dart';
 import 'package:reportes_unimayor/widgets/text_and_title_container.dart';
+import 'package:reportes_unimayor/widgets/text_note.dart';
 import 'package:reportes_unimayor/widgets/view_location.dart';
 
 class MainUserScreen extends ConsumerWidget {
@@ -17,6 +19,10 @@ class MainUserScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final reportsAsync = ref.watch(reportListPendingProvider);
+
+    final idReport = reportsAsync.whenData(
+      (reports) => reports.first.idReporte,
+    );
 
     return Scaffold(
       appBar: AppBarUser(),
@@ -44,7 +50,9 @@ class MainUserScreen extends ConsumerWidget {
         ),
       ),
       bottomNavigationBar: reportsAsync.maybeWhen(
-        data: (reports) => reports.isEmpty ? bottomAppBarMain(context) : null,
+        data: (reports) => reports.isEmpty
+            ? buttonAppBarCreateReport(context)
+            : buttonAppBarCancelReport(ref, idReport),
         orElse: () => null, // Por defecto no mostrar
       ),
     );
@@ -55,8 +63,6 @@ class MainUserScreen extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) {
-    final router = GoRouter.of(context);
-
     if (reports.isEmpty) {
       return textNoReports(ref, context);
     }
@@ -77,6 +83,17 @@ class MainUserScreen extends ConsumerWidget {
               TextAndTitleContainer(
                 title: 'Descripción',
                 description: report.descripcion,
+              ),
+              SizedBox(height: 20),
+              DateAndHourContainer(
+                date: report.fechaCreacion,
+                hour: report.horaCreacion,
+              ),
+              SizedBox(height: 30),
+              TextNote(
+                title: 'Nota',
+                description:
+                    'Reporte realizado, espera a que lo acepte un brigadista',
               ),
             ],
           ),
@@ -111,7 +128,7 @@ class MainUserScreen extends ConsumerWidget {
     );
   }
 
-  BottomAppBar bottomAppBarMain(BuildContext context) {
+  BottomAppBar buttonAppBarCreateReport(BuildContext context) {
     final router = GoRouter.of(context);
 
     return BottomAppBar(
@@ -144,6 +161,76 @@ class MainUserScreen extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+
+  BottomAppBar buttonAppBarCancelReport(
+    WidgetRef ref,
+    AsyncValue<int> idReport,
+  ) {
+    return BottomAppBar(
+      color: Colors.transparent,
+      elevation: 0,
+      height: 90,
+      child: Material(
+        color: const Color(0xFFFF3737),
+        borderRadius: BorderRadius.circular(100),
+        child: InkWell(
+          onTap: () {
+            if (idReport.isLoading || idReport.value == null) {
+              return;
+            }
+            showDialogIfCancel(ref, idReport);
+          },
+          child: Center(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Cancelar Reporte",
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Icon(Icons.cancel_outlined, color: Colors.white),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<dynamic> showDialogIfCancel(WidgetRef ref, AsyncValue<int> idReport) {
+    return showDialog(
+      context: ref.context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmar cancelación'),
+          content: const Text(
+            '¿Estás seguro de que quieres cancelar el reporte?',
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Dismiss the dialog
+              },
+            ),
+            TextButton(
+              child: const Text('Sí'),
+              onPressed: () {
+                // Dismiss the dialog and then cancel the report
+                Navigator.of(context).pop();
+                ref.read(cancelReportProvider(idReport.value!));
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 

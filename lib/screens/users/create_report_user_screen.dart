@@ -22,8 +22,9 @@ class _CreateReportUserScreenState
   final List<String> _buildings = ['Edificio 1'];
   // final List<String> _rooms = ['Salón 201', 'Salon 202'];
   final List<Map<String, String>> _locations = [
-    {'idLocation': '1', 'location': 'Salón 201'},
+    {'idLocation': '1', 'location': 'Salón 101'},
     {'idLocation': '2', 'location': 'Salón 202'},
+    {'idLocation': '3', 'location': 'Salón 302'},
   ];
 
   String? _selectedHeadquarter;
