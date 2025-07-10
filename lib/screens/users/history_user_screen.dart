@@ -66,7 +66,7 @@ class HistoryUserScreen extends ConsumerWidget {
 
     return ListView.separated(
       physics: const AlwaysScrollableScrollPhysics(),
-      separatorBuilder: (context, index) => const SizedBox(height: 12),
+      separatorBuilder: (context, index) => const SizedBox(height: 0),
       itemCount: reports.length,
       itemBuilder: (context, index) {
         final report = reports[index];
