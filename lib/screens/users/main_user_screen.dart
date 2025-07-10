@@ -6,8 +6,10 @@ import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/themes/light.theme.dart';
 import 'package:reportes_unimayor/widgets/app_bar_user.dart';
-import 'package:reportes_unimayor/widgets/card_report.dart';
+import 'package:reportes_unimayor/widgets/big_badge_view_progress.dart';
 import 'package:reportes_unimayor/widgets/drawer_user.dart';
+import 'package:reportes_unimayor/widgets/text_and_title_container.dart';
+import 'package:reportes_unimayor/widgets/view_location.dart';
 
 class MainUserScreen extends ConsumerWidget {
   const MainUserScreen({super.key});
@@ -24,11 +26,6 @@ class MainUserScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            reportsAsync.maybeWhen(
-              data: (reports) =>
-                  reports.isNotEmpty ? textReports() : const SizedBox.shrink(),
-              orElse: () => const SizedBox.shrink(),
-            ),
             Expanded(
               child: reportsAsync.when(
                 // data: (reports) => _buildReportsList(reports, context),
@@ -71,17 +68,17 @@ class MainUserScreen extends ConsumerWidget {
         final report = reports[index];
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
-          child: CardReport(
-            title: report.ubicacion.sede,
-            description: report.descripcion,
-            status: report.estado,
-            date:
-                '${report.fechaCreacion.day.toString()} - ${report.fechaCreacion.month} - ${report.fechaCreacion.year.toString()}',
-            hour:
-                '${report.horaCreacion.split(':').first}:${report.horaCreacion.split(':')[1]}',
-            location:
-                '${report.ubicacion.edificio} - ${report.ubicacion.salon}',
-            redirectTo: () => router.push('/user/report/${report.idReporte}'),
+          child: Column(
+            children: [
+              BigBadgeViewProgress(text: report.estado),
+              SizedBox(height: 20),
+              ViewLocation(location: report.ubicacion),
+              SizedBox(height: 20),
+              TextAndTitleContainer(
+                title: 'Descripción',
+                description: report.descripcion,
+              ),
+            ],
           ),
         );
       },
