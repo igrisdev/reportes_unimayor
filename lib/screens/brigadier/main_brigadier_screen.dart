@@ -5,8 +5,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/widgets/app_bar_brigadier.dart';
-import 'package:reportes_unimayor/widgets/card_report.dart';
+import 'package:reportes_unimayor/widgets/date_and_hour_container.dart';
 import 'package:reportes_unimayor/widgets/drawer_brigadier.dart';
+import 'package:reportes_unimayor/widgets/text_and_title_container.dart';
+import 'package:reportes_unimayor/widgets/view_location.dart';
 
 class MainBrigadierScreen extends ConsumerWidget {
   const MainBrigadierScreen({super.key});
@@ -28,10 +30,10 @@ class MainBrigadierScreen extends ConsumerWidget {
                   ? Column(
                       children: [
                         Text(
-                          'Reportes En Curso',
+                          'Reportes Pendientes',
                           style: GoogleFonts.poppins(
                             fontWeight: FontWeight.w600,
-                            fontSize: 18,
+                            fontSize: 20,
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -70,26 +72,135 @@ class MainBrigadierScreen extends ConsumerWidget {
       return textNoReports(ref, context);
     }
 
+    // router.push('/brigadier/report/${report.idReporte}'),
+
     return ListView.builder(
       physics: const AlwaysScrollableScrollPhysics(),
       itemCount: reports.length,
       itemBuilder: (context, index) {
         final report = reports[index];
+
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
-          child: CardReport(
-            title: report.ubicacion.salon,
-            description: report.descripcion,
-            status: report.estado,
-            date:
-                '${report.fechaCreacion.day.toString()} - ${report.fechaCreacion.month} - ${report.fechaCreacion.year.toString()}',
-            hour:
-                '${report.horaCreacion.split(':').first}:${report.horaCreacion.split(':')[1]}',
-            location:
-                '${report.ubicacion.edificio} - ${report.ubicacion.salon}',
-            redirectTo: () =>
-                router.push('/brigadier/report/${report.idReporte}'),
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.black),
+              borderRadius: BorderRadius.circular(5),
+            ),
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              children: [
+                ViewLocation(location: report.ubicacion),
+                SizedBox(height: 20),
+                TextAndTitleContainer(
+                  title: 'Descripción',
+                  description: report.descripcion,
+                ),
+                SizedBox(height: 20),
+                DateAndHourContainer(
+                  date: report.fechaCreacion,
+                  hour: report.horaCreacion,
+                ),
+                SizedBox(height: 20),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          showDialogIfAccept(ref, report);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF338838),
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 8,
+                              horizontal: 20,
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Aceptar',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          router.push('/brigadier/report/${report.idReporte}');
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            border: Border.all(color: Colors.black),
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 8,
+                              horizontal: 20,
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Ver Más',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
+        );
+      },
+    );
+  }
+
+  showDialogIfAccept(ref, report) {
+    return showDialog(
+      context: ref.context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmar aceptación'),
+          content: const Text(
+            '¿Estás seguro de que quieres aceptar el reporte?',
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Dismiss the dialog
+              },
+            ),
+            TextButton(
+              child: const Text('Sí'),
+              onPressed: () {
+                // Dismiss the dialog and then cancel the report
+                Navigator.of(context).pop();
+                ref.read(acceptReportProvider(report.idReporte));
+              },
+            ),
+          ],
         );
       },
     );

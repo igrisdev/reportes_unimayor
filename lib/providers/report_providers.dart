@@ -38,13 +38,12 @@ Future<List<ReportsModel>> reportListBrigadier(
   try {
     final apiService = ApiReportsService();
 
-    final reportAcepted = await apiService.getReportsBrigadierAssigned(token);
+    final reportAccepted = await apiService.getReportsBrigadierAssigned(token);
 
-    final reports = reportAcepted
+    final reports = reportAccepted
         .where((element) => element.estado == 'En proceso')
         .toList();
 
-    print('Reports: $reports');
     if (reports.isEmpty) {
       return await apiService.getReportsBrigadierPending(token);
     }
