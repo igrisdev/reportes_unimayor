@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -8,26 +9,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
-
-@pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await _showNotification(message);
-}
-
-void requestNotificationPermission() async {
-  final messaging = FirebaseMessaging.instance;
-  await messaging.requestPermission();
-  // final settings = await messaging.requestPermission();
-
-  // if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-  //   print('✅ Permiso concedido');
-  // } else if (settings.authorizationStatus == AuthorizationStatus.denied) {
-  //   print('🚫 Permiso denegado');
-  // } else if (settings.authorizationStatus ==
-  //     AuthorizationStatus.notDetermined) {
-  //   print('❓ Permiso no determinado');
-  // }
-}
 
 Future<void> _showNotification(RemoteMessage message) async {
   const AndroidNotificationDetails androidPlatformChannelSpecifics =
@@ -53,6 +34,11 @@ Future<void> _showNotification(RemoteMessage message) async {
   );
 }
 
+void requestNotificationPermission() async {
+  final messaging = FirebaseMessaging.instance;
+  await messaging.requestPermission();
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -63,19 +49,17 @@ void main() async {
     ),
   );
 
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
   runApp(ProviderScope(child: MainApp()));
 }
 
-class MainApp extends StatefulWidget {
+class MainApp extends ConsumerStatefulWidget {
   const MainApp({super.key});
 
   @override
-  State<MainApp> createState() => _MainAppState();
+  ConsumerState<MainApp> createState() => _MainAppState();
 }
 
-class _MainAppState extends State<MainApp> {
+class _MainAppState extends ConsumerState<MainApp> {
   @override
   void initState() {
     super.initState();
@@ -83,6 +67,7 @@ class _MainAppState extends State<MainApp> {
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       _showNotification(message);
+      invalidateAllProvidersBrigadier(ref);
     });
   }
 
