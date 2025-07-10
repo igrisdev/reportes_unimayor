@@ -10,17 +10,23 @@ class BigBadgeViewProgress extends StatelessWidget {
     Color colorBackground = const Color(0x009E9E9E);
     Color colorText = const Color(0x009E9E9E);
 
-    if (text == 'Pendiente') {
-      colorBackground = const Color(0xFFFFCE00);
-      colorText = const Color(0xFF000000);
-    }
-    if (text == 'Cancelado') {
-      colorBackground = const Color(0xFFFF3737);
-      colorText = const Color(0xFFFFFFFF);
-    }
-    if (text == 'Finalizado') {
-      colorBackground = const Color(0xFF3882F1);
-      colorText = const Color(0xFFFFFFFF);
+    switch (text) {
+      case 'Pendiente':
+        colorBackground = const Color(0xFFFFCE00);
+        colorText = const Color(0xFF000000);
+        break;
+      case 'En proceso':
+        colorBackground = const Color(0xFF338838);
+        colorText = const Color(0xFFFFFFFF);
+        break;
+      case 'Cancelado':
+        colorBackground = const Color(0xFFFF3737);
+        colorText = const Color(0xFFFFFFFF);
+        break;
+      case 'Finalizado':
+        colorBackground = const Color(0xFF3882F1);
+        colorText = const Color(0xFFFFFFFF);
+        break;
     }
 
     return Container(

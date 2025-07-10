@@ -72,6 +72,12 @@ class MainUserScreen extends ConsumerWidget {
       itemCount: reports.length,
       itemBuilder: (context, index) {
         final report = reports[index];
+        final isAccepted = report.estado == 'En proceso';
+
+        final String textNote = isAccepted
+            ? 'Reporte aceptado, brigadista en camino'
+            : 'Reporte realizado, espera a que lo acepte un brigadista';
+
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
           child: Column(
@@ -90,11 +96,7 @@ class MainUserScreen extends ConsumerWidget {
                 hour: report.horaCreacion,
               ),
               SizedBox(height: 30),
-              TextNote(
-                title: 'Nota',
-                description:
-                    'Reporte realizado, espera a que lo acepte un brigadista',
-              ),
+              TextNote(title: 'Nota', description: textNote),
             ],
           ),
         );
