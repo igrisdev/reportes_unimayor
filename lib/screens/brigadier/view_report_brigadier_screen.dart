@@ -24,7 +24,6 @@ class ViewReportBrigadierScreen extends ConsumerWidget {
       body: Padding(
         padding: const EdgeInsets.only(left: 18, right: 18, top: 10),
         child: asyncReport.when(
-          // data: (report) => infoReport(report),
           data: (report) => RefreshIndicator(
             onRefresh: () async {
               ref.invalidate(getReportByIdBrigadierProvider(id));

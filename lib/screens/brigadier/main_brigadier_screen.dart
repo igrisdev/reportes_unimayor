@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/widgets/app_bar_brigadier.dart';
+import 'package:reportes_unimayor/widgets/big_badge_view_progress.dart';
 import 'package:reportes_unimayor/widgets/date_and_hour_container.dart';
 import 'package:reportes_unimayor/widgets/drawer_brigadier.dart';
 import 'package:reportes_unimayor/widgets/text_and_title_container.dart';
@@ -17,6 +18,10 @@ class MainBrigadierScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final reportsAsync = ref.watch(reportListBrigadierProvider);
 
+    final idReport = reportsAsync.whenData(
+      (reports) => reports.first.idReporte,
+    );
+
     return Scaffold(
       appBar: AppBarBrigadier(),
       drawer: DrawerBrigadier(context: context),
@@ -26,7 +31,8 @@ class MainBrigadierScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             reportsAsync.maybeWhen(
-              data: (reports) => reports.isNotEmpty
+              data: (reports) =>
+                  reports.isNotEmpty && reports.first.estado != 'En proceso'
                   ? Column(
                       children: [
                         Text(
@@ -58,6 +64,82 @@ class MainBrigadierScreen extends ConsumerWidget {
           ],
         ),
       ),
+      bottomNavigationBar: reportsAsync.maybeWhen(
+        data: (reports) =>
+            reports.isNotEmpty && reports.first.estado == 'En proceso'
+            ? buttonAppBarFinalizeReport(ref, idReport)
+            : null,
+        orElse: () => null, // Por defecto no mostrar
+      ),
+    );
+  }
+
+  BottomAppBar buttonAppBarFinalizeReport(
+    WidgetRef ref,
+    AsyncValue<int> idReport,
+  ) {
+    return BottomAppBar(
+      color: Colors.transparent,
+      elevation: 0,
+      height: 90,
+      child: Material(
+        color: const Color(0xFF034593),
+        borderRadius: BorderRadius.circular(100),
+        child: InkWell(
+          onTap: () {
+            if (idReport.isLoading || idReport.value == null) {
+              return;
+            }
+            showDialogIfCancel(ref, idReport);
+          },
+          child: Center(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Finalizar Reporte",
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Icon(Icons.check, color: Colors.white),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<dynamic> showDialogIfCancel(WidgetRef ref, AsyncValue<int> idReport) {
+    return showDialog(
+      context: ref.context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmar Finalizar El Reporte'),
+          content: const Text(
+            '¿Estás seguro de que quieres finalizar el reporte?',
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Dismiss the dialog
+              },
+            ),
+            TextButton(
+              child: const Text('Sí'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                ref.read(endReportProvider(idReport.value!));
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -70,6 +152,13 @@ class MainBrigadierScreen extends ConsumerWidget {
 
     if (reports.isEmpty) {
       return textNoReports(ref, context);
+    }
+
+    if (reports.first.estado == 'En proceso') {
+      return SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: viewReportInProcess(ref, reports.first),
+      );
     }
 
     // router.push('/brigadier/report/${report.idReporte}'),
@@ -173,6 +262,29 @@ class MainBrigadierScreen extends ConsumerWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget viewReportInProcess(WidgetRef ref, ReportsModel report) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        children: [
+          BigBadgeViewProgress(text: report.estado),
+          SizedBox(height: 20),
+          ViewLocation(location: report.ubicacion),
+          SizedBox(height: 20),
+          TextAndTitleContainer(
+            title: 'Descripción',
+            description: report.descripcion,
+          ),
+          SizedBox(height: 20),
+          DateAndHourContainer(
+            date: report.fechaCreacion,
+            hour: report.horaCreacion,
+          ),
+        ],
+      ),
     );
   }
 
