@@ -6,6 +6,10 @@ import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/themes/light.theme.dart';
 import 'package:reportes_unimayor/widgets/app_bar_user.dart';
+import 'package:reportes_unimayor/widgets/big_badge_view_progress.dart';
+import 'package:reportes_unimayor/widgets/date_and_hour_container.dart';
+import 'package:reportes_unimayor/widgets/text_and_title_container.dart';
+import 'package:reportes_unimayor/widgets/view_location.dart';
 
 class ViewReportUserScreen extends ConsumerWidget {
   final String id;
@@ -75,66 +79,33 @@ class ViewReportUserScreen extends ConsumerWidget {
     );
   }
 
-  Column infoReport(ReportsModel report) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Text(
-                report.ubicacion.sede,
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 17,
-                ),
-              ),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                color: lightMode.colorScheme.secondary,
-                borderRadius: BorderRadius.circular(100),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  left: 20,
-                  right: 20,
-                  top: 5,
-                  bottom: 5,
-                ),
-                child: Text(
-                  report.estado,
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 10),
-        Row(
-          children: [
-            Text(
-              '${report.horaCreacion.split(':').first}:${report.horaCreacion.split(':')[1]}',
-              style: GoogleFonts.poppins(fontSize: 16),
-            ),
-            Text('  |  ', style: GoogleFonts.poppins(fontSize: 16)),
-            Text(
-              '${report.fechaCreacion.day.toString()} - ${report.fechaCreacion.month} - ${report.fechaCreacion.year.toString()}',
-              style: GoogleFonts.poppins(fontSize: 16),
-            ),
-          ],
-        ),
-        SizedBox(height: 13),
-        Column(
-          children: [
-            Text(report.descripcion, style: GoogleFonts.poppins(fontSize: 14)),
-          ],
-        ),
-      ],
+  Padding infoReport(ReportsModel report) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        children: [
+          BigBadgeViewProgress(text: report.estado),
+          SizedBox(height: 20),
+          ViewLocation(location: report.ubicacion),
+          SizedBox(height: 20),
+          TextAndTitleContainer(
+            title: 'Descripción',
+            description: report.descripcion,
+            isImportant: false,
+          ),
+          SizedBox(height: 20),
+          DateAndHourContainer(
+            date: report.fechaCreacion,
+            hour: report.horaCreacion,
+          ),
+          SizedBox(height: 30),
+          TextAndTitleContainer(
+            title: 'Nota Brigadista',
+            description:
+                'Se termino con buen resultado, gracias por reportarlo, se salvo una vida',
+          ),
+        ],
+      ),
     );
   }
 }

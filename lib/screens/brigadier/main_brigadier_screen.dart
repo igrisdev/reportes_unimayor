@@ -23,6 +23,7 @@ class MainBrigadierScreen extends ConsumerWidget {
     );
 
     return Scaffold(
+      // backgroundColor: const Color.fromARGB(255, 140, 238, 213),
       appBar: AppBarBrigadier(),
       drawer: DrawerBrigadier(context: context),
       body: Padding(
@@ -160,8 +161,6 @@ class MainBrigadierScreen extends ConsumerWidget {
         child: viewReportInProcess(ref, reports.first),
       );
     }
-
-    // router.push('/brigadier/report/${report.idReporte}'),
 
     return ListView.separated(
       physics: const AlwaysScrollableScrollPhysics(),
