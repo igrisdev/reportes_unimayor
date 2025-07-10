@@ -87,13 +87,13 @@ class ViewReportUserScreen extends ConsumerWidget {
           BigBadgeViewProgress(text: report.estado),
           SizedBox(height: 20),
           ViewLocation(location: report.ubicacion),
-          SizedBox(height: 20),
+          SizedBox(height: 30),
           TextAndTitleContainer(
             title: 'Descripción',
             description: report.descripcion,
             isImportant: false,
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 30),
           DateAndHourContainer(
             date: report.fechaCreacion,
             hour: report.horaCreacion,
