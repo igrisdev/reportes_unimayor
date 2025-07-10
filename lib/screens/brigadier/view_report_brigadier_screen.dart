@@ -6,6 +6,9 @@ import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/themes/light.theme.dart';
 import 'package:reportes_unimayor/widgets/app_bar_brigadier.dart';
+import 'package:reportes_unimayor/widgets/date_and_hour_container.dart';
+import 'package:reportes_unimayor/widgets/text_and_title_container.dart';
+import 'package:reportes_unimayor/widgets/view_location.dart';
 
 class ViewReportBrigadierScreen extends ConsumerWidget {
   final String id;
@@ -101,7 +104,7 @@ class ViewReportBrigadierScreen extends ConsumerWidget {
       elevation: 0,
       height: 90,
       child: Material(
-        color: lightMode.colorScheme.primary,
+        color: const Color(0xFF338838),
         borderRadius: BorderRadius.circular(100),
         child: InkWell(
           onTap: () async {
@@ -140,63 +143,16 @@ class ViewReportBrigadierScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Text(
-                  report.ubicacion.salon,
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 17,
-                  ),
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: lightMode.colorScheme.secondary,
-                  borderRadius: BorderRadius.circular(100),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    left: 20,
-                    right: 20,
-                    top: 5,
-                    bottom: 5,
-                  ),
-                  child: Text(
-                    report.estado,
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+          ViewLocation(location: report.ubicacion),
+          SizedBox(height: 20),
+          TextAndTitleContainer(
+            title: 'Descripción',
+            description: report.descripcion,
           ),
-          SizedBox(height: 10),
-          Row(
-            children: [
-              Text(
-                '${report.horaCreacion.split(':').first}:${report.horaCreacion.split(':')[1]}',
-                style: GoogleFonts.poppins(fontSize: 16),
-              ),
-              Text('  |  ', style: GoogleFonts.poppins(fontSize: 16)),
-              Text(
-                '${report.fechaCreacion.day.toString()} - ${report.fechaCreacion.month} - ${report.fechaCreacion.year.toString()}',
-                style: GoogleFonts.poppins(fontSize: 16),
-              ),
-            ],
-          ),
-          SizedBox(height: 13),
-          Column(
-            children: [
-              Text(
-                report.descripcion,
-                style: GoogleFonts.poppins(fontSize: 14),
-              ),
-            ],
+          SizedBox(height: 20),
+          DateAndHourContainer(
+            date: report.fechaCreacion,
+            hour: report.horaCreacion,
           ),
         ],
       ),
