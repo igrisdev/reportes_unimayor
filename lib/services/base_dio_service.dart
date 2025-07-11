@@ -1,6 +1,6 @@
-import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:dio/io.dart';
+// import 'dart:io';
+// import 'package:dio/io.dart';
 
 class BaseDioService {
   static final optionsDio = BaseOptions(
@@ -12,12 +12,12 @@ class BaseDioService {
 
   final dio = Dio(optionsDio);
 
-  BaseDioService() {
-    dio.httpClientAdapter = DefaultHttpClientAdapter()
-      ..onHttpClientCreate = (HttpClient client) {
-        client.badCertificateCallback =
-            (X509Certificate cert, String host, int port) => true;
-        return client;
-      };
-  }
+  // BaseDioService() {
+  //   dio.httpClientAdapter = DefaultHttpClientAdapter()
+  //     ..onHttpClientCreate = (HttpClient client) {
+  //       client.badCertificateCallback =
+  //           (X509Certificate cert, String host, int port) => true;
+  //       return client;
+  //     };
+  // }
 }
