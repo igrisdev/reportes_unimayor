@@ -25,12 +25,23 @@ class HistoryUserScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Historial de Reportes',
-              style: GoogleFonts.poppins(
-                fontWeight: FontWeight.w600,
-                fontSize: 18,
-              ),
+            reportsAsync.maybeWhen(
+              data: (reports) =>
+                  reports.isNotEmpty && reports.first.estado != 'En proceso'
+                  ? Column(
+                      children: [
+                        Text(
+                          'Historial de Reportes',
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 20,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                    )
+                  : const SizedBox.shrink(),
+              orElse: () => const SizedBox.shrink(),
             ),
             const SizedBox(height: 16),
             Expanded(
