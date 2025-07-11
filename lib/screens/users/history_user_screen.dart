@@ -37,7 +37,6 @@ class HistoryUserScreen extends ConsumerWidget {
                             fontSize: 20,
                           ),
                         ),
-                        const SizedBox(height: 16),
                       ],
                     )
                   : const SizedBox.shrink(),
@@ -87,6 +86,10 @@ class HistoryUserScreen extends ConsumerWidget {
         Color colorBackground = isFinalized
             ? const Color(0xFF3882F1)
             : Color(0xFFFF3737);
+
+        if (report.estado == 'Pendiente') {
+          return null;
+        }
 
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
