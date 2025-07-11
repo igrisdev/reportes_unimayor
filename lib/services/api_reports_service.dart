@@ -100,7 +100,6 @@ class ApiReportsService extends BaseDioService {
         throw Exception('Error al crear el reporte');
       }
 
-      print('Reporte creado exitosamente');
       return true;
     } catch (e) {
       print('Error en ApiReportsService: $e');
