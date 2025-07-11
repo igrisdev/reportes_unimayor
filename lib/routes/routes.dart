@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:reportes_unimayor/screens/auth/auth_screen.dart';
+import 'package:reportes_unimayor/screens/brigadier/history_brigadier_screen.dart';
 import 'package:reportes_unimayor/screens/brigadier/main_brigadier_screen.dart';
 import 'package:reportes_unimayor/screens/brigadier/view_report_brigadier_screen.dart';
 import 'package:reportes_unimayor/screens/users/create_report_user_screen.dart';
@@ -46,6 +47,10 @@ final router = GoRouter(
           path: '/report/:id',
           builder: (context, state) =>
               ViewReportBrigadierScreen(id: state.pathParameters['id']!),
+        ),
+        GoRoute(
+          path: '/history',
+          builder: (context, state) => HistoryBrigadierScreen(),
         ),
       ],
     ),

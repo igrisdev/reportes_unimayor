@@ -39,19 +39,19 @@ class DrawerBrigadier extends ConsumerWidget {
             },
           ),
 
-          // ListTile(
-          //   leading: const Icon(Icons.history),
-          //   title: Text(
-          //     'Historial',
-          //     style: GoogleFonts.poppins(
-          //       fontWeight: FontWeight.w500,
-          //       fontSize: 18,
-          //     ),
-          //   ),
-          //   onTap: () {
-          //     router.push('/user/history');
-          //   },
-          // ),
+          ListTile(
+            leading: const Icon(Icons.history),
+            title: Text(
+              'Historial',
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w500,
+                fontSize: 18,
+              ),
+            ),
+            onTap: () {
+              router.push('/brigadier/history');
+            },
+          ),
           Spacer(),
 
           ListTile(
