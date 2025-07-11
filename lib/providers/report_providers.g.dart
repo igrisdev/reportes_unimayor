@@ -25,7 +25,7 @@ final reportListProvider =
 // ignore: unused_element
 typedef ReportListRef = AutoDisposeFutureProviderRef<List<ReportsModel>>;
 String _$reportListBrigadierHash() =>
-    r'b4216f24d1cb19bbfb056c718b7a48c0aa4b100b';
+    r'5482fd420c2b6ed2d7d1f49c42517af037dd64ce';
 
 /// See also [reportListBrigadier].
 @ProviderFor(reportListBrigadier)
@@ -43,6 +43,26 @@ final reportListBrigadierProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef ReportListBrigadierRef =
+    AutoDisposeFutureProviderRef<List<ReportsModel>>;
+String _$reportListHistoryBrigadierHash() =>
+    r'a15a92d1268fbc8d2e12629701564b1c9fe66f50';
+
+/// See also [reportListHistoryBrigadier].
+@ProviderFor(reportListHistoryBrigadier)
+final reportListHistoryBrigadierProvider =
+    AutoDisposeFutureProvider<List<ReportsModel>>.internal(
+      reportListHistoryBrigadier,
+      name: r'reportListHistoryBrigadierProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$reportListHistoryBrigadierHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef ReportListHistoryBrigadierRef =
     AutoDisposeFutureProviderRef<List<ReportsModel>>;
 String _$reportListPendingHash() => r'803e5d42719705aa49bb887df00d38b32b37a7c5';
 
@@ -325,7 +345,7 @@ class _GetReportByIdBrigadierProviderElement
   String get id => (origin as GetReportByIdBrigadierProvider).id;
 }
 
-String _$createReportHash() => r'04a3c43492f19911864eaa07451955d47bf9a228';
+String _$createReportHash() => r'dd1d0578a04b9a17f1aaed11598c0a1787c3495f';
 
 /// See also [createReport].
 @ProviderFor(createReport)

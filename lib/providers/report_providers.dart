@@ -56,6 +56,35 @@ Future<List<ReportsModel>> reportListBrigadier(
 }
 
 @riverpod
+Future<List<ReportsModel>> reportListHistoryBrigadier(
+  ReportListHistoryBrigadierRef ref,
+) async {
+  final token = ref.watch(tokenProvider);
+
+  if (token.isEmpty) {
+    return []; // o throw Exception('Token no disponible');
+  }
+
+  try {
+    final apiService = ApiReportsService();
+
+    final reportFinalized = await apiService.getReportsBrigadierAssigned(token);
+
+    final reports = reportFinalized
+        .where(
+          (element) =>
+              element.estado != 'En proceso' && element.estado != 'Pendiente',
+        )
+        .toList();
+
+    return reports;
+  } catch (e) {
+    print('Error en report provider: $e');
+    throw e; // Riverpod manejará el error
+  }
+}
+
+@riverpod
 Future<List<ReportsModel>> reportListPending(ReportListPendingRef ref) async {
   final token = ref.watch(tokenProvider);
 
@@ -148,6 +177,7 @@ Future<bool> createReport(
       descripcion,
     );
 
+    print('response: $response');
     if (response) {
       invalidateAllProvidersUser(ref);
       return true;
