@@ -9,6 +9,7 @@ import 'package:reportes_unimayor/widgets/big_badge_view_progress.dart';
 import 'package:reportes_unimayor/widgets/date_and_hour_container.dart';
 import 'package:reportes_unimayor/widgets/drawer_brigadier.dart';
 import 'package:reportes_unimayor/widgets/text_and_title_container.dart';
+import 'package:reportes_unimayor/widgets/text_no_reports.dart';
 import 'package:reportes_unimayor/widgets/view_location.dart';
 
 class MainBrigadierScreen extends ConsumerWidget {
@@ -152,7 +153,7 @@ class MainBrigadierScreen extends ConsumerWidget {
     final router = GoRouter.of(context);
 
     if (reports.isEmpty) {
-      return textNoReports(ref, context);
+      return TextNoReports();
     }
 
     if (reports.first.estado == 'En proceso') {
@@ -340,49 +341,6 @@ class MainBrigadierScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
         ],
-      ),
-    );
-  }
-
-  Widget textNoReports(WidgetRef ref, BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        ref.invalidate(reportListBrigadierProvider);
-      },
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: SizedBox(
-          height: MediaQueryData.fromView(View.of(context)).size.height * 0.8,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.assignment_outlined,
-                  size: 64,
-                  color: Colors.grey[400],
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  "Sin Reportes",
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  "No han realizado reportes",
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    color: Colors.grey[500],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }
