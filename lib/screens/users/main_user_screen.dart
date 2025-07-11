@@ -10,6 +10,7 @@ import 'package:reportes_unimayor/widgets/big_badge_view_progress.dart';
 import 'package:reportes_unimayor/widgets/date_and_hour_container.dart';
 import 'package:reportes_unimayor/widgets/drawer_user.dart';
 import 'package:reportes_unimayor/widgets/text_and_title_container.dart';
+import 'package:reportes_unimayor/widgets/text_no_reports.dart';
 import 'package:reportes_unimayor/widgets/text_note.dart';
 import 'package:reportes_unimayor/widgets/view_location.dart';
 
@@ -64,7 +65,7 @@ class MainUserScreen extends ConsumerWidget {
     WidgetRef ref,
   ) {
     if (reports.isEmpty) {
-      return textNoReports(ref, context);
+      return TextNoReports();
     }
 
     return ListView.builder(
@@ -233,49 +234,6 @@ class MainUserScreen extends ConsumerWidget {
           ],
         );
       },
-    );
-  }
-
-  Widget textNoReports(WidgetRef ref, BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        ref.invalidate(reportListPendingProvider);
-      },
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: SizedBox(
-          height: MediaQueryData.fromView(View.of(context)).size.height * 0.7,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.assignment_outlined,
-                  size: 64,
-                  color: Colors.grey[400],
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  "Sin Reportes",
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  "No tienes reportes creados aún",
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    color: Colors.grey[500],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
     );
   }
 

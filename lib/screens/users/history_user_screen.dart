@@ -8,6 +8,7 @@ import 'package:reportes_unimayor/widgets/app_bar_user.dart';
 import 'package:reportes_unimayor/widgets/date_and_hour_container.dart';
 import 'package:reportes_unimayor/widgets/drawer_user.dart';
 import 'package:reportes_unimayor/widgets/text_and_title_container.dart';
+import 'package:reportes_unimayor/widgets/text_no_reports.dart';
 import 'package:reportes_unimayor/widgets/view_location.dart';
 
 class HistoryUserScreen extends ConsumerWidget {
@@ -68,12 +69,7 @@ class HistoryUserScreen extends ConsumerWidget {
     final router = GoRouter.of(context);
 
     if (reports.isEmpty) {
-      return Center(
-        child: Text(
-          "Sin Reportes",
-          style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
-        ),
-      );
+      return TextNoReports();
     }
 
     return ListView.separated(
