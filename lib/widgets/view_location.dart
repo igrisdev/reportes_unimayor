@@ -36,7 +36,7 @@ class ViewLocation extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Salon ${location.salon}',
+                  'Salon ${location.lugar}',
                   style: GoogleFonts.poppins(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,

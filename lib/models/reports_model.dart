@@ -15,6 +15,7 @@ class ReportsModel {
   int idReporte;
   Ubicacion ubicacion;
   String descripcion;
+  dynamic rutaAudio;
   String estado;
   DateTime fechaCreacion;
   String horaCreacion;
@@ -23,6 +24,7 @@ class ReportsModel {
     required this.idReporte,
     required this.ubicacion,
     required this.descripcion,
+    required this.rutaAudio,
     required this.estado,
     required this.fechaCreacion,
     required this.horaCreacion,
@@ -32,6 +34,7 @@ class ReportsModel {
     int? idReporte,
     Ubicacion? ubicacion,
     String? descripcion,
+    dynamic rutaAudio,
     String? estado,
     DateTime? fechaCreacion,
     String? horaCreacion,
@@ -39,6 +42,7 @@ class ReportsModel {
     idReporte: idReporte ?? this.idReporte,
     ubicacion: ubicacion ?? this.ubicacion,
     descripcion: descripcion ?? this.descripcion,
+    rutaAudio: rutaAudio ?? this.rutaAudio,
     estado: estado ?? this.estado,
     fechaCreacion: fechaCreacion ?? this.fechaCreacion,
     horaCreacion: horaCreacion ?? this.horaCreacion,
@@ -48,6 +52,7 @@ class ReportsModel {
     idReporte: json["idReporte"],
     ubicacion: Ubicacion.fromJson(json["ubicacion"]),
     descripcion: json["descripcion"],
+    rutaAudio: json["rutaAudio"],
     estado: json["estado"],
     fechaCreacion: DateTime.parse(json["fechaCreacion"]),
     horaCreacion: json["horaCreacion"],
@@ -57,6 +62,7 @@ class ReportsModel {
     "idReporte": idReporte,
     "ubicacion": ubicacion.toJson(),
     "descripcion": descripcion,
+    "rutaAudio": rutaAudio,
     "estado": estado,
     "fechaCreacion":
         "${fechaCreacion.year.toString().padLeft(4, '0')}-${fechaCreacion.month.toString().padLeft(2, '0')}-${fechaCreacion.day.toString().padLeft(2, '0')}",
@@ -69,10 +75,9 @@ class Ubicacion {
   String descripcion;
   String sede;
   String edificio;
-  String salon;
+  String lugar;
   String piso;
-  dynamic informacionAdicional;
-  dynamic rutaQr;
+  String rutaQr;
   dynamic reportes;
 
   Ubicacion({
@@ -80,9 +85,8 @@ class Ubicacion {
     required this.descripcion,
     required this.sede,
     required this.edificio,
-    required this.salon,
+    required this.lugar,
     required this.piso,
-    required this.informacionAdicional,
     required this.rutaQr,
     required this.reportes,
   });
@@ -92,19 +96,17 @@ class Ubicacion {
     String? descripcion,
     String? sede,
     String? edificio,
-    String? salon,
+    String? lugar,
     String? piso,
-    dynamic informacionAdicional,
-    dynamic rutaQr,
+    String? rutaQr,
     dynamic reportes,
   }) => Ubicacion(
     idUbicacion: idUbicacion ?? this.idUbicacion,
     descripcion: descripcion ?? this.descripcion,
     sede: sede ?? this.sede,
     edificio: edificio ?? this.edificio,
-    salon: salon ?? this.salon,
+    lugar: lugar ?? this.lugar,
     piso: piso ?? this.piso,
-    informacionAdicional: informacionAdicional ?? this.informacionAdicional,
     rutaQr: rutaQr ?? this.rutaQr,
     reportes: reportes ?? this.reportes,
   );
@@ -114,9 +116,8 @@ class Ubicacion {
     descripcion: json["descripcion"],
     sede: json["sede"],
     edificio: json["edificio"],
-    salon: json["salon"],
+    lugar: json["lugar"],
     piso: json["piso"],
-    informacionAdicional: json["informacionAdicional"],
     rutaQr: json["rutaQr"],
     reportes: json["reportes"],
   );
@@ -126,9 +127,8 @@ class Ubicacion {
     "descripcion": descripcion,
     "sede": sede,
     "edificio": edificio,
-    "salon": salon,
+    "lugar": lugar,
     "piso": piso,
-    "informacionAdicional": informacionAdicional,
     "rutaQr": rutaQr,
     "reportes": reportes,
   };
