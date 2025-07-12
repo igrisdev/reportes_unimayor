@@ -33,11 +33,11 @@ class _CreateReportUserScreenState
   String? _description;
 
   String _buttonSelectLocation = 'Qr';
+  String _buttonSelectDescription = 'Audio';
 
   @override
   Widget build(BuildContext context) {
     final router = GoRouter.of(context);
-
     final idLocationQrScanner = ref.watch(idLocationQrScannerProvider);
 
     return Scaffold(
@@ -156,31 +156,170 @@ class _CreateReportUserScreenState
                       )
                     : buttonScannerQr(router, idLocationQrScanner),
                 SizedBox(height: 20),
-                Text(
-                  'Descripción',
-                  style: GoogleFonts.poppins(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Descripción',
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _buttonSelectDescription = 'Audio';
+                            });
+                          },
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStateProperty.all(
+                              Colors.grey.withAlpha(50),
+                            ),
+                            padding: WidgetStateProperty.all(
+                              EdgeInsets.symmetric(
+                                vertical: 10,
+                                horizontal: 25,
+                              ),
+                            ),
+                            side: WidgetStateProperty.all(
+                              BorderSide(
+                                color: Colors.grey, // Color del borde
+                                width: 1, // Grosor del borde
+                              ),
+                            ),
+                            shape: WidgetStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                            ),
+                          ),
+                          child: Text(
+                            'Audio',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _buttonSelectDescription = 'Escribir';
+                            });
+                          },
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStateProperty.all(
+                              Colors.grey.withAlpha(50),
+                            ),
+                            padding: WidgetStateProperty.all(
+                              EdgeInsets.symmetric(
+                                vertical: 10,
+                                horizontal: 25,
+                              ),
+                            ),
+                            side: WidgetStateProperty.all(
+                              BorderSide(
+                                color: Colors.grey, // Color del borde
+                                width: 1, // Grosor del borde
+                              ),
+                            ),
+                            shape: WidgetStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                            ),
+                          ),
+                          child: Text(
+                            'Escribir',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
+
                 SizedBox(height: 20),
-                TextFormField(
-                  maxLines: 7,
-                  decoration: const InputDecoration(
-                    labelText: 'Descripción del reporte',
-                    alignLabelWithHint: true,
-                    border: OutlineInputBorder(),
-                  ),
-                  onChanged: (value) {
-                    _description = value;
-                  },
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Por favor escriba una descripción';
-                    }
-                    return null;
-                  },
-                ),
+                _buttonSelectDescription == 'Escribir'
+                    ? TextFormField(
+                        maxLines: 7,
+                        decoration: const InputDecoration(
+                          labelText: 'Descripción del reporte',
+                          alignLabelWithHint: true,
+                          border: OutlineInputBorder(),
+                        ),
+                        onChanged: (value) {
+                          _description = value;
+                        },
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Por favor escriba una descripción';
+                          }
+                          return null;
+                        },
+                      )
+                    : Column(
+                        children: [
+                          SizedBox(
+                            width: double.infinity,
+                            height: MediaQuery.of(context).size.height / 5,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                IconButton(
+                                  padding: const EdgeInsets.all(30),
+                                  onPressed: () {},
+                                  style: IconButton.styleFrom(
+                                    backgroundColor: Colors.grey.withAlpha(50),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(100),
+                                    ),
+                                  ),
+                                  icon: const Icon(Icons.mic, size: 80),
+                                ),
+                                Positioned(
+                                  right:
+                                      MediaQuery.of(context).size.width / 2 -
+                                      160,
+                                  child: IconButton(
+                                    padding: const EdgeInsets.all(10),
+                                    onPressed: () {},
+                                    style: IconButton.styleFrom(
+                                      backgroundColor: Colors.grey.withAlpha(
+                                        50,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          100,
+                                        ),
+                                      ),
+                                    ),
+                                    icon: const Icon(
+                                      Icons.settings_backup_restore_rounded,
+                                      size: 35,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          Text(
+                            'Presionar para grabar',
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
                 SizedBox(height: 20),
               ],
             ),
