@@ -158,8 +158,8 @@ Future<ReportsModel> getReportByIdBrigadier(
 }
 
 @riverpod
-Future<bool> createReport(
-  CreateReportRef ref,
+Future<bool> createReportWrite(
+  CreateReportWriteRef ref,
   String idUbicacion,
   String descripcion,
 ) async {
@@ -186,6 +186,39 @@ Future<bool> createReport(
     return false;
   } catch (e) {
     print('Error en report provider: $e');
+    throw e; // Riverpod manejará el error
+  }
+}
+
+@riverpod
+Future<bool> createReportRecord(
+  CreateReportRecordRef ref,
+  String idUbicacion,
+  String record,
+) async {
+  final token = ref.watch(tokenProvider);
+
+  if (token.isEmpty) {
+    throw Exception('Token no disponible');
+  }
+
+  try {
+    final apiService = ApiReportsService();
+    final response = await apiService.createReportAudio(
+      token,
+      idUbicacion,
+      record,
+    );
+
+    print('response: $response');
+    if (response) {
+      invalidateAllProvidersUser(ref);
+      return true;
+    }
+
+    return false;
+  } catch (e) {
+    print('Error crear reporte con audio: $e');
     throw e; // Riverpod manejará el error
   }
 }

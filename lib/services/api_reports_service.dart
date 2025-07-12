@@ -94,12 +94,14 @@ class ApiReportsService extends BaseDioService {
     String id,
     String description,
   ) async {
+    final formData = FormData.fromMap({
+      'IdUbicacion': id,
+      'Descripcion': description,
+      // Para 'ArchivoAudio', el backend espera algo aunque sea vacío.
+    });
     try {
       dio.options.headers["Authorization"] = "Bearer $token";
-      final response = await dio.post(
-        '/reportes',
-        data: {'idUbicacion': id, 'descripcion': description},
-      );
+      final response = await dio.post('/reportes', data: formData);
 
       if (response.statusCode != 200) {
         throw Exception('Error al crear el reporte');
@@ -117,14 +119,14 @@ class ApiReportsService extends BaseDioService {
       'IdUbicacion': id,
       'ArchivoAudio': await MultipartFile.fromFile(
         record,
-        filename: 'audio.m4a',
-        contentType: DioMediaType('audio', 'm4a'),
+        filename: 'audio.mp3',
+        contentType: DioMediaType('audio', 'mp3'),
       ),
     });
 
     try {
       dio.options.headers["Authorization"] = "Bearer $token";
-      final response = await dio.post('/reportes/audio', data: formData);
+      final response = await dio.post('/reportes', data: formData);
 
       if (response.statusCode != 200) {
         throw Exception('Error al crear el reporte con audio');

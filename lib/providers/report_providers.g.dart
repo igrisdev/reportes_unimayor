@@ -345,25 +345,25 @@ class _GetReportByIdBrigadierProviderElement
   String get id => (origin as GetReportByIdBrigadierProvider).id;
 }
 
-String _$createReportHash() => r'dd1d0578a04b9a17f1aaed11598c0a1787c3495f';
+String _$createReportWriteHash() => r'3b8e70fbff95896d694760595315a9fda4cea2c1';
 
-/// See also [createReport].
-@ProviderFor(createReport)
-const createReportProvider = CreateReportFamily();
+/// See also [createReportWrite].
+@ProviderFor(createReportWrite)
+const createReportWriteProvider = CreateReportWriteFamily();
 
-/// See also [createReport].
-class CreateReportFamily extends Family<AsyncValue<bool>> {
-  /// See also [createReport].
-  const CreateReportFamily();
+/// See also [createReportWrite].
+class CreateReportWriteFamily extends Family<AsyncValue<bool>> {
+  /// See also [createReportWrite].
+  const CreateReportWriteFamily();
 
-  /// See also [createReport].
-  CreateReportProvider call(String idUbicacion, String descripcion) {
-    return CreateReportProvider(idUbicacion, descripcion);
+  /// See also [createReportWrite].
+  CreateReportWriteProvider call(String idUbicacion, String descripcion) {
+    return CreateReportWriteProvider(idUbicacion, descripcion);
   }
 
   @override
-  CreateReportProvider getProviderOverride(
-    covariant CreateReportProvider provider,
+  CreateReportWriteProvider getProviderOverride(
+    covariant CreateReportWriteProvider provider,
   ) {
     return call(provider.idUbicacion, provider.descripcion);
   }
@@ -380,28 +380,32 @@ class CreateReportFamily extends Family<AsyncValue<bool>> {
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'createReportProvider';
+  String? get name => r'createReportWriteProvider';
 }
 
-/// See also [createReport].
-class CreateReportProvider extends AutoDisposeFutureProvider<bool> {
-  /// See also [createReport].
-  CreateReportProvider(String idUbicacion, String descripcion)
+/// See also [createReportWrite].
+class CreateReportWriteProvider extends AutoDisposeFutureProvider<bool> {
+  /// See also [createReportWrite].
+  CreateReportWriteProvider(String idUbicacion, String descripcion)
     : this._internal(
-        (ref) => createReport(ref as CreateReportRef, idUbicacion, descripcion),
-        from: createReportProvider,
-        name: r'createReportProvider',
+        (ref) => createReportWrite(
+          ref as CreateReportWriteRef,
+          idUbicacion,
+          descripcion,
+        ),
+        from: createReportWriteProvider,
+        name: r'createReportWriteProvider',
         debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
             ? null
-            : _$createReportHash,
-        dependencies: CreateReportFamily._dependencies,
+            : _$createReportWriteHash,
+        dependencies: CreateReportWriteFamily._dependencies,
         allTransitiveDependencies:
-            CreateReportFamily._allTransitiveDependencies,
+            CreateReportWriteFamily._allTransitiveDependencies,
         idUbicacion: idUbicacion,
         descripcion: descripcion,
       );
 
-  CreateReportProvider._internal(
+  CreateReportWriteProvider._internal(
     super._createNotifier, {
     required super.name,
     required super.dependencies,
@@ -417,12 +421,12 @@ class CreateReportProvider extends AutoDisposeFutureProvider<bool> {
 
   @override
   Override overrideWith(
-    FutureOr<bool> Function(CreateReportRef provider) create,
+    FutureOr<bool> Function(CreateReportWriteRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
-      override: CreateReportProvider._internal(
-        (ref) => create(ref as CreateReportRef),
+      override: CreateReportWriteProvider._internal(
+        (ref) => create(ref as CreateReportWriteRef),
         from: from,
         name: null,
         dependencies: null,
@@ -436,12 +440,12 @@ class CreateReportProvider extends AutoDisposeFutureProvider<bool> {
 
   @override
   AutoDisposeFutureProviderElement<bool> createElement() {
-    return _CreateReportProviderElement(this);
+    return _CreateReportWriteProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is CreateReportProvider &&
+    return other is CreateReportWriteProvider &&
         other.idUbicacion == idUbicacion &&
         other.descripcion == descripcion;
   }
@@ -458,7 +462,7 @@ class CreateReportProvider extends AutoDisposeFutureProvider<bool> {
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin CreateReportRef on AutoDisposeFutureProviderRef<bool> {
+mixin CreateReportWriteRef on AutoDisposeFutureProviderRef<bool> {
   /// The parameter `idUbicacion` of this provider.
   String get idUbicacion;
 
@@ -466,15 +470,152 @@ mixin CreateReportRef on AutoDisposeFutureProviderRef<bool> {
   String get descripcion;
 }
 
-class _CreateReportProviderElement
+class _CreateReportWriteProviderElement
     extends AutoDisposeFutureProviderElement<bool>
-    with CreateReportRef {
-  _CreateReportProviderElement(super.provider);
+    with CreateReportWriteRef {
+  _CreateReportWriteProviderElement(super.provider);
 
   @override
-  String get idUbicacion => (origin as CreateReportProvider).idUbicacion;
+  String get idUbicacion => (origin as CreateReportWriteProvider).idUbicacion;
   @override
-  String get descripcion => (origin as CreateReportProvider).descripcion;
+  String get descripcion => (origin as CreateReportWriteProvider).descripcion;
+}
+
+String _$createReportRecordHash() =>
+    r'9fb500c22d9a11c4ccc787c2e04a25759cdf4c9e';
+
+/// See also [createReportRecord].
+@ProviderFor(createReportRecord)
+const createReportRecordProvider = CreateReportRecordFamily();
+
+/// See also [createReportRecord].
+class CreateReportRecordFamily extends Family<AsyncValue<bool>> {
+  /// See also [createReportRecord].
+  const CreateReportRecordFamily();
+
+  /// See also [createReportRecord].
+  CreateReportRecordProvider call(String idUbicacion, String record) {
+    return CreateReportRecordProvider(idUbicacion, record);
+  }
+
+  @override
+  CreateReportRecordProvider getProviderOverride(
+    covariant CreateReportRecordProvider provider,
+  ) {
+    return call(provider.idUbicacion, provider.record);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'createReportRecordProvider';
+}
+
+/// See also [createReportRecord].
+class CreateReportRecordProvider extends AutoDisposeFutureProvider<bool> {
+  /// See also [createReportRecord].
+  CreateReportRecordProvider(String idUbicacion, String record)
+    : this._internal(
+        (ref) => createReportRecord(
+          ref as CreateReportRecordRef,
+          idUbicacion,
+          record,
+        ),
+        from: createReportRecordProvider,
+        name: r'createReportRecordProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$createReportRecordHash,
+        dependencies: CreateReportRecordFamily._dependencies,
+        allTransitiveDependencies:
+            CreateReportRecordFamily._allTransitiveDependencies,
+        idUbicacion: idUbicacion,
+        record: record,
+      );
+
+  CreateReportRecordProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.idUbicacion,
+    required this.record,
+  }) : super.internal();
+
+  final String idUbicacion;
+  final String record;
+
+  @override
+  Override overrideWith(
+    FutureOr<bool> Function(CreateReportRecordRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: CreateReportRecordProvider._internal(
+        (ref) => create(ref as CreateReportRecordRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        idUbicacion: idUbicacion,
+        record: record,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<bool> createElement() {
+    return _CreateReportRecordProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CreateReportRecordProvider &&
+        other.idUbicacion == idUbicacion &&
+        other.record == record;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, idUbicacion.hashCode);
+    hash = _SystemHash.combine(hash, record.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin CreateReportRecordRef on AutoDisposeFutureProviderRef<bool> {
+  /// The parameter `idUbicacion` of this provider.
+  String get idUbicacion;
+
+  /// The parameter `record` of this provider.
+  String get record;
+}
+
+class _CreateReportRecordProviderElement
+    extends AutoDisposeFutureProviderElement<bool>
+    with CreateReportRecordRef {
+  _CreateReportRecordProviderElement(super.provider);
+
+  @override
+  String get idUbicacion => (origin as CreateReportRecordProvider).idUbicacion;
+  @override
+  String get record => (origin as CreateReportRecordProvider).record;
 }
 
 String _$cancelReportHash() => r'94014a3acd0fad7732bfa695593ca1d6a2be6027';

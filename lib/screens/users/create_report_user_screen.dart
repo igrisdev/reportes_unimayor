@@ -1,11 +1,15 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:record/record.dart';
 import 'package:reportes_unimayor/providers/id_location_qr_scanner.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/themes/light.theme.dart';
 import 'package:reportes_unimayor/widgets/app_bar_user.dart';
+import 'package:path/path.dart' as p;
 
 class CreateReportUserScreen extends ConsumerStatefulWidget {
   const CreateReportUserScreen({super.key});
@@ -35,6 +39,10 @@ class _CreateReportUserScreenState
   String _buttonSelectLocation = 'Qr';
   String _buttonSelectDescription = 'Audio';
 
+  final AudioRecorder audioRecorder = AudioRecorder();
+  bool isRecording = false;
+  String? recordingPath;
+
   @override
   Widget build(BuildContext context) {
     final router = GoRouter.of(context);
@@ -42,7 +50,6 @@ class _CreateReportUserScreenState
 
     return Scaffold(
       appBar: AppBarUser(),
-      // La configuración por defecto de resizeToAvoidBottomInset está en true.
       body: Form(
         key: _formKey,
         child: Padding(
@@ -274,36 +281,47 @@ class _CreateReportUserScreenState
                               children: [
                                 IconButton(
                                   padding: const EdgeInsets.all(30),
-                                  onPressed: () {},
+                                  onPressed: () async {
+                                    if (isRecording) {
+                                      String? filePath = await audioRecorder
+                                          .stop();
+
+                                      if (filePath != null) {
+                                        setState(() {
+                                          isRecording = false;
+                                          recordingPath = filePath;
+                                        });
+                                      }
+                                    } else {
+                                      if (await audioRecorder.hasPermission()) {
+                                        final Directory appDocumentDirectory =
+                                            await getApplicationDocumentsDirectory();
+                                        final String filePath = p.join(
+                                          appDocumentDirectory.path,
+                                          'audio.mp3',
+                                        );
+
+                                        await audioRecorder.start(
+                                          const RecordConfig(),
+                                          path: filePath,
+                                        );
+
+                                        setState(() {
+                                          isRecording = true;
+                                          recordingPath = null;
+                                        });
+                                      }
+                                    }
+                                  },
                                   style: IconButton.styleFrom(
                                     backgroundColor: Colors.grey.withAlpha(50),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(100),
                                     ),
                                   ),
-                                  icon: const Icon(Icons.mic, size: 80),
-                                ),
-                                Positioned(
-                                  right:
-                                      MediaQuery.of(context).size.width / 2 -
-                                      160,
-                                  child: IconButton(
-                                    padding: const EdgeInsets.all(10),
-                                    onPressed: () {},
-                                    style: IconButton.styleFrom(
-                                      backgroundColor: Colors.grey.withAlpha(
-                                        50,
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          100,
-                                        ),
-                                      ),
-                                    ),
-                                    icon: const Icon(
-                                      Icons.settings_backup_restore_rounded,
-                                      size: 35,
-                                    ),
+                                  icon: Icon(
+                                    isRecording ? Icons.stop : Icons.mic,
+                                    size: 80,
                                   ),
                                 ),
                               ],
@@ -311,7 +329,7 @@ class _CreateReportUserScreenState
                           ),
                           SizedBox(height: 5),
                           Text(
-                            'Presionar para grabar',
+                            'Presionar una vez',
                             style: GoogleFonts.poppins(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
@@ -344,12 +362,23 @@ class _CreateReportUserScreenState
                   _selectedLocation = idLocationQrScanner;
                 }
 
-                final response = await ref.read(
-                  createReportProvider(
-                    _selectedLocation!,
-                    _description!,
-                  ).future,
-                );
+                bool? response;
+
+                if (_buttonSelectDescription == 'Audio') {
+                  response = await ref.read(
+                    createReportRecordProvider(
+                      _selectedLocation!,
+                      recordingPath!,
+                    ).future,
+                  );
+                } else {
+                  response = await ref.read(
+                    createReportWriteProvider(
+                      _selectedLocation!,
+                      _description!,
+                    ).future,
+                  );
+                }
 
                 if (response == true) {
                   ref
