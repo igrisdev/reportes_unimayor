@@ -245,7 +245,6 @@ class _CreateReportUserScreenState
                     ),
                   ],
                 ),
-
                 SizedBox(height: 20),
                 _buttonSelectDescription == 'Escribir'
                     ? TextFormField(

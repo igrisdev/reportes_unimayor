@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/services/base_dio_service.dart';
 
@@ -88,7 +89,11 @@ class ApiReportsService extends BaseDioService {
     }
   }
 
-  Future<bool> createReport(String token, String id, String description) async {
+  Future<bool> createReportWrite(
+    String token,
+    String id,
+    String description,
+  ) async {
     try {
       dio.options.headers["Authorization"] = "Bearer $token";
       final response = await dio.post(
@@ -103,6 +108,31 @@ class ApiReportsService extends BaseDioService {
       return true;
     } catch (e) {
       print('Error en ApiReportsService: $e');
+      rethrow; // Re-lanzar el error para que lo maneje el provider
+    }
+  }
+
+  Future<bool> createReportAudio(String token, String id, String record) async {
+    final formData = FormData.fromMap({
+      'IdUbicacion': id,
+      'ArchivoAudio': await MultipartFile.fromFile(
+        record,
+        filename: 'audio.m4a',
+        contentType: DioMediaType('audio', 'm4a'),
+      ),
+    });
+
+    try {
+      dio.options.headers["Authorization"] = "Bearer $token";
+      final response = await dio.post('/reportes/audio', data: formData);
+
+      if (response.statusCode != 200) {
+        throw Exception('Error al crear el reporte con audio');
+      }
+
+      return true;
+    } catch (e) {
+      print('Error crear reporte con audio: $e');
       rethrow; // Re-lanzar el error para que lo maneje el provider
     }
   }

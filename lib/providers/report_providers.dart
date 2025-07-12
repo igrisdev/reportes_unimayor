@@ -171,7 +171,7 @@ Future<bool> createReport(
 
   try {
     final apiService = ApiReportsService();
-    final response = await apiService.createReport(
+    final response = await apiService.createReportWrite(
       token,
       idUbicacion,
       descripcion,
