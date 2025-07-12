@@ -35,7 +35,6 @@ class MainUserScreen extends ConsumerWidget {
           children: [
             Expanded(
               child: reportsAsync.when(
-                // data: (reports) => _buildReportsList(reports, context),
                 data: (reports) => RefreshIndicator(
                   onRefresh: () async {
                     ref.invalidate(reportListPendingProvider);
@@ -88,8 +87,10 @@ class MainUserScreen extends ConsumerWidget {
               ViewLocation(location: report.ubicacion),
               SizedBox(height: 20),
               TextAndTitleContainer(
-                title: 'Descripción',
-                description: report.descripcion,
+                title: report.descripcion == '' ? 'Audio' : 'Descripción',
+                description: report.descripcion == ''
+                    ? report.rutaAudio
+                    : report.descripcion,
               ),
               SizedBox(height: 20),
               DateAndHourContainer(

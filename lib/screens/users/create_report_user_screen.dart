@@ -15,7 +15,7 @@ class CreateReportUserScreen extends ConsumerStatefulWidget {
   const CreateReportUserScreen({super.key});
 
   @override
-  createState() => _CreateReportUserScreenState();
+  ConsumerState createState() => _CreateReportUserScreenState();
 }
 
 class _CreateReportUserScreenState
@@ -42,6 +42,13 @@ class _CreateReportUserScreenState
   final AudioRecorder audioRecorder = AudioRecorder();
   bool isRecording = false;
   String? recordingPath;
+
+  @override
+  void dispose() {
+    audioRecorder.stop();
+    audioRecorder.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -298,11 +305,13 @@ class _CreateReportUserScreenState
                                             await getApplicationDocumentsDirectory();
                                         final String filePath = p.join(
                                           appDocumentDirectory.path,
-                                          'audio.mp3',
+                                          'audio.m4a',
                                         );
 
                                         await audioRecorder.start(
-                                          const RecordConfig(),
+                                          RecordConfig(
+                                            encoder: AudioEncoder.aacLc,
+                                          ),
                                           path: filePath,
                                         );
 

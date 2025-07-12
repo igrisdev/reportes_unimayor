@@ -102,8 +102,10 @@ class HistoryUserScreen extends ConsumerWidget {
                 ViewLocation(location: report.ubicacion),
                 SizedBox(height: 20),
                 TextAndTitleContainer(
-                  title: 'Descripción',
-                  description: report.descripcion,
+                  title: report.descripcion == '' ? 'Audio' : 'Descripción',
+                  description: report.descripcion == ''
+                      ? report.rutaAudio
+                      : report.descripcion,
                 ),
                 SizedBox(height: 20),
                 DateAndHourContainer(

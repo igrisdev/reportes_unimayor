@@ -89,9 +89,10 @@ class ViewReportUserScreen extends ConsumerWidget {
           ViewLocation(location: report.ubicacion),
           SizedBox(height: 30),
           TextAndTitleContainer(
-            title: 'Descripción',
-            description: report.descripcion,
-            isImportant: false,
+            title: report.descripcion == '' ? 'Audio' : 'Descripción',
+            description: report.descripcion == ''
+                ? report.rutaAudio
+                : report.descripcion,
           ),
           SizedBox(height: 30),
           DateAndHourContainer(

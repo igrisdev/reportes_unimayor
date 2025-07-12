@@ -972,5 +972,121 @@ class _EndReportProviderElement extends AutoDisposeFutureProviderElement<bool>
   int get id => (origin as EndReportProvider).id;
 }
 
+String _$getRecordHash() => r'8f809000ab29500959c3809a7f3be1ee622014f4';
+
+/// See also [getRecord].
+@ProviderFor(getRecord)
+const getRecordProvider = GetRecordFamily();
+
+/// See also [getRecord].
+class GetRecordFamily extends Family<AsyncValue<String>> {
+  /// See also [getRecord].
+  const GetRecordFamily();
+
+  /// See also [getRecord].
+  GetRecordProvider call(String urlRecord) {
+    return GetRecordProvider(urlRecord);
+  }
+
+  @override
+  GetRecordProvider getProviderOverride(covariant GetRecordProvider provider) {
+    return call(provider.urlRecord);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'getRecordProvider';
+}
+
+/// See also [getRecord].
+class GetRecordProvider extends AutoDisposeFutureProvider<String> {
+  /// See also [getRecord].
+  GetRecordProvider(String urlRecord)
+    : this._internal(
+        (ref) => getRecord(ref as GetRecordRef, urlRecord),
+        from: getRecordProvider,
+        name: r'getRecordProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$getRecordHash,
+        dependencies: GetRecordFamily._dependencies,
+        allTransitiveDependencies: GetRecordFamily._allTransitiveDependencies,
+        urlRecord: urlRecord,
+      );
+
+  GetRecordProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.urlRecord,
+  }) : super.internal();
+
+  final String urlRecord;
+
+  @override
+  Override overrideWith(
+    FutureOr<String> Function(GetRecordRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: GetRecordProvider._internal(
+        (ref) => create(ref as GetRecordRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        urlRecord: urlRecord,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<String> createElement() {
+    return _GetRecordProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is GetRecordProvider && other.urlRecord == urlRecord;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, urlRecord.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin GetRecordRef on AutoDisposeFutureProviderRef<String> {
+  /// The parameter `urlRecord` of this provider.
+  String get urlRecord;
+}
+
+class _GetRecordProviderElement extends AutoDisposeFutureProviderElement<String>
+    with GetRecordRef {
+  _GetRecordProviderElement(super.provider);
+
+  @override
+  String get urlRecord => (origin as GetRecordProvider).urlRecord;
+}
+
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -296,6 +296,29 @@ Future<bool> endReport(EndReportRef ref, int id) async {
   }
 }
 
+@riverpod
+Future<String> getRecord(GetRecordRef ref, String urlRecord) async {
+  final token = ref.watch(tokenProvider);
+
+  if (token.isEmpty) {
+    throw Exception('Token no disponible');
+  }
+
+  try {
+    final apiService = ApiReportsService();
+    final response = await apiService.getRecordReport(token, urlRecord);
+
+    if (response.isEmpty) {
+      throw Exception('Error obteniendo el audio');
+    }
+
+    return response;
+  } catch (e) {
+    print('Error obtener audio: $e');
+    throw e; // Riverpod manejará el error
+  }
+}
+
 void invalidateAllProvidersUser(ref) {
   ref.invalidate(reportListPendingProvider);
   ref.invalidate(reportListProvider);
