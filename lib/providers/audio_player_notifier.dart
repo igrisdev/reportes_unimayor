@@ -1,6 +1,5 @@
-// 1. Importa las anotaciones y el part file
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'audio_player_notifier.g.dart';
 
@@ -27,9 +26,15 @@ class AudioPlayerNotifier extends _$AudioPlayerNotifier {
     _player = AudioPlayer();
 
     _player.playerStateStream.listen((playerState) {
-      if (state.isPlaying &&
-          playerState.processingState == ProcessingState.completed) {
-        state = state.copyWith(isPlaying: false, currentUrl: null);
+      final isPlaying = playerState.playing;
+      final processingState = playerState.processingState;
+
+      if (state.isPlaying != isPlaying) {
+        state = state.copyWith(isPlaying: isPlaying);
+      }
+
+      if (processingState == ProcessingState.completed) {
+        state = state.copyWith(isPlaying: false);
       }
     });
 
@@ -41,24 +46,30 @@ class AudioPlayerNotifier extends _$AudioPlayerNotifier {
   }
 
   Future<void> play(String url) async {
-    if (state.currentUrl == url && _player.playing) {
+    if (_player.playing && state.currentUrl == url) {
       await pause();
       return;
     }
 
-    state = state.copyWith(isPlaying: true, currentUrl: url);
     try {
-      await _player.setUrl(url);
+      if (state.currentUrl != url) {
+        await _player.setUrl(url);
+        state = state.copyWith(currentUrl: url);
+      }
+
+      if (_player.processingState == ProcessingState.completed) {
+        await _player.seek(Duration.zero);
+      }
+
       _player.play();
     } catch (e) {
-      state = state.copyWith(isPlaying: false, currentUrl: null);
       print("Error playing audio: $e");
+      state = state.copyWith(isPlaying: false, currentUrl: null);
     }
   }
 
   Future<void> pause() async {
     await _player.pause();
-    state = state.copyWith(isPlaying: false);
   }
 
   Future<void> stop() async {
