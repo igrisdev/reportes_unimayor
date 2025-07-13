@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:reportes_unimayor/providers/audio_player_notifier.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
 
 class TextAndTitleContainer extends ConsumerStatefulWidget {
@@ -22,51 +23,11 @@ class TextAndTitleContainer extends ConsumerStatefulWidget {
 }
 
 class _TextAndTitleContainerState extends ConsumerState<TextAndTitleContainer> {
-  final AudioPlayer audioPlayer = AudioPlayer();
-  bool isPlaying = false;
-
-  @override
-  void initState() {
-    super.initState();
-
-    audioPlayer.playerStateStream.listen((state) {
-      if (state.processingState == ProcessingState.completed) {
-        setState(() {
-          isPlaying = false;
-        });
-      }
-    });
-  }
-
-  Future<void> _reproducirAudio() async {
-    if (audioPlayer.playing) {
-      await audioPlayer.stop();
-    }
-
-    try {
-      final localPath = await ref.read(
-        getRecordProvider(widget.description).future,
-      );
-
-      await audioPlayer.setUrl(localPath);
-      audioPlayer.play();
-      setState(() {
-        isPlaying = true;
-      });
-    } catch (e) {
-      // print('Error reproduciendo audio: $e');
-    }
-  }
-
-  @override
-  void dispose() {
-    audioPlayer.stop();
-    audioPlayer.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
+    final audioState = ref.watch(audioPlayerProvider);
+    final audioUrlAsync = ref.watch(getRecordProvider(widget.description));
+
     Color colorBackground = Colors.transparent;
 
     if (widget.isImportant) {
@@ -78,26 +39,34 @@ class _TextAndTitleContainerState extends ConsumerState<TextAndTitleContainer> {
     }
 
     if (widget.title == 'Audio') {
-      return GestureDetector(
-        onTap: () {
-          if (isPlaying) {
-            audioPlayer.pause();
-            setState(() {
-              isPlaying = false;
-            });
-          } else {
-            _reproducirAudio();
-          }
+      return audioUrlAsync.when(
+        data: (url) {
+          final isPlaying =
+              audioState.isPlaying && audioState.currentUrl == url;
+
+          return GestureDetector(
+            onTap: () async {
+              final audioNotifier = ref.read(audioPlayerProvider.notifier);
+
+              if (isPlaying) {
+                await audioNotifier.pause();
+              } else {
+                await audioNotifier.play(url);
+              }
+            },
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: colorBackground,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              padding: widget.isImportant ? const EdgeInsets.all(10) : null,
+              child: descriptionRecord(isPlaying),
+            ),
+          );
         },
-        child: Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: colorBackground,
-            borderRadius: BorderRadius.circular(5),
-          ),
-          padding: widget.isImportant ? const EdgeInsets.all(10) : null,
-          child: descriptionRecord(),
-        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (_, __) => const Text('Error cargando audio'),
       );
     }
 
@@ -112,7 +81,7 @@ class _TextAndTitleContainerState extends ConsumerState<TextAndTitleContainer> {
     );
   }
 
-  Row descriptionRecord() {
+  Row descriptionRecord(bool isPlaying) {
     return Row(
       children: [
         Expanded(
@@ -137,7 +106,6 @@ class _TextAndTitleContainerState extends ConsumerState<TextAndTitleContainer> {
             ],
           ),
         ),
-
         Icon(isPlaying ? Icons.pause : Icons.play_arrow, size: 40),
       ],
     );
