@@ -12,6 +12,7 @@ class AppBarBrigadier extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final router = GoRouter.of(context);
     return AppBar(
+      backgroundColor: const Color.fromARGB(255, 241, 241, 241),
       centerTitle: true,
       title: Text(
         'Reportes UniMayor',

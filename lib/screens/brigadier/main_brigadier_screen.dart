@@ -24,7 +24,7 @@ class MainBrigadierScreen extends ConsumerWidget {
     );
 
     return Scaffold(
-      // backgroundColor: const Color.fromARGB(255, 140, 238, 213),
+      backgroundColor: const Color.fromARGB(255, 241, 241, 241),
       appBar: AppBarBrigadier(),
       drawer: DrawerBrigadier(context: context),
       body: Padding(

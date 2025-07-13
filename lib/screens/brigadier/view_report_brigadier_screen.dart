@@ -20,6 +20,7 @@ class ViewReportBrigadierScreen extends ConsumerWidget {
     final asyncReport = ref.watch(getReportByIdBrigadierProvider(id));
 
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 241, 241, 241),
       appBar: AppBarBrigadier(),
       body: Padding(
         padding: const EdgeInsets.only(left: 18, right: 18, top: 10),

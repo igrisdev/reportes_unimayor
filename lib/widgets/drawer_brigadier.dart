@@ -17,6 +17,7 @@ class DrawerBrigadier extends ConsumerWidget {
     final router = GoRouter.of(context);
 
     return Drawer(
+      backgroundColor: const Color.fromARGB(255, 241, 241, 241),
       child: Column(
         children: [
           DrawerHeader(
