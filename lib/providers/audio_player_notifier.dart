@@ -1,10 +1,8 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+// 1. Importa las anotaciones y el part file
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:just_audio/just_audio.dart';
 
-final audioPlayerProvider =
-    StateNotifierProvider<AudioPlayerNotifier, AudioPlayerState>(
-      (ref) => AudioPlayerNotifier(),
-    );
+part 'audio_player_notifier.g.dart';
 
 class AudioPlayerState {
   final bool isPlaying;
@@ -20,15 +18,26 @@ class AudioPlayerState {
   }
 }
 
-class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
-  final AudioPlayer _player = AudioPlayer();
+@riverpod
+class AudioPlayerNotifier extends _$AudioPlayerNotifier {
+  late AudioPlayer _player;
 
-  AudioPlayerNotifier() : super(AudioPlayerState()) {
+  @override
+  AudioPlayerState build() {
+    _player = AudioPlayer();
+
     _player.playerStateStream.listen((playerState) {
-      if (playerState.processingState == ProcessingState.completed) {
-        state = state.copyWith(isPlaying: false);
+      if (state.isPlaying &&
+          playerState.processingState == ProcessingState.completed) {
+        state = state.copyWith(isPlaying: false, currentUrl: null);
       }
     });
+
+    ref.onDispose(() {
+      _player.dispose();
+    });
+
+    return AudioPlayerState();
   }
 
   Future<void> play(String url) async {
@@ -37,10 +46,14 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
       return;
     }
 
-    await _player.stop();
-    await _player.setUrl(url);
-    state = state.copyWith(isPlaying: true, currentUrl: url); // 👈 esto primero
-    await _player.play();
+    state = state.copyWith(isPlaying: true, currentUrl: url);
+    try {
+      await _player.setUrl(url);
+      _player.play();
+    } catch (e) {
+      state = state.copyWith(isPlaying: false, currentUrl: null);
+      print("Error playing audio: $e");
+    }
   }
 
   Future<void> pause() async {
@@ -51,11 +64,5 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
   Future<void> stop() async {
     await _player.stop();
     state = state.copyWith(isPlaying: false, currentUrl: null);
-  }
-
-  @override
-  void dispose() {
-    _player.dispose();
-    super.dispose();
   }
 }

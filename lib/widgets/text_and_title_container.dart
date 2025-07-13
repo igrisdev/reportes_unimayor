@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:reportes_unimayor/providers/audio_player_notifier.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
 
@@ -25,7 +24,7 @@ class TextAndTitleContainer extends ConsumerStatefulWidget {
 class _TextAndTitleContainerState extends ConsumerState<TextAndTitleContainer> {
   @override
   Widget build(BuildContext context) {
-    final audioState = ref.watch(audioPlayerProvider);
+    final audioState = ref.watch(audioPlayerNotifierProvider);
     final audioUrlAsync = ref.watch(getRecordProvider(widget.description));
 
     Color colorBackground = Colors.transparent;
@@ -46,7 +45,9 @@ class _TextAndTitleContainerState extends ConsumerState<TextAndTitleContainer> {
 
           return GestureDetector(
             onTap: () async {
-              final audioNotifier = ref.read(audioPlayerProvider.notifier);
+              final audioNotifier = ref.read(
+                audioPlayerNotifierProvider.notifier,
+              );
 
               if (isPlaying) {
                 await audioNotifier.pause();
