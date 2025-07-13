@@ -366,6 +366,9 @@ class _CreateReportUserScreenState
                   ref
                       .read(idLocationQrScannerProvider.notifier)
                       .removeIdLocationQrScanner();
+                  setState(() {
+                    _description = '';
+                  });
 
                   router.push('/user');
                   return;

@@ -73,7 +73,7 @@ Future<List<ReportsModel>> reportListHistoryBrigadier(
     final reports = reportFinalized
         .where(
           (element) =>
-              element.estado != 'En proceso' && element.estado != 'Pendiente',
+              element.estado != 'En proceso' || element.estado != 'Pendiente',
         )
         .toList();
 

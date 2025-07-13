@@ -25,6 +25,10 @@ class MainUserScreen extends ConsumerWidget {
       (reports) => reports.first.idReporte,
     );
 
+    final stateReport = reportsAsync.whenData(
+      (reports) => reports.first.estado,
+    );
+
     return Scaffold(
       appBar: AppBarUser(),
       drawer: DrawerUser(context: context),
@@ -52,8 +56,10 @@ class MainUserScreen extends ConsumerWidget {
       bottomNavigationBar: reportsAsync.maybeWhen(
         data: (reports) => reports.isEmpty
             ? buttonAppBarCreateReport(context)
-            : buttonAppBarCancelReport(ref, idReport),
-        orElse: () => null, // Por defecto no mostrar
+            : stateReport.value == 'Pendiente'
+            ? buttonAppBarCancelReport(ref, idReport)
+            : null,
+        orElse: () => null,
       ),
     );
   }

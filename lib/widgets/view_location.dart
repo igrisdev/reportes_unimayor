@@ -43,7 +43,7 @@ class ViewLocation extends StatelessWidget {
                     color: Colors.black,
                   ),
                 ),
-                location.descripcion != 'null'
+                location.descripcion != ''
                     ? Text(
                         'Descripción: ${location.descripcion}',
                         style: GoogleFonts.poppins(
