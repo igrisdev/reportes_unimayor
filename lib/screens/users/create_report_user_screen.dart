@@ -290,12 +290,7 @@ class _CreateReportUserScreenState
                                   },
                                   style: IconButton.styleFrom(
                                     backgroundColor: recordingPath != null
-                                        ? const Color.fromARGB(
-                                            255,
-                                            103,
-                                            230,
-                                            99,
-                                          ).withAlpha(50)
+                                        ? const Color(0xFF67E663).withAlpha(50)
                                         : Colors.grey.withAlpha(50),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(100),
