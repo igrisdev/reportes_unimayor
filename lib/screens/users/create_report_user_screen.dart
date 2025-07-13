@@ -366,6 +366,10 @@ class _CreateReportUserScreenState
               ),
             ),
             onPressed: () async {
+              if (isRecording) {
+                return;
+              }
+
               if (_formKey.currentState!.validate()) {
                 if (idLocationQrScanner.isNotEmpty) {
                   _selectedLocation = idLocationQrScanner;
@@ -373,7 +377,8 @@ class _CreateReportUserScreenState
 
                 bool? response;
 
-                if (_buttonSelectDescription == 'Audio') {
+                if (_buttonSelectDescription == 'Audio' &&
+                    recordingPath != null) {
                   response = await ref.read(
                     createReportRecordProvider(
                       _selectedLocation!,
@@ -403,14 +408,16 @@ class _CreateReportUserScreenState
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Enviar',
+                  isRecording ? 'Grabando Audio' : 'Enviar',
                   style: GoogleFonts.poppins(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 SizedBox(width: 10),
-                const Icon(Icons.send, size: 24),
+                isRecording
+                    ? CircularProgressIndicator()
+                    : const Icon(Icons.send, size: 24),
               ],
             ),
           ),
