@@ -36,13 +36,23 @@ class ViewLocation extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Salon ${location.lugar}',
+                  'Lugar ${location.lugar}',
                   style: GoogleFonts.poppins(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                     color: Colors.black,
                   ),
                 ),
+                location.descripcion != 'null'
+                    ? Text(
+                        'Descripción: ${location.descripcion}',
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                        ),
+                      )
+                    : const SizedBox(),
               ],
             ),
           ),

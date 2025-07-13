@@ -52,9 +52,7 @@ class DrawerUser extends ConsumerWidget {
               router.push('/user/history');
             },
           ),
-
           Spacer(),
-
           ListTile(
             leading: const Icon(Icons.logout),
             title: Text(
