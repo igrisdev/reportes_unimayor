@@ -77,9 +77,27 @@ class _CreateReportUserScreenState
                     ),
                     Row(
                       children: [
-                        buttonSelect('Escáner Qr', 'Qr'),
+                        selectButton(
+                          () {
+                            setState(() {
+                              _buttonSelectLocation = 'Qr';
+                            });
+                          },
+                          'Escáner Qr',
+                          'Qr',
+                          _buttonSelectLocation,
+                        ),
                         SizedBox(width: 10),
-                        buttonSelect('Seleccionar', 'Seleccionar'),
+                        selectButton(
+                          () {
+                            setState(() {
+                              _buttonSelectLocation = 'Seleccionar';
+                            });
+                          },
+                          'Seleccionar',
+                          'Seleccionar',
+                          _buttonSelectLocation,
+                        ),
                       ],
                     ),
                   ],
@@ -182,78 +200,26 @@ class _CreateReportUserScreenState
                     ),
                     Row(
                       children: [
-                        TextButton(
-                          onPressed: () {
+                        selectButton(
+                          () {
                             setState(() {
                               _buttonSelectDescription = 'Audio';
                             });
                           },
-                          style: ButtonStyle(
-                            backgroundColor: WidgetStateProperty.all(
-                              Colors.grey.withAlpha(50),
-                            ),
-                            padding: WidgetStateProperty.all(
-                              EdgeInsets.symmetric(
-                                vertical: 10,
-                                horizontal: 25,
-                              ),
-                            ),
-                            side: WidgetStateProperty.all(
-                              BorderSide(
-                                color: Colors.grey, // Color del borde
-                                width: 1, // Grosor del borde
-                              ),
-                            ),
-                            shape: WidgetStateProperty.all(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                            ),
-                          ),
-                          child: Text(
-                            'Audio',
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
-                            ),
-                          ),
+                          'Audio',
+                          'Audio',
+                          _buttonSelectDescription,
                         ),
                         SizedBox(width: 10),
-                        TextButton(
-                          onPressed: () {
+                        selectButton(
+                          () {
                             setState(() {
                               _buttonSelectDescription = 'Escribir';
                             });
                           },
-                          style: ButtonStyle(
-                            backgroundColor: WidgetStateProperty.all(
-                              Colors.grey.withAlpha(50),
-                            ),
-                            padding: WidgetStateProperty.all(
-                              EdgeInsets.symmetric(
-                                vertical: 10,
-                                horizontal: 25,
-                              ),
-                            ),
-                            side: WidgetStateProperty.all(
-                              BorderSide(
-                                color: Colors.grey, // Color del borde
-                                width: 1, // Grosor del borde
-                              ),
-                            ),
-                            shape: WidgetStateProperty.all(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                            ),
-                          ),
-                          child: Text(
-                            'Escribir',
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
-                            ),
-                          ),
+                          'Escribir',
+                          'Escribir',
+                          _buttonSelectDescription,
                         ),
                       ],
                     ),
@@ -323,7 +289,14 @@ class _CreateReportUserScreenState
                                     }
                                   },
                                   style: IconButton.styleFrom(
-                                    backgroundColor: Colors.grey.withAlpha(50),
+                                    backgroundColor: recordingPath != null
+                                        ? const Color.fromARGB(
+                                            255,
+                                            103,
+                                            230,
+                                            99,
+                                          ).withAlpha(50)
+                                        : Colors.grey.withAlpha(50),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(100),
                                     ),
@@ -426,6 +399,39 @@ class _CreateReportUserScreenState
     );
   }
 
+  TextButton selectButton(
+    Function buttonFunction,
+    String text,
+    String value,
+    buttonSelect,
+  ) {
+    return TextButton(
+      onPressed: () {
+        buttonFunction();
+      },
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.all(Colors.grey.withAlpha(50)),
+        padding: WidgetStateProperty.all(EdgeInsets.symmetric(horizontal: 15)),
+        side: WidgetStateProperty.all(
+          BorderSide(
+            color: buttonSelect == value ? Colors.grey : Colors.transparent,
+            width: 1, // Grosor del borde
+          ),
+        ),
+        shape: WidgetStateProperty.all(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+        ),
+      ),
+      child: Text(
+        text,
+        style: GoogleFonts.poppins(
+          fontWeight: FontWeight.w500,
+          color: Colors.black,
+        ),
+      ),
+    );
+  }
+
   GestureDetector buttonScannerQr(GoRouter router, String idLocationQrScanner) {
     return GestureDetector(
       onTap: () {
@@ -470,41 +476,6 @@ class _CreateReportUserScreenState
               SizedBox(height: 10),
               Icon(Icons.qr_code_scanner, size: 50),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  GestureDetector buttonSelect(String text, String value) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          if (_buttonSelectLocation != value) {
-            _buttonSelectLocation = value;
-          }
-        });
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          border: _buttonSelectLocation == value
-              ? Border.all(color: Colors.grey)
-              : null,
-          borderRadius: BorderRadius.circular(5),
-        ),
-        foregroundDecoration: BoxDecoration(
-          color: Colors.grey.withValues(alpha: 0.1),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.only(
-            left: 16,
-            right: 16,
-            top: 8,
-            bottom: 8,
-          ),
-          child: Text(
-            text,
-            style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
           ),
         ),
       ),
