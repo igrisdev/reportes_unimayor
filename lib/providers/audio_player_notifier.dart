@@ -46,11 +46,6 @@ class AudioPlayerNotifier extends _$AudioPlayerNotifier {
   }
 
   Future<void> play(String url) async {
-    if (_player.playing && state.currentUrl == url) {
-      await pause();
-      return;
-    }
-
     try {
       if (state.currentUrl != url) {
         await _player.setUrl(url);
@@ -69,6 +64,7 @@ class AudioPlayerNotifier extends _$AudioPlayerNotifier {
   }
 
   Future<void> pause() async {
+    await _player.seek(Duration.zero);
     await _player.pause();
   }
 
