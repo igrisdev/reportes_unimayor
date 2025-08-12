@@ -19,6 +19,6 @@ bool isBrigadier(IsBrigadierRef ref) {
     return result;
   } catch (e) {
     print('Error en report provider: $e');
-    throw e; // Riverpod manejará el error
+    rethrow; // Riverpod manejará el error
   }
 }

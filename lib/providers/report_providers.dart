@@ -21,7 +21,7 @@ Future<List<ReportsModel>> reportList(ReportListRef ref) async {
     return reports;
   } catch (e) {
     print('Error en report provider: $e');
-    throw e; // Riverpod manejará el error
+    rethrow; // Riverpod manejará el error
   }
 }
 
@@ -51,7 +51,7 @@ Future<List<ReportsModel>> reportListBrigadier(
     return reports;
   } catch (e) {
     print('Error en report provider: $e');
-    throw e; // Riverpod manejará el error
+    rethrow; // Riverpod manejará el error
   }
 }
 
@@ -80,7 +80,7 @@ Future<List<ReportsModel>> reportListHistoryBrigadier(
     return reports;
   } catch (e) {
     print('Error en report provider: $e');
-    throw e; // Riverpod manejará el error
+    rethrow; // Riverpod manejará el error
   }
 }
 
@@ -105,7 +105,7 @@ Future<List<ReportsModel>> reportListPending(ReportListPendingRef ref) async {
     return pendingReports;
   } catch (e) {
     print('Error Report List Pending ***: $e');
-    throw e; // Riverpod manejará el error
+    rethrow; // Riverpod manejará el error
   }
 }
 
@@ -124,7 +124,7 @@ Future<ReportsModel> getReportById(GetReportByIdRef ref, String id) async {
     return report;
   } catch (e) {
     print('Error en report provider: $e');
-    throw e; // Riverpod manejará el error
+    rethrow; // Riverpod manejará el error
   }
 }
 
@@ -153,7 +153,7 @@ Future<ReportsModel> getReportByIdBrigadier(
     return report.first;
   } catch (e) {
     print('Error en report provider: $e');
-    throw e; // Riverpod manejará el error
+    rethrow; // Riverpod manejará el error
   }
 }
 
@@ -186,7 +186,7 @@ Future<bool> createReportWrite(
     return false;
   } catch (e) {
     print('Error en report provider: $e');
-    throw e; // Riverpod manejará el error
+    rethrow; // Riverpod manejará el error
   }
 }
 
@@ -219,7 +219,7 @@ Future<bool> createReportRecord(
     return false;
   } catch (e) {
     print('Error crear reporte con audio: $e');
-    throw e; // Riverpod manejará el error
+    rethrow; // Riverpod manejará el error
   }
 }
 
@@ -243,7 +243,7 @@ Future<bool> cancelReport(CancelReportRef ref, int id) async {
     return false;
   } catch (e) {
     print('Error en report provider: $e');
-    throw e; // Riverpod manejará el error
+    rethrow; // Riverpod manejará el error
   }
 }
 
@@ -268,7 +268,7 @@ Future<bool> acceptReport(AcceptReportRef ref, int id) async {
     return false;
   } catch (e) {
     print('Error en report provider: $e');
-    throw e; // Riverpod manejará el error
+    rethrow; // Riverpod manejará el error
   }
 }
 
@@ -292,7 +292,7 @@ Future<bool> endReport(EndReportRef ref, int id) async {
     return false;
   } catch (e) {
     print('Error en report provider: $e');
-    throw e; // Riverpod manejará el error
+    rethrow; // Riverpod manejará el error
   }
 }
 
@@ -315,7 +315,7 @@ Future<String> getRecord(GetRecordRef ref, String urlRecord) async {
     return response;
   } catch (e) {
     print('Error obtener audio: $e');
-    throw e; // Riverpod manejará el error
+    rethrow; // Riverpod manejará el error
   }
 }
 
