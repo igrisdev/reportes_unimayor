@@ -8,6 +8,7 @@ import 'package:reportes_unimayor/services/api_auth_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:reportes_unimayor/services/api_token_device_service.dart';
 import 'package:reportes_unimayor/utils/local_storage.dart';
+import 'package:reportes_unimayor/utils/show_message.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key});
@@ -40,7 +41,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
     if (token != null && mounted) {
       ref.read(tokenProvider.notifier).setToken(token);
-
       final userType = ref.read(isBrigadierProvider);
 
       if (userType) {
@@ -64,21 +64,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     super.dispose();
   }
 
-  void _showError(String message) {
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red.shade700,
-        duration: const Duration(seconds: 3),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: const EdgeInsets.all(10),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -86,7 +71,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           ? circularProgress()
           : SafeArea(
               child: Center(
-                child: Padding(
+                child: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -122,14 +107,14 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                             TextFormField(
                               controller: _emailController,
                               keyboardType: TextInputType.emailAddress,
-                              decoration: decorationTextForm('Email'),
+                              decoration: decorationTextForm(
+                                'Email',
+                                Icons.email_outlined,
+                              ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Por favor, introduce un email';
                                 }
-                                // if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
-                                //   return 'Por favor, introduce un email válido';
-                                // }
                                 return null;
                               },
                             ),
@@ -137,7 +122,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                             TextFormField(
                               controller: _passwordController,
                               obscureText: true,
-                              decoration: decorationTextForm('Contraseña'),
+                              decoration: decorationTextForm(
+                                'Contraseña',
+                                Icons.lock_outline,
+                              ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Por favor, introduce una contraseña';
@@ -159,9 +147,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   }
 
   Center circularProgress() {
-    return Center(
+    return const Center(
       child: CircularProgressIndicator(
-        color: const Color.fromARGB(255, 0, 0, 0),
+        color: Color.fromARGB(255, 0, 0, 0),
         strokeWidth: 3,
       ),
     );
@@ -183,7 +171,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           Text('Iniciar sesión', style: GoogleFonts.poppins(fontSize: 16)),
           if (_isLoading) const SizedBox(width: 20),
           if (_isLoading)
-            SizedBox(
+            const SizedBox(
               height: 24,
               width: 24,
               child: CircularProgressIndicator(
@@ -196,10 +184,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     );
   }
 
-  InputDecoration decorationTextForm(String label) {
+  InputDecoration decorationTextForm(String label, IconData icon) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: const Icon(Icons.email_outlined),
+      prefixIcon: Icon(icon),
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
     );
   }
@@ -207,7 +195,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   void _login() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final router = GoRouter.of(context);
     setState(() => _isLoading = true);
 
     try {
@@ -217,7 +204,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       final String? token = await ApiAuthService().login(email, password);
 
       if (token == null) {
-        _showError('Credenciales incorrectas');
+        if (!mounted) return;
+        showMessage(context, 'Credenciales incorrectas', Colors.red.shade700);
         return;
       }
 
@@ -235,12 +223,17 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       if (!mounted) return;
 
       if (userType) {
-        router.go('/brigadier');
+        context.go('/brigadier');
       } else {
-        router.go('/user');
+        context.go('/user');
       }
     } catch (e) {
-      _showError('Error de conexión. Intenta nuevamente.');
+      if (!mounted) return;
+      showMessage(
+        context,
+        'Error de conexión. Intenta nuevamente.',
+        Colors.red.shade700,
+      );
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);

@@ -6,7 +6,8 @@ class BaseDioService {
   static final optionsDio = BaseOptions(
     // baseUrl: 'http://10.0.2.2:5217/api', // desde el emulador android studio
     // baseUrl: 'http://192.168.101.78:5217/api', // desde dispositivo físico
-    baseUrl: 'https://qwwwk0hk-5217.use2.devtunnels.ms/api',
+    baseUrl: 'http://192.168.101.95:5217/api',
+    // baseUrl: 'https://qwwwk0hk-5217.use2.devtunnels.ms/api',
     connectTimeout: Duration(seconds: 5),
     receiveTimeout: Duration(seconds: 3),
   );
