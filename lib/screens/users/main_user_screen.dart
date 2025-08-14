@@ -14,23 +14,28 @@ import 'package:reportes_unimayor/widgets/text_no_reports.dart';
 import 'package:reportes_unimayor/widgets/text_note.dart';
 import 'package:reportes_unimayor/widgets/view_location.dart';
 
-class MainUserScreen extends ConsumerWidget {
+class MainUserScreen extends ConsumerStatefulWidget {
   const MainUserScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MainUserScreen> createState() => _MainUserScreenState();
+}
+
+class _MainUserScreenState extends ConsumerState<MainUserScreen> {
+  @override
+  Widget build(BuildContext context) {
     final reportsAsync = ref.watch(reportListPendingProvider);
 
     final idReport = reportsAsync.whenData(
-      (reports) => reports.first.idReporte,
+      (reports) => reports.isNotEmpty ? reports.first.idReporte : null,
     );
 
     final stateReport = reportsAsync.whenData(
-      (reports) => reports.first.estado,
+      (reports) => reports.isNotEmpty ? reports.first.estado : null,
     );
 
     return Scaffold(
-      appBar: AppBarUser(),
+      appBar: const AppBarUser(),
       drawer: DrawerUser(context: context),
       body: Padding(
         padding: const EdgeInsets.only(left: 18, right: 18, top: 10),
@@ -45,7 +50,6 @@ class MainUserScreen extends ConsumerWidget {
                   },
                   child: _buildReportsList(reports, context, ref),
                 ),
-
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (error, stack) => _buildErrorWidget(error, ref),
               ),
@@ -54,11 +58,15 @@ class MainUserScreen extends ConsumerWidget {
         ),
       ),
       bottomNavigationBar: reportsAsync.maybeWhen(
-        data: (reports) => reports.isEmpty
-            ? buttonAppBarCreateReport(context)
-            : stateReport.value == 'Pendiente'
-            ? buttonAppBarCancelReport(ref, idReport)
-            : null,
+        data: (reports) {
+          if (reports.isEmpty) {
+            return buttonAppBarCreateReport(context);
+          }
+          if (stateReport.value == 'Pendiente') {
+            return buttonAppBarCancelReport(ref, idReport);
+          }
+          return null;
+        },
         orElse: () => null,
       ),
     );
@@ -70,7 +78,7 @@ class MainUserScreen extends ConsumerWidget {
     WidgetRef ref,
   ) {
     if (reports.isEmpty) {
-      return TextNoReports();
+      return const TextNoReports();
     }
 
     return ListView.builder(
@@ -89,21 +97,21 @@ class MainUserScreen extends ConsumerWidget {
           child: Column(
             children: [
               BigBadgeViewProgress(text: report.estado),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ViewLocation(location: report.ubicacion),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextAndTitleContainer(
                 title: report.descripcion == '' ? 'Audio' : 'Descripción',
                 description: report.descripcion == ''
                     ? report.rutaAudio
                     : report.descripcion,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               DateAndHourContainer(
                 date: report.fechaCreacion,
                 hour: report.horaCreacion,
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               TextNote(title: 'Nota', description: textNote),
             ],
           ),
@@ -144,29 +152,33 @@ class MainUserScreen extends ConsumerWidget {
     return BottomAppBar(
       color: Colors.transparent,
       elevation: 0,
-      height: 110,
-      child: Material(
-        color: lightMode.colorScheme.secondary,
-        borderRadius: BorderRadius.circular(100),
-        child: InkWell(
-          onTap: () {
-            router.push('/user/create-report');
-          },
-          child: Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "Realizar Reporte",
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                    color: lightMode.colorScheme.secondaryFixed,
+      height: 130,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Material(
+          color: lightMode.colorScheme.secondary,
+          borderRadius: BorderRadius.circular(100),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(100),
+            onTap: () {
+              router.push('/user/create-report');
+            },
+            child: Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.send, color: Colors.black, size: 24),
+                  const SizedBox(width: 10),
+                  Text(
+                    "Realizar Reporte",
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                      color: Colors.black,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 10),
-                Icon(Icons.send, color: lightMode.colorScheme.secondaryFixed),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -176,37 +188,45 @@ class MainUserScreen extends ConsumerWidget {
 
   BottomAppBar buttonAppBarCancelReport(
     WidgetRef ref,
-    AsyncValue<int> idReport,
+    AsyncValue<int?> idReport,
   ) {
     return BottomAppBar(
       color: Colors.transparent,
       elevation: 0,
-      height: 90,
-      child: Material(
-        color: const Color(0xFFFF3737),
-        borderRadius: BorderRadius.circular(100),
-        child: InkWell(
-          onTap: () {
-            if (idReport.isLoading || idReport.value == null) {
-              return;
-            }
-            showDialogIfCancel(ref, idReport);
-          },
-          child: Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "Cancelar Reporte",
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
+      height: 130,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Material(
+          color: const Color(0xFFFF3737),
+          borderRadius: BorderRadius.circular(100),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(100),
+            onTap: () {
+              if (idReport.isLoading || idReport.value == null) {
+                return;
+              }
+              showDialogIfCancel(ref, idReport.value!);
+            },
+            child: Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.cancel_outlined,
                     color: Colors.white,
+                    size: 24,
                   ),
-                ),
-                const SizedBox(width: 10),
-                Icon(Icons.cancel_outlined, color: Colors.white),
-              ],
+                  const SizedBox(width: 10),
+                  Text(
+                    "Cancelar Reporte",
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -214,45 +234,51 @@ class MainUserScreen extends ConsumerWidget {
     );
   }
 
-  Future<dynamic> showDialogIfCancel(WidgetRef ref, AsyncValue<int> idReport) {
+  Future<void> showDialogIfCancel(WidgetRef ref, int idReport) {
     return showDialog(
       context: ref.context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Confirmar cancelación'),
-          content: const Text(
-            '¿Estás seguro de que quieres cancelar el reporte?',
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('No'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Dismiss the dialog
-              },
-            ),
-            TextButton(
-              child: const Text('Sí'),
-              onPressed: () {
-                // Dismiss the dialog and then cancel the report
-                Navigator.of(context).pop();
-                ref.read(cancelReportProvider(idReport.value!));
-              },
-            ),
-          ],
+        bool isCancelling = false;
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Confirmar cancelación'),
+              content: const Text(
+                '¿Estás seguro de que quieres cancelar el reporte?',
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('No'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  onPressed: isCancelling
+                      ? null
+                      : () async {
+                          setDialogState(() {
+                            isCancelling = true;
+                          });
+                          await ref.read(cancelReportProvider(idReport).future);
+
+                          if (context.mounted) {
+                            Navigator.of(context).pop();
+                          }
+                        },
+                  child: isCancelling
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text('Sí'),
+                ),
+              ],
+            );
+          },
         );
       },
-    );
-  }
-
-  Column textReports() {
-    return Column(
-      children: [
-        Text(
-          'Reportes En Curso',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 18),
-        ),
-        const SizedBox(height: 16),
-      ],
     );
   }
 }
