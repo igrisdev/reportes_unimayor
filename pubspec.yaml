@@ -1,6 +1,6 @@
 name: reportes_unimayor
-description: 'A new Flutter project.'
-publish_to: 'none'
+description: "A new Flutter project."
+publish_to: "none"
 version: 0.1.0
 
 environment:
@@ -24,6 +24,7 @@ dependencies:
   just_audio: ^0.10.4
   path_provider: ^2.1.5
   path: ^1.9.1
+  flutter_dotenv: ^5.2.1
 
 dev_dependencies:
   flutter_test:
@@ -37,3 +38,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/icons/
+    - .env

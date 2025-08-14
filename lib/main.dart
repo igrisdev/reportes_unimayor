@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/routes/routes.dart';
@@ -48,6 +49,8 @@ void main() async {
       android: AndroidInitializationSettings('@mipmap/ic_launcher'),
     ),
   );
+
+  await dotenv.load(fileName: ".env");
 
   runApp(ProviderScope(child: MainApp()));
 }

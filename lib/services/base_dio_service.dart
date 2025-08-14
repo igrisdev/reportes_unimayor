@@ -1,13 +1,14 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 // import 'dart:io';
 // import 'package:dio/io.dart';
 
 class BaseDioService {
+  static final String url = dotenv.env['BASE_URL']!;
+  static final String baseUrl = '$url/api';
+
   static final optionsDio = BaseOptions(
-    // baseUrl: 'http://10.0.2.2:5217/api', // desde el emulador android studio
-    // baseUrl: 'http://192.168.101.78:5217/api', // desde dispositivo físico
-    baseUrl: 'http://192.168.101.95:5217/api',
-    // baseUrl: 'https://qwwwk0hk-5217.use2.devtunnels.ms/api',
+    baseUrl: baseUrl,
     connectTimeout: Duration(seconds: 5),
     receiveTimeout: Duration(seconds: 3),
   );

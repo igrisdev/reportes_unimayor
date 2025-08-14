@@ -24,9 +24,6 @@ class TextAndTitleContainer extends ConsumerStatefulWidget {
 class _TextAndTitleContainerState extends ConsumerState<TextAndTitleContainer> {
   @override
   Widget build(BuildContext context) {
-    final audioState = ref.watch(audioPlayerNotifierProvider);
-    final audioUrlAsync = ref.watch(getRecordProvider(widget.description));
-
     Color colorBackground = Colors.transparent;
 
     if (widget.isImportant) {
@@ -38,6 +35,9 @@ class _TextAndTitleContainerState extends ConsumerState<TextAndTitleContainer> {
     }
 
     if (widget.title == 'Audio') {
+      final audioState = ref.watch(audioPlayerNotifierProvider);
+      final audioUrlAsync = ref.watch(getRecordProvider(widget.description));
+
       return audioUrlAsync.when(
         data: (url) {
           final isPlaying =

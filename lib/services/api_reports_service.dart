@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/services/base_dio_service.dart';
@@ -30,10 +31,11 @@ class ApiReportsService extends BaseDioService {
 
   Future<String> getRecordReport(String token, String urlRecord) async {
     final dioLimit = Dio();
+    final baseUrl = dotenv.env['BASE_URL']!;
 
     dioLimit.options.headers["Authorization"] = "Bearer $token";
     final response = await dioLimit.get(
-      'http://192.168.101.78:5217/$urlRecord',
+      '$baseUrl$urlRecord',
       options: Options(responseType: ResponseType.bytes),
     );
 
