@@ -1,17 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:reportes_unimayor/services/base_dio_service.dart';
 
-class ApiAuthWithGoogle {
+class ApiAuthWithGoogle extends BaseDioService {
   final auth = FirebaseAuth.instance;
   final googleSignIn = GoogleSignIn();
 
-  Future<bool> signInWithGoogle() async {
+  Future<String?> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleSignInAccount = await googleSignIn
           .signIn();
 
       if (googleSignInAccount == null) {
-        return false;
+        return null;
       }
 
       final GoogleSignInAuthentication googleSignInAuthentication =
@@ -22,12 +23,21 @@ class ApiAuthWithGoogle {
         idToken: googleSignInAuthentication.idToken,
       );
 
-      await auth.signInWithCredential(authCredential);
+      final response = await dio.post(
+        '/auth/institucional/login-google',
+        data: {'idToken': googleSignInAuthentication.idToken},
+      );
 
-      return FirebaseAuth.instance.currentUser != null;
+      await auth.signInWithCredential(authCredential);
+      final bool isLogged = FirebaseAuth.instance.currentUser != null;
+
+      if (response.statusCode == 200 && isLogged) {
+        return response.data['token'];
+      } else {
+        return null;
+      }
     } on FirebaseAuthException catch (e) {
-      print(e);
-      return false;
+      return null;
     }
   }
 
