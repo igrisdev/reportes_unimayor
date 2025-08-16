@@ -26,8 +26,6 @@ class _CreateReportUserScreenState
   final List<String> _buildings = ['Edificio 1'];
   final List<Map<String, String>> _locations = [
     {'idLocation': '1', 'location': 'Salón 101'},
-    {'idLocation': '2', 'location': 'Salón 202'},
-    {'idLocation': '3', 'location': 'Salón 302'},
   ];
 
   String? _selectedHeadquarter;
@@ -67,7 +65,6 @@ class _CreateReportUserScreenState
       return;
     }
 
-    // 3. VALIDACIÓN PERSONALIZADA: Verificar si se grabó un audio
     if (_descriptionInputMode == 'Audio' && _recordingPath == null) {
       showMessage(
         context,
@@ -79,8 +76,29 @@ class _CreateReportUserScreenState
 
     setState(() => _isSending = true);
 
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(strokeWidth: 3),
+              const SizedBox(width: 20),
+              Text(
+                'Enviando reporte...',
+                style: GoogleFonts.poppins(fontSize: 16),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
     try {
-      // Asignar la ubicación escaneada si existe
       final idLocationFromQr = ref.read(idLocationQrScannerProvider);
       final locationToSend = idLocationFromQr.isNotEmpty
           ? idLocationFromQr
@@ -93,22 +111,18 @@ class _CreateReportUserScreenState
           createReportRecordProvider(locationToSend!, _recordingPath!).future,
         );
       } else {
-        // 'Escribir'
         response = await ref.read(
           createReportWriteProvider(locationToSend!, _description!).future,
         );
       }
+
+      if (mounted) Navigator.of(context).pop();
 
       if (response == true && mounted) {
         ref
             .read(idLocationQrScannerProvider.notifier)
             .removeIdLocationQrScanner();
         context.go('/user');
-        // showMessage(
-        //   context,
-        //   'Reporte enviado con éxito.',
-        //   Colors.green.shade700,
-        // );
       } else {
         showMessage(
           context,
@@ -117,6 +131,7 @@ class _CreateReportUserScreenState
         );
       }
     } catch (e) {
+      if (mounted) Navigator.of(context).pop(); // Cerrar loader
       showMessage(
         context,
         'Ocurrió un error: ${e.toString()}',
@@ -142,7 +157,6 @@ class _CreateReportUserScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // --- SECCIÓN DE UBICACIÓN ---
               _buildSectionHeader(
                 title: 'Ubicación',
                 children: [
@@ -170,10 +184,7 @@ class _CreateReportUserScreenState
                 _buildManualLocationSelector()
               else
                 _buildQrScannerButton(idLocationQrScanner),
-
               const SizedBox(height: 30),
-
-              // --- SECCIÓN DE DESCRIPCIÓN ---
               _buildSectionHeader(
                 title: 'Descripción',
                 children: [
@@ -201,7 +212,6 @@ class _CreateReportUserScreenState
                 _buildDescriptionTextField()
               else
                 _buildAudioRecorder(),
-
               const SizedBox(height: 20),
             ],
           ),
@@ -211,7 +221,6 @@ class _CreateReportUserScreenState
     );
   }
 
-  /// Construye la cabecera de una sección con un título y botones.
   Widget _buildSectionHeader({
     required String title,
     required List<Widget> children,
@@ -228,7 +237,6 @@ class _CreateReportUserScreenState
     );
   }
 
-  /// Construye los selectores de ubicación manual (Dropdowns).
   Widget _buildManualLocationSelector() {
     return Column(
       children: [
@@ -286,7 +294,6 @@ class _CreateReportUserScreenState
     );
   }
 
-  /// Construye el botón para escanear el código QR.
   Widget _buildQrScannerButton(String idLocationQrScanner) {
     final bool isScanned = idLocationQrScanner.isNotEmpty;
     return GestureDetector(
@@ -294,7 +301,6 @@ class _CreateReportUserScreenState
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
         decoration: BoxDecoration(
-          // MEJORA: Color visual para indicar éxito
           color: isScanned ? Colors.green.withOpacity(0.1) : Colors.transparent,
           border: Border.all(color: isScanned ? Colors.green : Colors.grey),
           borderRadius: BorderRadius.circular(8),
@@ -332,7 +338,6 @@ class _CreateReportUserScreenState
     );
   }
 
-  /// Construye el campo de texto para la descripción.
   Widget _buildDescriptionTextField() {
     return TextFormField(
       maxLines: 7,
@@ -352,7 +357,6 @@ class _CreateReportUserScreenState
     );
   }
 
-  /// Construye la UI para grabar audio.
   Widget _buildAudioRecorder() {
     return Column(
       children: [
@@ -390,7 +394,6 @@ class _CreateReportUserScreenState
     );
   }
 
-  /// Lógica para iniciar y detener la grabación.
   Future<void> _toggleRecording() async {
     if (_isRecording) {
       final path = await _audioRecorder.stop();
@@ -407,7 +410,7 @@ class _CreateReportUserScreenState
 
         setState(() {
           _isRecording = true;
-          _recordingPath = null; // Limpiar path anterior al empezar a grabar
+          _recordingPath = null;
         });
       } else {
         showMessage(
@@ -419,7 +422,6 @@ class _CreateReportUserScreenState
     }
   }
 
-  /// Construye el botón de envío principal.
   Widget _buildSubmitButton() {
     return Padding(
       padding: const EdgeInsets.all(20),
@@ -439,30 +441,19 @@ class _CreateReportUserScreenState
           ),
           onPressed: _isRecording || _isSending ? null : _submitReport,
           label: Text(
-            _isSending ? 'Enviando...' : 'Enviar Reporte',
+            'Enviar Reporte',
             style: GoogleFonts.poppins(
               color: Colors.black,
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
           ),
-          icon: _isSending
-              ? Container(
-                  width: 24,
-                  height: 24,
-                  padding: const EdgeInsets.all(2.0),
-                  child: const CircularProgressIndicator(
-                    color: Colors.black,
-                    strokeWidth: 3,
-                  ),
-                )
-              : const Icon(Icons.send, color: Colors.black, size: 24),
+          icon: const Icon(Icons.send, color: Colors.black, size: 24),
         ),
       ),
     );
   }
 
-  /// Construye un botón de texto para alternar modos.
   Widget _buildToggleButton(
     String text,
     String value,
