@@ -233,7 +233,7 @@ class _CreateReportUserScreenState
     return Column(
       children: [
         DropdownButtonFormField<String>(
-          value: _selectedHeadquarter,
+          initialValue: _selectedHeadquarter,
           decoration: const InputDecoration(labelText: 'Seleccionar Sede'),
           items: _headquarters.map((headquarter) {
             return DropdownMenuItem(
@@ -251,7 +251,7 @@ class _CreateReportUserScreenState
         ),
         const SizedBox(height: 20),
         DropdownButtonFormField<String>(
-          value: _selectedBuilding,
+          initialValue: _selectedBuilding,
           decoration: const InputDecoration(labelText: 'Seleccionar Edificio'),
           items: _buildings.map((build) {
             return DropdownMenuItem(value: build, child: Text(build));
@@ -266,7 +266,7 @@ class _CreateReportUserScreenState
         ),
         const SizedBox(height: 20),
         DropdownButtonFormField<String>(
-          value: _selectedLocation,
+          initialValue: _selectedLocation,
           decoration: const InputDecoration(labelText: 'Seleccionar Salón'),
           items: _locations.map((location) {
             return DropdownMenuItem(

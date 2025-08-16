@@ -12,7 +12,20 @@
           "package_name": "com.example.reportes_unimayor"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1059278596054-jr12nkd5qqp1jtotqovgua61stcrar8p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.reportes_unimayor",
+            "certificate_hash": "a9296464d33e957865ec47dcec7ba7366f292e1c"
+          }
+        },
+        {
+          "client_id": "1059278596054-2eh8flsfnsko7l69ikburf8f8e5ebkhl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAmDe_lTKIBT5_mUjfqU7crZ3fI9kM5J3c"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1059278596054-2eh8flsfnsko7l69ikburf8f8e5ebkhl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

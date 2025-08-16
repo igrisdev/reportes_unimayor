@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/providers/token_provider.dart';
+import 'package:reportes_unimayor/services/api_auth_with_google.dart';
 import 'package:reportes_unimayor/services/api_token_device_service.dart';
 import 'package:reportes_unimayor/utils/local_storage.dart';
 
@@ -63,6 +64,8 @@ class DrawerUser extends ConsumerWidget {
               ),
             ),
             onTap: () async {
+              ApiAuthWithGoogle().googleSingOut();
+
               String? deviceToken = await FirebaseMessaging.instance.getToken();
               String? token = ref.read(tokenProvider);
 

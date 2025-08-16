@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:reportes_unimayor/screens/auth/auth_login_how_guest.dart';
 import 'package:reportes_unimayor/screens/auth/auth_screen.dart';
 import 'package:reportes_unimayor/screens/brigadier/history_brigadier_screen.dart';
 import 'package:reportes_unimayor/screens/brigadier/main_brigadier_screen.dart';
@@ -13,7 +14,16 @@ import 'package:reportes_unimayor/widgets/qr_scanner.dart';
 final router = GoRouter(
   initialLocation: '/auth',
   routes: [
-    GoRoute(path: '/auth', builder: (context, state) => AuthScreen()),
+    GoRoute(
+      path: '/auth',
+      builder: (context, state) => AuthScreen(),
+      routes: [
+        GoRoute(
+          path: '/login-how-guest',
+          builder: (context, state) => AuthLoginHowGuest(),
+        ),
+      ],
+    ),
     GoRoute(
       path: '/user',
       builder: (context, state) => MainUserScreen(),
