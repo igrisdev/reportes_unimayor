@@ -51,9 +51,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         context.go('/user');
       }
     } catch (e) {
+      await ApiAuthWithGoogle().googleSingOut();
+
+      if (!mounted) return;
       showMessage(
         context,
-        'Error de conexión. Intenta nuevamente.',
+        'Solo puedes acceder a la aplicación con una cuenta de correo unimayor',
         Colors.red.shade700,
       );
     } finally {
@@ -65,93 +68,101 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Image.asset('assets/icons/logo_unimayor.png', height: 100),
-                const SizedBox(height: 20),
-                Text(
-                  'Bienvenido',
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Inicia sesión para continuar',
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-                const SizedBox(height: 40),
+    return Stack(
+      children: [
+        Scaffold(
+          body: SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Image.asset('assets/icons/logo_unimayor.png', height: 100),
+                    const SizedBox(height: 20),
+                    Text(
+                      'Bienvenido',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Inicia sesión para continuar',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    const SizedBox(height: 40),
 
-                _isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : TextButton(
-                        style: ButtonStyle(
-                          backgroundColor: WidgetStateProperty.all(Colors.blue),
-                          minimumSize: WidgetStateProperty.all(
-                            const Size(200, 60),
-                          ),
-                          foregroundColor: WidgetStateProperty.all(
-                            Colors.white,
-                          ),
-                          shape: WidgetStateProperty.all(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(100),
-                            ),
-                          ),
+                    TextButton(
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all(Colors.blue),
+                        minimumSize: WidgetStateProperty.all(
+                          const Size(200, 60),
                         ),
-                        onPressed: login,
-                        child: Text(
-                          'Correo Unimayor',
-                          style: GoogleFonts.poppins(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
+                        foregroundColor: WidgetStateProperty.all(Colors.white),
+                        shape: WidgetStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(100),
                           ),
                         ),
                       ),
-
-                const SizedBox(height: 20),
-
-                // Botón de invitado
-                TextButton(
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(Colors.grey),
-                    minimumSize: WidgetStateProperty.all(const Size(200, 60)),
-                    foregroundColor: WidgetStateProperty.all(Colors.white),
-                    shape: WidgetStateProperty.all(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(100),
+                      onPressed: login,
+                      child: Text(
+                        'Correo Unimayor',
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
-                  ),
-                  onPressed: () {
-                    context.go('/auth/login-how-guest');
-                  },
-                  child: Text(
-                    'Como Invitado',
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
+
+                    const SizedBox(height: 20),
+
+                    TextButton(
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all(Colors.grey),
+                        minimumSize: WidgetStateProperty.all(
+                          const Size(200, 60),
+                        ),
+                        foregroundColor: WidgetStateProperty.all(Colors.white),
+                        shape: WidgetStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                        ),
+                      ),
+                      onPressed: () {
+                        context.go('/auth/login-how-guest');
+                      },
+                      child: Text(
+                        'Como Invitado',
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
-      ),
+
+        if (_isLoading)
+          Container(
+            color: Colors.black.withOpacity(0.5),
+            alignment: Alignment.center,
+            child: const CircularProgressIndicator(color: Colors.white),
+          ),
+      ],
     );
   }
 }
