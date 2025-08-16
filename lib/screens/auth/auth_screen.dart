@@ -158,7 +158,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
         if (_isLoading)
           Container(
-            color: Colors.black.withOpacity(0.5),
+            color: Colors.black.withValues(alpha: 0.5),
             alignment: Alignment.center,
             child: const CircularProgressIndicator(color: Colors.white),
           ),

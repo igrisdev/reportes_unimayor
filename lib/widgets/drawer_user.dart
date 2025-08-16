@@ -8,86 +8,122 @@ import 'package:reportes_unimayor/services/api_auth_with_google.dart';
 import 'package:reportes_unimayor/services/api_token_device_service.dart';
 import 'package:reportes_unimayor/utils/local_storage.dart';
 
-class DrawerUser extends ConsumerWidget {
+class DrawerUser extends ConsumerStatefulWidget {
   final BuildContext context;
 
   const DrawerUser({super.key, required this.context});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DrawerUser> createState() => _DrawerUserState();
+}
+
+class _DrawerUserState extends ConsumerState<DrawerUser> {
+  bool _isLoading = false;
+
+  Future<void> _logout(BuildContext context) async {
+    setState(() => _isLoading = true);
+
+    try {
+      await ApiAuthWithGoogle().googleSingOut();
+
+      String? deviceToken = await FirebaseMessaging.instance.getToken();
+      String? token = ref.read(tokenProvider);
+
+      if (deviceToken != null && token != null) {
+        final res = await ApiTokenDeviceService().deleteTokenDevice(
+          deviceToken,
+          token,
+        );
+
+        await deleteTokenStorage('token');
+        ref.read(tokenProvider.notifier).removeToken();
+
+        if (res && mounted) {
+          GoRouter.of(context).go('/auth');
+        }
+      }
+    } catch (e) {
+      debugPrint("Error al cerrar sesión: $e");
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final router = GoRouter.of(context);
 
-    return Drawer(
-      child: Column(
-        children: [
-          DrawerHeader(
-            child: Center(
-              child: Image.asset('assets/icons/logo_unimayor.png', width: 80),
-            ),
-          ),
-
-          ListTile(
-            leading: const Icon(Icons.home),
-            title: Text(
-              'Inicio',
-              style: GoogleFonts.poppins(
-                fontWeight: FontWeight.w500,
-                fontSize: 18,
+    return Stack(
+      children: [
+        Drawer(
+          child: Column(
+            children: [
+              DrawerHeader(
+                child: Center(
+                  child: Image.asset(
+                    'assets/icons/logo_unimayor.png',
+                    width: 80,
+                  ),
+                ),
               ),
-            ),
-            onTap: () {
-              router.push('/user');
-            },
-          ),
 
-          ListTile(
-            leading: const Icon(Icons.history),
-            title: Text(
-              'Historial',
-              style: GoogleFonts.poppins(
-                fontWeight: FontWeight.w500,
-                fontSize: 18,
+              ListTile(
+                leading: const Icon(Icons.home),
+                title: Text(
+                  'Inicio',
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 18,
+                  ),
+                ),
+                onTap: () {
+                  router.push('/user');
+                },
               ),
-            ),
-            onTap: () {
-              router.push('/user/history');
-            },
-          ),
-          Spacer(),
-          ListTile(
-            leading: const Icon(Icons.logout),
-            title: Text(
-              'Cerrar Sesión',
-              style: GoogleFonts.poppins(
-                fontWeight: FontWeight.w500,
-                fontSize: 18,
+
+              ListTile(
+                leading: const Icon(Icons.history),
+                title: Text(
+                  'Historial',
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 18,
+                  ),
+                ),
+                onTap: () {
+                  router.push('/user/history');
+                },
               ),
-            ),
-            onTap: () async {
-              ApiAuthWithGoogle().googleSingOut();
 
-              String? deviceToken = await FirebaseMessaging.instance.getToken();
-              String? token = ref.read(tokenProvider);
+              const Spacer(),
 
-              if (deviceToken != null) {
-                final res = await ApiTokenDeviceService().deleteTokenDevice(
-                  deviceToken,
-                  token!,
-                );
+              ListTile(
+                leading: const Icon(Icons.logout),
+                title: Text(
+                  'Cerrar Sesión',
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 18,
+                  ),
+                ),
+                onTap: () => _logout(context),
+              ),
 
-                await deleteTokenStorage('token');
-
-                ref.read(tokenProvider.notifier).removeToken();
-                if (res) {
-                  router.go('/auth');
-                }
-              }
-            },
+              const SizedBox(height: 20),
+            ],
           ),
+        ),
 
-          SizedBox(height: 20),
-        ],
-      ),
+        // Overlay loader
+        if (_isLoading)
+          Container(
+            color: Colors.black.withValues(alpha: 0.5),
+            alignment: Alignment.center,
+            child: const CircularProgressIndicator(color: Colors.white),
+          ),
+      ],
     );
   }
 }
