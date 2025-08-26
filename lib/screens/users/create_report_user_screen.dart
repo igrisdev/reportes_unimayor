@@ -374,7 +374,9 @@ class _CreateReportUserScreenState
                 iconSize: 60,
                 color: _isRecording
                     ? Colors.red
-                    : Theme.of(context).primaryColor,
+                    : _recordingPath == null
+                    ? Colors.black
+                    : Colors.green,
                 icon: Icon(
                   _isRecording ? Icons.stop_circle_outlined : Icons.mic,
                 ),

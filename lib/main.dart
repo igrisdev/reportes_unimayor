@@ -1,5 +1,6 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:record/record.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/routes/routes.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +44,9 @@ void requestNotificationPermission() async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  final AudioRecorder audioRecorder = AudioRecorder();
+  await audioRecorder.hasPermission();
 
   await flutterLocalNotificationsPlugin.initialize(
     const InitializationSettings(
