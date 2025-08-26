@@ -4,46 +4,47 @@ import 'package:reportes_unimayor/screens/auth/auth_screen.dart';
 import 'package:reportes_unimayor/screens/brigadier/history_brigadier_screen.dart';
 import 'package:reportes_unimayor/screens/brigadier/main_brigadier_screen.dart';
 import 'package:reportes_unimayor/screens/brigadier/view_report_brigadier_screen.dart';
+import 'package:reportes_unimayor/screens/splash/splash_screen.dart';
 import 'package:reportes_unimayor/screens/users/create_report_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/history_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/main_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/view_report_user_screen.dart';
 import 'package:reportes_unimayor/widgets/qr_scanner.dart';
 
-// GoRouter configuration
 final router = GoRouter(
-  initialLocation: '/auth',
+  initialLocation: '/',
   routes: [
+    GoRoute(path: '/', builder: (context, state) => const SplashScreen()),
     GoRoute(
       path: '/auth',
-      builder: (context, state) => AuthScreen(),
+      builder: (context, state) => const AuthScreen(),
       routes: [
         GoRoute(
-          path: '/login-how-guest',
-          builder: (context, state) => AuthLoginHowGuest(),
+          path: 'login-how-guest',
+          builder: (context, state) => const AuthLoginHowGuest(),
         ),
       ],
     ),
     GoRoute(
       path: '/user',
-      builder: (context, state) => MainUserScreen(),
+      builder: (context, state) => const MainUserScreen(),
       routes: [
         GoRoute(
-          path: '/report/:id',
+          path: 'report/:id',
           builder: (context, state) =>
               ViewReportUserScreen(id: state.pathParameters['id']!),
         ),
         GoRoute(
-          path: '/history',
-          builder: (context, state) => HistoryUserScreen(),
+          path: 'history',
+          builder: (context, state) => const HistoryUserScreen(),
         ),
         GoRoute(
-          path: '/create-report',
-          builder: (context, state) => CreateReportUserScreen(),
+          path: 'create-report',
+          builder: (context, state) => const CreateReportUserScreen(),
           routes: [
             GoRoute(
-              path: '/qr-scanner',
-              builder: (context, state) => QrScanner(),
+              path: 'qr-scanner',
+              builder: (context, state) => const QrScanner(),
             ),
           ],
         ),
@@ -51,16 +52,16 @@ final router = GoRouter(
     ),
     GoRoute(
       path: '/brigadier',
-      builder: (context, state) => MainBrigadierScreen(),
+      builder: (context, state) => const MainBrigadierScreen(),
       routes: [
         GoRoute(
-          path: '/report/:id',
+          path: 'report/:id',
           builder: (context, state) =>
               ViewReportBrigadierScreen(id: state.pathParameters['id']!),
         ),
         GoRoute(
-          path: '/history',
-          builder: (context, state) => HistoryBrigadierScreen(),
+          path: 'history',
+          builder: (context, state) => const HistoryBrigadierScreen(),
         ),
       ],
     ),
