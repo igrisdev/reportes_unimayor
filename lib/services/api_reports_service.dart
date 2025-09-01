@@ -29,13 +29,14 @@ class ApiReportsService extends BaseDioService {
     }
   }
 
-  Future<String> getRecordReport(String token, String urlRecord) async {
-    final dioLimit = Dio();
-    final baseUrl = dotenv.env['BASE_URL']!;
-
-    dioLimit.options.headers["Authorization"] = "Bearer $token";
-    final response = await dioLimit.get(
-      '$baseUrl$urlRecord',
+  Future<String> getRecordReport(
+    String token,
+    int idReport,
+    String urlRecord,
+  ) async {
+    dio.options.headers["Authorization"] = "Bearer $token";
+    final response = await dio.get(
+      '/reportes/$idReport/audio',
       options: Options(responseType: ResponseType.bytes),
     );
 

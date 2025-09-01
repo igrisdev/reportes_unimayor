@@ -6,7 +6,7 @@ part of 'report_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$reportListHash() => r'e5252d2fad63ad8633cb0016a4434a9701c96cdd';
+String _$reportListHash() => r'6a948831822ba21b2c2d473b6c08d1dd19a8bcd7';
 
 /// See also [reportList].
 @ProviderFor(reportList)
@@ -25,7 +25,7 @@ final reportListProvider =
 // ignore: unused_element
 typedef ReportListRef = AutoDisposeFutureProviderRef<List<ReportsModel>>;
 String _$reportListBrigadierHash() =>
-    r'5482fd420c2b6ed2d7d1f49c42517af037dd64ce';
+    r'1e98709090ef2f00777f84b5b9ac9135004e6d54';
 
 /// See also [reportListBrigadier].
 @ProviderFor(reportListBrigadier)
@@ -45,7 +45,7 @@ final reportListBrigadierProvider =
 typedef ReportListBrigadierRef =
     AutoDisposeFutureProviderRef<List<ReportsModel>>;
 String _$reportListHistoryBrigadierHash() =>
-    r'a15a92d1268fbc8d2e12629701564b1c9fe66f50';
+    r'49c6a17e010e69afa7de874231daa44d05343b2c';
 
 /// See also [reportListHistoryBrigadier].
 @ProviderFor(reportListHistoryBrigadier)
@@ -64,7 +64,7 @@ final reportListHistoryBrigadierProvider =
 // ignore: unused_element
 typedef ReportListHistoryBrigadierRef =
     AutoDisposeFutureProviderRef<List<ReportsModel>>;
-String _$reportListPendingHash() => r'803e5d42719705aa49bb887df00d38b32b37a7c5';
+String _$reportListPendingHash() => r'f1745be9334b55eea9ea2062e0b14da6f3408696';
 
 /// See also [reportListPending].
 @ProviderFor(reportListPending)
@@ -82,7 +82,7 @@ final reportListPendingProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef ReportListPendingRef = AutoDisposeFutureProviderRef<List<ReportsModel>>;
-String _$getReportByIdHash() => r'1e6bbb4b56558366476e2cb074a57c8d2ea5eb56';
+String _$getReportByIdHash() => r'0873726a01838a31443e84b8f74d343cef7487ba';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -224,7 +224,7 @@ class _GetReportByIdProviderElement
 }
 
 String _$getReportByIdBrigadierHash() =>
-    r'e538f43548264c0f8b1162032960b89d73553dcf';
+    r'dc38d8cbb59f651c27cc7d04a8f5e1fe6b19cf22';
 
 /// See also [getReportByIdBrigadier].
 @ProviderFor(getReportByIdBrigadier)
@@ -345,7 +345,7 @@ class _GetReportByIdBrigadierProviderElement
   String get id => (origin as GetReportByIdBrigadierProvider).id;
 }
 
-String _$createReportWriteHash() => r'3b8e70fbff95896d694760595315a9fda4cea2c1';
+String _$createReportWriteHash() => r'3b6112815566ba5d1b2853719ad05982fdb5d852';
 
 /// See also [createReportWrite].
 @ProviderFor(createReportWrite)
@@ -482,7 +482,7 @@ class _CreateReportWriteProviderElement
 }
 
 String _$createReportRecordHash() =>
-    r'9fb500c22d9a11c4ccc787c2e04a25759cdf4c9e';
+    r'ff60555afd8eea40750b8610becc1d7fe465ecda';
 
 /// See also [createReportRecord].
 @ProviderFor(createReportRecord)
@@ -618,7 +618,7 @@ class _CreateReportRecordProviderElement
   String get record => (origin as CreateReportRecordProvider).record;
 }
 
-String _$cancelReportHash() => r'94014a3acd0fad7732bfa695593ca1d6a2be6027';
+String _$cancelReportHash() => r'8089ebb85f35da5ac738fb3638b2700bbc37c7c1';
 
 /// See also [cancelReport].
 @ProviderFor(cancelReport)
@@ -738,7 +738,7 @@ class _CancelReportProviderElement
   int get id => (origin as CancelReportProvider).id;
 }
 
-String _$acceptReportHash() => r'988a1a710f95c568414369e40f2539bebab84ffb';
+String _$acceptReportHash() => r'936ff160aa2afd9d13eeb1b398c1b79b6f4060a6';
 
 /// See also [acceptReport].
 @ProviderFor(acceptReport)
@@ -858,7 +858,7 @@ class _AcceptReportProviderElement
   int get id => (origin as AcceptReportProvider).id;
 }
 
-String _$endReportHash() => r'c8dcb9bbb1bc48df83999a1929779c3008ae79aa';
+String _$endReportHash() => r'0e8ef819673ae222f200343390c4c21e7c86d110';
 
 /// See also [endReport].
 @ProviderFor(endReport)
@@ -972,7 +972,7 @@ class _EndReportProviderElement extends AutoDisposeFutureProviderElement<bool>
   int get id => (origin as EndReportProvider).id;
 }
 
-String _$getRecordHash() => r'8f809000ab29500959c3809a7f3be1ee622014f4';
+String _$getRecordHash() => r'd55474228c99a528bb69a557bab0c93d5a955d46';
 
 /// See also [getRecord].
 @ProviderFor(getRecord)
@@ -984,13 +984,13 @@ class GetRecordFamily extends Family<AsyncValue<String>> {
   const GetRecordFamily();
 
   /// See also [getRecord].
-  GetRecordProvider call(String urlRecord) {
-    return GetRecordProvider(urlRecord);
+  GetRecordProvider call(int idReport, String urlRecord) {
+    return GetRecordProvider(idReport, urlRecord);
   }
 
   @override
   GetRecordProvider getProviderOverride(covariant GetRecordProvider provider) {
-    return call(provider.urlRecord);
+    return call(provider.idReport, provider.urlRecord);
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -1011,9 +1011,9 @@ class GetRecordFamily extends Family<AsyncValue<String>> {
 /// See also [getRecord].
 class GetRecordProvider extends AutoDisposeFutureProvider<String> {
   /// See also [getRecord].
-  GetRecordProvider(String urlRecord)
+  GetRecordProvider(int idReport, String urlRecord)
     : this._internal(
-        (ref) => getRecord(ref as GetRecordRef, urlRecord),
+        (ref) => getRecord(ref as GetRecordRef, idReport, urlRecord),
         from: getRecordProvider,
         name: r'getRecordProvider',
         debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -1021,6 +1021,7 @@ class GetRecordProvider extends AutoDisposeFutureProvider<String> {
             : _$getRecordHash,
         dependencies: GetRecordFamily._dependencies,
         allTransitiveDependencies: GetRecordFamily._allTransitiveDependencies,
+        idReport: idReport,
         urlRecord: urlRecord,
       );
 
@@ -1031,9 +1032,11 @@ class GetRecordProvider extends AutoDisposeFutureProvider<String> {
     required super.allTransitiveDependencies,
     required super.debugGetCreateSourceHash,
     required super.from,
+    required this.idReport,
     required this.urlRecord,
   }) : super.internal();
 
+  final int idReport;
   final String urlRecord;
 
   @override
@@ -1049,6 +1052,7 @@ class GetRecordProvider extends AutoDisposeFutureProvider<String> {
         dependencies: null,
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
+        idReport: idReport,
         urlRecord: urlRecord,
       ),
     );
@@ -1061,12 +1065,15 @@ class GetRecordProvider extends AutoDisposeFutureProvider<String> {
 
   @override
   bool operator ==(Object other) {
-    return other is GetRecordProvider && other.urlRecord == urlRecord;
+    return other is GetRecordProvider &&
+        other.idReport == idReport &&
+        other.urlRecord == urlRecord;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, idReport.hashCode);
     hash = _SystemHash.combine(hash, urlRecord.hashCode);
 
     return _SystemHash.finish(hash);
@@ -1076,6 +1083,9 @@ class GetRecordProvider extends AutoDisposeFutureProvider<String> {
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 mixin GetRecordRef on AutoDisposeFutureProviderRef<String> {
+  /// The parameter `idReport` of this provider.
+  int get idReport;
+
   /// The parameter `urlRecord` of this provider.
   String get urlRecord;
 }
@@ -1084,6 +1094,8 @@ class _GetRecordProviderElement extends AutoDisposeFutureProviderElement<String>
     with GetRecordRef {
   _GetRecordProviderElement(super.provider);
 
+  @override
+  int get idReport => (origin as GetRecordProvider).idReport;
   @override
   String get urlRecord => (origin as GetRecordProvider).urlRecord;
 }

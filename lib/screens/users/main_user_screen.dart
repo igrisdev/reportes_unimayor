@@ -105,6 +105,7 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
                 description: report.descripcion == ''
                     ? report.rutaAudio
                     : report.descripcion,
+                idReport: report.idReporte,
               ),
               const SizedBox(height: 20),
               DateAndHourContainer(

@@ -93,6 +93,7 @@ class ViewReportUserScreen extends ConsumerWidget {
             description: report.descripcion == ''
                 ? report.rutaAudio
                 : report.descripcion,
+            idReport: report.idReporte,
           ),
           SizedBox(height: 30),
           DateAndHourContainer(

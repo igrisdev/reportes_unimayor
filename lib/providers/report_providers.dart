@@ -297,7 +297,11 @@ Future<bool> endReport(EndReportRef ref, int id) async {
 }
 
 @riverpod
-Future<String> getRecord(GetRecordRef ref, String urlRecord) async {
+Future<String> getRecord(
+  GetRecordRef ref,
+  int idReport,
+  String urlRecord,
+) async {
   final token = ref.watch(tokenProvider);
 
   if (token.isEmpty) {
@@ -306,7 +310,11 @@ Future<String> getRecord(GetRecordRef ref, String urlRecord) async {
 
   try {
     final apiService = ApiReportsService();
-    final response = await apiService.getRecordReport(token, urlRecord);
+    final response = await apiService.getRecordReport(
+      token,
+      idReport,
+      urlRecord,
+    );
 
     if (response.isEmpty) {
       throw Exception('Error obteniendo el audio');

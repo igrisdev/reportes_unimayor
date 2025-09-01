@@ -150,6 +150,7 @@ class ViewReportBrigadierScreen extends ConsumerWidget {
             description: report.descripcion == ''
                 ? report.rutaAudio
                 : report.descripcion,
+            idReport: report.idReporte,
           ),
           SizedBox(height: 20),
           DateAndHourContainer(

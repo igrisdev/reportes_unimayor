@@ -7,12 +7,14 @@ import 'package:reportes_unimayor/providers/report_providers.dart';
 class TextAndTitleContainer extends ConsumerStatefulWidget {
   final String title;
   final String description;
+  final int idReport;
   final bool isImportant;
 
   const TextAndTitleContainer({
     super.key,
     this.title = '',
     required this.description,
+    this.idReport = 0,
     this.isImportant = true,
   });
 
@@ -36,7 +38,9 @@ class _TextAndTitleContainerState extends ConsumerState<TextAndTitleContainer> {
 
     if (widget.title == 'Audio') {
       final audioState = ref.watch(audioPlayerNotifierProvider);
-      final audioUrlAsync = ref.watch(getRecordProvider(widget.description));
+      final audioUrlAsync = ref.watch(
+        getRecordProvider(widget.idReport, widget.description),
+      );
 
       return audioUrlAsync.when(
         data: (url) {

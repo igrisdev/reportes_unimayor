@@ -6,7 +6,7 @@ part of 'is_brigadier_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$isBrigadierHash() => r'6bf95e96b1f385b1095b1c5abae514931a93879f';
+String _$isBrigadierHash() => r'ed1aa33fd863a5a863fad2bafe3ad1ecb4da9c2f';
 
 /// See also [isBrigadier].
 @ProviderFor(isBrigadier)
