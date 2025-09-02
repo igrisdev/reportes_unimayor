@@ -11,23 +11,29 @@ class AppBarBrigadier extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final router = GoRouter.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
+
     return AppBar(
-      backgroundColor: const Color.fromARGB(255, 241, 241, 241),
+      backgroundColor: colorScheme.surface, // Fondo del AppBar
       centerTitle: true,
       title: Text(
         'Reportes UniMayor',
-        style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 18),
+        style: GoogleFonts.poppins(
+          fontWeight: FontWeight.w600,
+          fontSize: 18,
+          color: colorScheme.onSurface, // Texto adaptado al tema
+        ),
       ),
       actions: [
         IconButton(
           style: IconButton.styleFrom(
-            backgroundColor: Colors.blue,
-            foregroundColor: Colors.white,
+            backgroundColor: colorScheme.primary, // Fondo del botón
+            foregroundColor: colorScheme.onPrimary, // Color del ícono
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-          icon: Icon(Icons.engineering),
+          icon: const Icon(Icons.engineering),
           onPressed: () {
             router.push('/user');
           },

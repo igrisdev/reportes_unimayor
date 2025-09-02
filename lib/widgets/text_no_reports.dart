@@ -10,9 +10,12 @@ class TextNoReports extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     String text = isBrigadier
         ? "No hay reportes en proceso"
         : "No tienes reportes creados aún";
+
     return RefreshIndicator(
       onRefresh: () async {
         ref.invalidate(reportListPendingProvider);
@@ -20,7 +23,7 @@ class TextNoReports extends ConsumerWidget {
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         child: SizedBox(
-          height: MediaQueryData.fromView(View.of(context)).size.height * 0.7,
+          height: MediaQuery.of(context).size.height * 0.7,
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -28,7 +31,7 @@ class TextNoReports extends ConsumerWidget {
                 Icon(
                   Icons.assignment_outlined,
                   size: 64,
-                  color: Colors.grey[400],
+                  color: colorScheme.outlineVariant, // 🎨 gris del tema
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -36,7 +39,7 @@ class TextNoReports extends ConsumerWidget {
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.bold,
                     fontSize: 24,
-                    color: Colors.grey[600],
+                    color: colorScheme.onSurface, // 🎨 texto principal
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -44,7 +47,7 @@ class TextNoReports extends ConsumerWidget {
                   text,
                   style: GoogleFonts.poppins(
                     fontSize: 16,
-                    color: Colors.grey[500],
+                    color: colorScheme.onSurfaceVariant, // 🎨 texto secundario
                   ),
                 ),
               ],

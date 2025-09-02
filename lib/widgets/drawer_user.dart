@@ -54,10 +54,13 @@ class _DrawerUserState extends ConsumerState<DrawerUser> {
   @override
   Widget build(BuildContext context) {
     final router = GoRouter.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     return Stack(
       children: [
         Drawer(
+          backgroundColor: colorScheme.surface, // Fondo del drawer
           child: Column(
             children: [
               DrawerHeader(
@@ -70,42 +73,41 @@ class _DrawerUserState extends ConsumerState<DrawerUser> {
               ),
 
               ListTile(
-                leading: const Icon(Icons.home),
+                leading: Icon(Icons.home, color: colorScheme.primary),
                 title: Text(
                   'Inicio',
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w500,
                     fontSize: 18,
+                    color: textTheme.bodyLarge?.color ?? colorScheme.onSurface,
                   ),
                 ),
-                onTap: () {
-                  router.push('/user');
-                },
+                onTap: () => router.push('/user'),
               ),
 
               ListTile(
-                leading: const Icon(Icons.history),
+                leading: Icon(Icons.history, color: colorScheme.primary),
                 title: Text(
                   'Historial',
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w500,
                     fontSize: 18,
+                    color: textTheme.bodyLarge?.color ?? colorScheme.onSurface,
                   ),
                 ),
-                onTap: () {
-                  router.push('/user/history');
-                },
+                onTap: () => router.push('/user/history'),
               ),
 
               const Spacer(),
 
               ListTile(
-                leading: const Icon(Icons.logout),
+                leading: Icon(Icons.logout, color: colorScheme.error),
                 title: Text(
                   'Cerrar Sesión',
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w500,
                     fontSize: 18,
+                    color: colorScheme.error,
                   ),
                 ),
                 onTap: () => _logout(context),
@@ -119,9 +121,13 @@ class _DrawerUserState extends ConsumerState<DrawerUser> {
         // Overlay loader
         if (_isLoading)
           Container(
-            color: Colors.black.withValues(alpha: 0.5),
+            color: colorScheme.scrim.withOpacity(
+              0.5,
+            ), // Overlay adaptado al tema
             alignment: Alignment.center,
-            child: const CircularProgressIndicator(color: Colors.white),
+            child: CircularProgressIndicator(
+              color: colorScheme.onPrimary, // color dinámico del loader
+            ),
           ),
       ],
     );

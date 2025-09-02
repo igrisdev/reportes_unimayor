@@ -26,16 +26,21 @@ class TextAndTitleContainer extends ConsumerStatefulWidget {
 class _TextAndTitleContainerState extends ConsumerState<TextAndTitleContainer> {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+
+    // 🎨 Colores base del contenedor
     Color colorBackground = Colors.transparent;
 
     if (widget.isImportant) {
-      colorBackground = const Color.fromARGB(41, 252, 6, 6);
+      colorBackground = scheme.error.withOpacity(0.15); // fondo de error suave
     }
 
     if (widget.isImportant && widget.title == 'Nota Brigadista') {
-      colorBackground = const Color.fromARGB(255, 223, 222, 222);
+      colorBackground = scheme.surface; // fondo alternativo (neutral)
     }
 
+    // 🎵 Caso especial: Audio
     if (widget.title == 'Audio') {
       final audioState = ref.watch(audioPlayerNotifierProvider);
       final audioUrlAsync = ref.watch(
@@ -66,15 +71,19 @@ class _TextAndTitleContainerState extends ConsumerState<TextAndTitleContainer> {
                 borderRadius: BorderRadius.circular(5),
               ),
               padding: widget.isImportant ? const EdgeInsets.all(10) : null,
-              child: descriptionRecord(isPlaying),
+              child: descriptionRecord(isPlaying, scheme),
             ),
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, __) => const Text('Error cargando audio'),
+        error: (_, __) => Text(
+          'Error cargando audio',
+          style: theme.textTheme.bodyMedium?.copyWith(color: scheme.error),
+        ),
       );
     }
 
+    // 📝 Texto normal
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -82,11 +91,11 @@ class _TextAndTitleContainerState extends ConsumerState<TextAndTitleContainer> {
         borderRadius: BorderRadius.circular(5),
       ),
       padding: widget.isImportant ? const EdgeInsets.all(10) : null,
-      child: descriptionText(),
+      child: descriptionText(scheme),
     );
   }
 
-  Row descriptionRecord(bool isPlaying) {
+  Row descriptionRecord(bool isPlaying, ColorScheme scheme) {
     return Row(
       children: [
         Expanded(
@@ -98,6 +107,7 @@ class _TextAndTitleContainerState extends ConsumerState<TextAndTitleContainer> {
                 style: GoogleFonts.poppins(
                   fontSize: 25,
                   fontWeight: FontWeight.w600,
+                  color: scheme.onSurface, // título
                 ),
               ),
               const SizedBox(height: 5),
@@ -106,28 +116,41 @@ class _TextAndTitleContainerState extends ConsumerState<TextAndTitleContainer> {
                 style: GoogleFonts.poppins(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
+                  color: scheme.onSurfaceVariant, // subtítulo
                 ),
               ),
             ],
           ),
         ),
-        Icon(isPlaying ? Icons.pause : Icons.play_arrow, size: 40),
+        Icon(
+          isPlaying ? Icons.pause : Icons.play_arrow,
+          size: 40,
+          color: scheme.primary, // ícono según tema
+        ),
       ],
     );
   }
 
-  Column descriptionText() {
+  Column descriptionText(ColorScheme scheme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           widget.title,
-          style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: scheme.onSurface, // texto principal
+          ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Text(
           widget.description,
-          style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500),
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: scheme.onSurfaceVariant, // texto secundario
+          ),
         ),
       ],
     );

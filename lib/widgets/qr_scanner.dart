@@ -19,18 +19,17 @@ class _QrScannerState extends ConsumerState<QrScanner> {
   @override
   Widget build(BuildContext context) {
     final router = GoRouter.of(context);
+    final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Escáner QR'),
+        title: Text('Escáner QR', style: TextStyle(color: colors.onPrimary)),
+        backgroundColor: colors.primary,
         actions: [
           IconButton(
-            color: Colors.white,
             icon: Icon(
               _isTorchOn ? Icons.flash_on : Icons.flash_off,
-              color: _isTorchOn
-                  ? const Color.fromARGB(255, 41, 41, 41)
-                  : const Color.fromARGB(255, 240, 64, 64),
+              color: _isTorchOn ? colors.tertiary : colors.error,
             ),
             iconSize: 32.0,
             onPressed: () async {
@@ -41,10 +40,9 @@ class _QrScannerState extends ConsumerState<QrScanner> {
             },
           ),
           IconButton(
-            color: Colors.white,
             icon: Icon(
               _isBackCamera ? Icons.camera_rear : Icons.camera_front,
-              color: const Color.fromARGB(255, 41, 41, 41),
+              color: colors.onPrimary,
             ),
             iconSize: 32.0,
             onPressed: () async {

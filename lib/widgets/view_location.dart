@@ -8,12 +8,19 @@ class ViewLocation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context); // 👈 accedemos al tema actual
+    final colors = theme.colorScheme;
+
     return SizedBox(
       width: double.infinity,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(Icons.location_on_outlined, size: 80, color: Colors.black),
+          Icon(
+            Icons.location_on_outlined,
+            size: 80,
+            color: colors.primary, // 👈 color principal del tema
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -24,7 +31,7 @@ class ViewLocation extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black,
+                    color: colors.onBackground, // 👈 texto principal
                   ),
                 ),
                 Text(
@@ -32,7 +39,7 @@ class ViewLocation extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
-                    color: Colors.black,
+                    color: colors.onSurface, // 👈 texto secundario
                   ),
                 ),
                 Text(
@@ -40,19 +47,18 @@ class ViewLocation extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
-                    color: Colors.black,
+                    color: colors.onSurface, // 👈 texto secundario
                   ),
                 ),
-                location.descripcion != ''
-                    ? Text(
-                        'Descripción: ${location.descripcion}',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black,
-                        ),
-                      )
-                    : const SizedBox(),
+                if (location.descripcion.isNotEmpty)
+                  Text(
+                    'Descripción: ${location.descripcion}',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: colors.onSurfaceVariant, // 👈 aún más suave
+                    ),
+                  ),
               ],
             ),
           ),

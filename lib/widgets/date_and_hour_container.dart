@@ -13,6 +13,8 @@ class DateAndHourContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return SizedBox(
       width: double.infinity,
       child: Row(
@@ -23,7 +25,7 @@ class DateAndHourContainer extends StatelessWidget {
               Icon(
                 Icons.calendar_today_outlined,
                 size: 30,
-                color: Colors.black,
+                color: colorScheme.onSurface, // texto/íconos principales
               ),
               const SizedBox(width: 10),
               Text(
@@ -31,22 +33,26 @@ class DateAndHourContainer extends StatelessWidget {
                 style: GoogleFonts.poppins(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: Colors.black,
+                  color: colorScheme.onSurface, // usa el tema
                 ),
               ),
             ],
           ),
-          SizedBox(width: 10),
+          const SizedBox(width: 10),
           Row(
             children: [
-              Icon(Icons.access_time_outlined, size: 30, color: Colors.black),
+              Icon(
+                Icons.access_time_outlined,
+                size: 30,
+                color: colorScheme.onSurface, // usa el tema
+              ),
               const SizedBox(width: 10),
               Text(
                 '${hour.split(':').first}:${hour.split(':')[1]}',
                 style: GoogleFonts.poppins(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: Colors.black,
+                  color: colorScheme.onSurface, // usa el tema
                 ),
               ),
             ],

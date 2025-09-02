@@ -7,32 +7,35 @@ class BigBadgeViewProgress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color colorBackground = const Color(0x009E9E9E);
-    Color colorText = const Color(0x009E9E9E);
+    final colorScheme = Theme.of(context).colorScheme;
+
+    // 🎨 Colores dinámicos basados en el estado
+    Color bgColor = colorScheme.surfaceContainerHighest;
+    Color textColor = colorScheme.onSurface;
 
     switch (text) {
       case 'Pendiente':
-        colorBackground = const Color(0xFFFFCE00);
-        colorText = const Color(0xFF000000);
+        bgColor = colorScheme.secondaryContainer; // amarillo o acento
+        textColor = colorScheme.onSecondaryContainer;
         break;
       case 'En proceso':
-        colorBackground = const Color(0xFF338838);
-        colorText = const Color(0xFFFFFFFF);
+        bgColor = colorScheme.tertiary; // verde = éxito
+        textColor = colorScheme.onTertiary;
         break;
       case 'Cancelado':
-        colorBackground = const Color(0xFFFF3737);
-        colorText = const Color(0xFFFFFFFF);
+        bgColor = colorScheme.error; // rojo = error
+        textColor = colorScheme.onError;
         break;
       case 'Finalizado':
-        colorBackground = const Color(0xFF3882F1);
-        colorText = const Color(0xFFFFFFFF);
+        bgColor = colorScheme.primary; // azul = principal
+        textColor = colorScheme.onPrimary;
         break;
     }
 
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: colorBackground,
+        color: bgColor,
         borderRadius: BorderRadius.circular(5),
       ),
       child: Padding(
@@ -41,7 +44,7 @@ class BigBadgeViewProgress extends StatelessWidget {
           child: Text(
             text,
             style: GoogleFonts.poppins(
-              color: colorText,
+              color: textColor,
               fontWeight: FontWeight.w600,
               fontSize: 20,
             ),

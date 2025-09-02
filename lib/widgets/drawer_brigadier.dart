@@ -54,11 +54,12 @@ class _DrawerBrigadierState extends ConsumerState<DrawerBrigadier> {
   @override
   Widget build(BuildContext context) {
     final router = GoRouter.of(context);
+    final colors = Theme.of(context).colorScheme;
 
     return Stack(
       children: [
         Drawer(
-          backgroundColor: const Color.fromARGB(255, 241, 241, 241),
+          backgroundColor: colors.surface, // 👈 Fondo adaptado al tema
           child: Column(
             children: [
               DrawerHeader(
@@ -71,12 +72,13 @@ class _DrawerBrigadierState extends ConsumerState<DrawerBrigadier> {
               ),
 
               ListTile(
-                leading: const Icon(Icons.home),
+                leading: Icon(Icons.home, color: colors.primary),
                 title: Text(
                   'Inicio',
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w500,
                     fontSize: 18,
+                    color: colors.onSurface, // 👈 Texto principal
                   ),
                 ),
                 onTap: () {
@@ -85,12 +87,13 @@ class _DrawerBrigadierState extends ConsumerState<DrawerBrigadier> {
               ),
 
               ListTile(
-                leading: const Icon(Icons.history),
+                leading: Icon(Icons.history, color: colors.primary),
                 title: Text(
                   'Historial',
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w500,
                     fontSize: 18,
+                    color: colors.onSurface, // 👈 Texto secundario
                   ),
                 ),
                 onTap: () {
@@ -101,12 +104,13 @@ class _DrawerBrigadierState extends ConsumerState<DrawerBrigadier> {
               const Spacer(),
 
               ListTile(
-                leading: const Icon(Icons.logout),
+                leading: Icon(Icons.logout, color: colors.error),
                 title: Text(
                   'Cerrar Sesión',
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w500,
                     fontSize: 18,
+                    color: colors.error, // 👈 Color de error/danger
                   ),
                 ),
                 onTap: () => _logout(context),
@@ -122,7 +126,7 @@ class _DrawerBrigadierState extends ConsumerState<DrawerBrigadier> {
           Container(
             color: Colors.black.withOpacity(0.5),
             alignment: Alignment.center,
-            child: const CircularProgressIndicator(color: Colors.white),
+            child: CircularProgressIndicator(color: colors.onPrimary),
           ),
       ],
     );
