@@ -1,6 +1,7 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:record/record.dart';
+import 'package:reportes_unimayor/providers/config/themes_provider.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/routes/routes.dart';
 import 'package:flutter/material.dart';
@@ -80,9 +81,12 @@ class _MainAppState extends ConsumerState<MainApp> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ref.watch(themeControllerProvider);
+
     return MaterialApp.router(
       title: 'Reportes Unimayor',
       debugShowCheckedModeBanner: false,
+      theme: theme,
       routerConfig: router,
     );
   }

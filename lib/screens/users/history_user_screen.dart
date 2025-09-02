@@ -18,6 +18,9 @@ class HistoryUserScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final reportsAsync = ref.watch(reportListProvider);
 
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
     return Scaffold(
       appBar: AppBarUser(),
       drawer: DrawerUser(context: context),
@@ -38,6 +41,7 @@ class HistoryUserScreen extends ConsumerWidget {
                           style: GoogleFonts.poppins(
                             fontWeight: FontWeight.w600,
                             fontSize: 20,
+                            color: colors.onSurface, // ← texto principal
                           ),
                         ),
                       ],
@@ -52,7 +56,7 @@ class HistoryUserScreen extends ConsumerWidget {
                   onRefresh: () async {
                     ref.invalidate(reportListProvider);
                   },
-                  child: _buildReportsList(reports, context),
+                  child: _buildReportsList(reports, context, colors),
                 ),
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (error, stack) =>
@@ -65,11 +69,15 @@ class HistoryUserScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildReportsList(List<ReportsModel> reports, BuildContext context) {
+  Widget _buildReportsList(
+    List<ReportsModel> reports,
+    BuildContext context,
+    ColorScheme colors,
+  ) {
     final router = GoRouter.of(context);
 
     if (reports.isEmpty) {
-      return TextNoReports();
+      return const TextNoReports();
     }
 
     return ListView.separated(
@@ -79,28 +87,30 @@ class HistoryUserScreen extends ConsumerWidget {
       itemBuilder: (context, index) {
         final report = reports[index];
 
+        if (report.estado == 'Pendiente' || report.estado == 'En proceso') {
+          return const SizedBox.shrink();
+        }
+
         final isFinalized = report.estado == 'Finalizado';
 
+        // ✅ Usa colores del theme para estados
         Color colorBackground = isFinalized
-            ? const Color(0xFF3882F1)
-            : Color(0xFFFF3737);
-
-        if (report.estado == 'Pendiente' || report.estado == 'En proceso') {
-          return null;
-        }
+            ? colors.primary
+            : colors.error; // éxito o error
 
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
           child: Container(
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.black),
+              border: Border.all(color: colors.outline), // borde del tema
               borderRadius: BorderRadius.circular(5),
+              color: colors.surface, // fondo del card
             ),
             padding: const EdgeInsets.all(12),
             child: Column(
               children: [
                 ViewLocation(location: report.ubicacion),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 TextAndTitleContainer(
                   title: report.descripcion == '' ? 'Audio' : 'Descripción',
                   description: report.descripcion == ''
@@ -108,12 +118,12 @@ class HistoryUserScreen extends ConsumerWidget {
                       : report.descripcion,
                   idReport: report.idReporte,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 DateAndHourContainer(
                   date: report.fechaCreacion,
                   hour: report.horaCreacion,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -124,19 +134,17 @@ class HistoryUserScreen extends ConsumerWidget {
                           color: colorBackground,
                           borderRadius: BorderRadius.circular(5),
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8,
-                            horizontal: 20,
-                          ),
-                          child: Center(
-                            child: Text(
-                              report.estado,
-                              style: GoogleFonts.poppins(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 20,
+                        ),
+                        child: Center(
+                          child: Text(
+                            report.estado,
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: colors.onPrimary, // texto sobre botón
                             ),
                           ),
                         ),
@@ -151,22 +159,20 @@ class HistoryUserScreen extends ConsumerWidget {
                         child: Container(
                           decoration: BoxDecoration(
                             color: Colors.transparent,
-                            border: Border.all(color: Colors.black),
+                            border: Border.all(color: colors.outline),
                             borderRadius: BorderRadius.circular(100),
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 8,
-                              horizontal: 20,
-                            ),
-                            child: Center(
-                              child: Text(
-                                'Ver Más',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.black,
-                                ),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 8,
+                            horizontal: 20,
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Ver Más',
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                color: colors.onSurface, // texto general
                               ),
                             ),
                           ),

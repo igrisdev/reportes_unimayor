@@ -18,13 +18,15 @@ class MainBrigadierScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final reportsAsync = ref.watch(reportListBrigadierProvider);
+    final colorScheme = Theme.of(context).colorScheme;
+    // final textTheme = Theme.of(context).textTheme;
 
     final idReport = reportsAsync.whenData(
       (reports) => reports.first.idReporte,
     );
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 241, 241, 241),
+      backgroundColor: colorScheme.background,
       appBar: AppBarBrigadier(),
       drawer: DrawerBrigadier(context: context),
       body: Padding(
@@ -42,6 +44,7 @@ class MainBrigadierScreen extends ConsumerWidget {
                           style: GoogleFonts.poppins(
                             fontWeight: FontWeight.w600,
                             fontSize: 20,
+                            color: colorScheme.onBackground,
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -52,15 +55,16 @@ class MainBrigadierScreen extends ConsumerWidget {
             ),
             Expanded(
               child: reportsAsync.when(
-                // data: (reports) => _buildReportsList(reports, context),
                 data: (reports) => RefreshIndicator(
                   onRefresh: () async {
                     ref.invalidate(reportListBrigadierProvider);
                   },
                   child: _buildReportsList(reports, context, ref),
                 ),
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, stack) => _buildErrorWidget(error, ref),
+                loading: () => Center(
+                  child: CircularProgressIndicator(color: colorScheme.primary),
+                ),
+                error: (error, stack) => _buildErrorWidget(error, ref, context),
               ),
             ),
           ],
@@ -69,9 +73,9 @@ class MainBrigadierScreen extends ConsumerWidget {
       bottomNavigationBar: reportsAsync.maybeWhen(
         data: (reports) =>
             reports.isNotEmpty && reports.first.estado == 'En proceso'
-            ? buttonAppBarFinalizeReport(ref, idReport)
+            ? buttonAppBarFinalizeReport(ref, idReport, context)
             : null,
-        orElse: () => null, // Por defecto no mostrar
+        orElse: () => null,
       ),
     );
   }
@@ -79,13 +83,16 @@ class MainBrigadierScreen extends ConsumerWidget {
   BottomAppBar buttonAppBarFinalizeReport(
     WidgetRef ref,
     AsyncValue<int> idReport,
+    BuildContext context,
   ) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return BottomAppBar(
       color: Colors.transparent,
       elevation: 0,
       height: 90,
       child: Material(
-        color: const Color(0xFF034593),
+        color: colorScheme.primary,
         borderRadius: BorderRadius.circular(100),
         child: InkWell(
           onTap: () {
@@ -103,11 +110,11 @@ class MainBrigadierScreen extends ConsumerWidget {
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.bold,
                     fontSize: 20,
-                    color: Colors.white,
+                    color: colorScheme.onPrimary,
                   ),
                 ),
                 const SizedBox(width: 10),
-                Icon(Icons.check, color: Colors.white),
+                Icon(Icons.check, color: colorScheme.onPrimary),
               ],
             ),
           ),
@@ -120,17 +127,20 @@ class MainBrigadierScreen extends ConsumerWidget {
     return showDialog(
       context: ref.context,
       builder: (BuildContext context) {
+        final colorScheme = Theme.of(context).colorScheme;
         return AlertDialog(
-          title: const Text('Confirmar Finalizar El Reporte'),
-          content: const Text(
+          title: Text(
+            'Confirmar Finalizar El Reporte',
+            style: TextStyle(color: colorScheme.onBackground),
+          ),
+          content: Text(
             '¿Estás seguro de que quieres finalizar el reporte?',
+            style: TextStyle(color: colorScheme.onSurface),
           ),
           actions: <Widget>[
             TextButton(
               child: const Text('No'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Dismiss the dialog
-              },
+              onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
               child: const Text('Sí'),
@@ -151,15 +161,16 @@ class MainBrigadierScreen extends ConsumerWidget {
     WidgetRef ref,
   ) {
     final router = GoRouter.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
 
     if (reports.isEmpty) {
-      return TextNoReports();
+      return const TextNoReports();
     }
 
     if (reports.first.estado == 'En proceso') {
       return SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        child: viewReportInProcess(ref, reports.first),
+        child: viewReportInProcess(ref, reports.first, context),
       );
     }
 
@@ -174,14 +185,15 @@ class MainBrigadierScreen extends ConsumerWidget {
           padding: const EdgeInsets.only(bottom: 12),
           child: Container(
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.black),
+              border: Border.all(color: colorScheme.outline),
               borderRadius: BorderRadius.circular(5),
+              color: colorScheme.surface,
             ),
             padding: const EdgeInsets.all(12),
             child: Column(
               children: [
                 ViewLocation(location: report.ubicacion),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 TextAndTitleContainer(
                   title: report.descripcion == '' ? 'Audio' : 'Descripción',
                   description: report.descripcion == ''
@@ -189,12 +201,12 @@ class MainBrigadierScreen extends ConsumerWidget {
                       : report.descripcion,
                   idReport: report.idReporte,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 DateAndHourContainer(
                   date: report.fechaCreacion,
                   hour: report.horaCreacion,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -206,7 +218,7 @@ class MainBrigadierScreen extends ConsumerWidget {
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                            color: const Color(0xFF338838),
+                            color: Colors.green, // aquí podrías usar tertiary
                             borderRadius: BorderRadius.circular(100),
                           ),
                           child: Padding(
@@ -220,7 +232,7 @@ class MainBrigadierScreen extends ConsumerWidget {
                                 style: GoogleFonts.poppins(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.white,
+                                  color: colorScheme.onTertiaryContainer,
                                 ),
                               ),
                             ),
@@ -237,7 +249,7 @@ class MainBrigadierScreen extends ConsumerWidget {
                         child: Container(
                           decoration: BoxDecoration(
                             color: Colors.transparent,
-                            border: Border.all(color: Colors.black),
+                            border: Border.all(color: colorScheme.outline),
                             borderRadius: BorderRadius.circular(100),
                           ),
                           child: Padding(
@@ -251,7 +263,7 @@ class MainBrigadierScreen extends ConsumerWidget {
                                 style: GoogleFonts.poppins(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
-                                  color: Colors.black,
+                                  color: colorScheme.onSurface,
                                 ),
                               ),
                             ),
@@ -269,15 +281,21 @@ class MainBrigadierScreen extends ConsumerWidget {
     );
   }
 
-  Widget viewReportInProcess(WidgetRef ref, ReportsModel report) {
+  Widget viewReportInProcess(
+    WidgetRef ref,
+    ReportsModel report,
+    BuildContext context,
+  ) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Column(
         children: [
           BigBadgeViewProgress(text: report.estado),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           ViewLocation(location: report.ubicacion),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           TextAndTitleContainer(
             title: report.descripcion == '' ? 'Audio' : 'Descripción',
             description: report.descripcion == ''
@@ -285,7 +303,7 @@ class MainBrigadierScreen extends ConsumerWidget {
                 : report.descripcion,
             idReport: report.idReporte,
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           DateAndHourContainer(
             date: report.fechaCreacion,
             hour: report.horaCreacion,
@@ -299,22 +317,24 @@ class MainBrigadierScreen extends ConsumerWidget {
     return showDialog(
       context: ref.context,
       builder: (BuildContext context) {
+        final colorScheme = Theme.of(context).colorScheme;
         return AlertDialog(
-          title: const Text('Confirmar aceptación'),
-          content: const Text(
+          title: Text(
+            'Confirmar aceptación',
+            style: TextStyle(color: colorScheme.onBackground),
+          ),
+          content: Text(
             '¿Estás seguro de que quieres aceptar el reporte?',
+            style: TextStyle(color: colorScheme.onSurface),
           ),
           actions: <Widget>[
             TextButton(
               child: const Text('No'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Dismiss the dialog
-              },
+              onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
               child: const Text('Sí'),
               onPressed: () {
-                // Dismiss the dialog and then cancel the report
                 Navigator.of(context).pop();
                 ref.read(acceptReportProvider(report.idReporte));
               },
@@ -325,25 +345,31 @@ class MainBrigadierScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildErrorWidget(Object error, WidgetRef ref) {
+  Widget _buildErrorWidget(Object error, WidgetRef ref, BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
+          Icon(Icons.error_outline, size: 64, color: colorScheme.error),
           const SizedBox(height: 16),
           Text(
             'Error al cargar reportes',
             style: GoogleFonts.poppins(
               fontSize: 18,
               fontWeight: FontWeight.w600,
+              color: colorScheme.onBackground,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             error.toString(),
             textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              color: colorScheme.onSurface,
+            ),
           ),
           const SizedBox(height: 16),
         ],

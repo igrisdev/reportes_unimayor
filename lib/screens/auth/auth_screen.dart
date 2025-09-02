@@ -28,7 +28,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
       if (token == null) {
         if (!mounted) return;
-        showMessage(context, 'Credenciales incorrectas', Colors.red.shade700);
+        showMessage(
+          context,
+          'Credenciales incorrectas',
+          Theme.of(context).colorScheme.error,
+        );
         return;
       }
 
@@ -57,7 +61,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       showMessage(
         context,
         'Solo puedes acceder a la aplicación con una cuenta de correo unimayor',
-        Colors.red.shade700,
+        Theme.of(context).colorScheme.error,
       );
     } finally {
       if (mounted) {
@@ -68,6 +72,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Stack(
       children: [
         Scaffold(
@@ -87,6 +94,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                       style: GoogleFonts.poppins(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
+                        color: colorScheme.onSurface, // 👈 título
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -95,18 +103,25 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                       textAlign: TextAlign.center,
                       style: GoogleFonts.poppins(
                         fontSize: 16,
-                        color: Colors.grey.shade600,
+                        color:
+                            textTheme.bodyMedium?.color ??
+                            colorScheme.onSurfaceVariant, // 👈 subtítulo
                       ),
                     ),
                     const SizedBox(height: 40),
 
+                    // Botón Google
                     TextButton(
                       style: ButtonStyle(
-                        backgroundColor: WidgetStateProperty.all(Colors.blue),
+                        backgroundColor: WidgetStateProperty.all(
+                          colorScheme.primary,
+                        ),
+                        foregroundColor: WidgetStateProperty.all(
+                          colorScheme.onPrimary,
+                        ),
                         minimumSize: WidgetStateProperty.all(
                           const Size(200, 60),
                         ),
-                        foregroundColor: WidgetStateProperty.all(Colors.white),
                         shape: WidgetStateProperty.all(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(100),
@@ -125,13 +140,18 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
                     const SizedBox(height: 20),
 
+                    // Botón Invitado
                     TextButton(
                       style: ButtonStyle(
-                        backgroundColor: WidgetStateProperty.all(Colors.grey),
+                        backgroundColor: WidgetStateProperty.all(
+                          colorScheme.secondary,
+                        ),
+                        foregroundColor: WidgetStateProperty.all(
+                          colorScheme.onSecondary,
+                        ),
                         minimumSize: WidgetStateProperty.all(
                           const Size(200, 60),
                         ),
-                        foregroundColor: WidgetStateProperty.all(Colors.white),
                         shape: WidgetStateProperty.all(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(100),
@@ -158,9 +178,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
         if (_isLoading)
           Container(
-            color: Colors.black.withValues(alpha: 0.5),
+            color: colorScheme.surface.withOpacity(0.6), // 👈 overlay
             alignment: Alignment.center,
-            child: const CircularProgressIndicator(color: Colors.white),
+            child: CircularProgressIndicator(
+              color: colorScheme.onSurface, // 👈 loading adaptado al tema
+            ),
           ),
       ],
     );

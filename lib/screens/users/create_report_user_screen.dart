@@ -6,7 +6,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:reportes_unimayor/providers/id_location_qr_scanner.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
-import 'package:reportes_unimayor/themes/light.theme.dart';
 import 'package:reportes_unimayor/widgets/app_bar_user.dart';
 import 'package:path/path.dart' as p;
 import 'package:reportes_unimayor/utils/show_message.dart';
@@ -60,7 +59,7 @@ class _CreateReportUserScreenState
       showMessage(
         context,
         'Por favor, escanee un código QR para la ubicación.',
-        Colors.red.shade700,
+        Theme.of(context).colorScheme.error,
       );
       return;
     }
@@ -69,7 +68,7 @@ class _CreateReportUserScreenState
       showMessage(
         context,
         'Por favor, grabe un audio para la descripción.',
-        Colors.red.shade700,
+        Theme.of(context).colorScheme.error,
       );
       return;
     }
@@ -127,15 +126,15 @@ class _CreateReportUserScreenState
         showMessage(
           context,
           'No se pudo enviar el reporte. Intente de nuevo.',
-          Colors.red.shade700,
+          Theme.of(context).colorScheme.error,
         );
       }
     } catch (e) {
-      if (mounted) Navigator.of(context).pop(); // Cerrar loader
+      if (mounted) Navigator.of(context).pop();
       showMessage(
         context,
         'Ocurrió un error: ${e.toString()}',
-        Colors.red.shade700,
+        Theme.of(context).colorScheme.error,
       );
     } finally {
       if (mounted) {
@@ -147,6 +146,7 @@ class _CreateReportUserScreenState
   @override
   Widget build(BuildContext context) {
     final idLocationQrScanner = ref.watch(idLocationQrScannerProvider);
+    final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: const AppBarUser(),
@@ -164,18 +164,14 @@ class _CreateReportUserScreenState
                     'Escáner Qr',
                     'Qr',
                     _locationInputMode,
-                    () {
-                      setState(() => _locationInputMode = 'Qr');
-                    },
+                    () => setState(() => _locationInputMode = 'Qr'),
                   ),
                   const SizedBox(width: 10),
                   _buildToggleButton(
                     'Seleccionar',
                     'Seleccionar',
                     _locationInputMode,
-                    () {
-                      setState(() => _locationInputMode = 'Seleccionar');
-                    },
+                    () => setState(() => _locationInputMode = 'Seleccionar'),
                   ),
                 ],
               ),
@@ -192,18 +188,14 @@ class _CreateReportUserScreenState
                     'Audio',
                     'Audio',
                     _descriptionInputMode,
-                    () {
-                      setState(() => _descriptionInputMode = 'Audio');
-                    },
+                    () => setState(() => _descriptionInputMode = 'Audio'),
                   ),
                   const SizedBox(width: 10),
                   _buildToggleButton(
                     'Escribir',
                     'Escribir',
                     _descriptionInputMode,
-                    () {
-                      setState(() => _descriptionInputMode = 'Escribir');
-                    },
+                    () => setState(() => _descriptionInputMode = 'Escribir'),
                   ),
                 ],
               ),
@@ -243,12 +235,14 @@ class _CreateReportUserScreenState
         DropdownButtonFormField<String>(
           initialValue: _selectedHeadquarter,
           decoration: const InputDecoration(labelText: 'Seleccionar Sede'),
-          items: _headquarters.map((headquarter) {
-            return DropdownMenuItem(
-              value: headquarter,
-              child: Text(headquarter),
-            );
-          }).toList(),
+          items: _headquarters
+              .map(
+                (headquarter) => DropdownMenuItem(
+                  value: headquarter,
+                  child: Text(headquarter),
+                ),
+              )
+              .toList(),
           onChanged: (value) => setState(() => _selectedHeadquarter = value),
           validator: (value) {
             if (_locationInputMode == 'Seleccionar' && value == null) {
@@ -261,9 +255,11 @@ class _CreateReportUserScreenState
         DropdownButtonFormField<String>(
           initialValue: _selectedBuilding,
           decoration: const InputDecoration(labelText: 'Seleccionar Edificio'),
-          items: _buildings.map((build) {
-            return DropdownMenuItem(value: build, child: Text(build));
-          }).toList(),
+          items: _buildings
+              .map(
+                (build) => DropdownMenuItem(value: build, child: Text(build)),
+              )
+              .toList(),
           onChanged: (value) => setState(() => _selectedBuilding = value),
           validator: (value) {
             if (_locationInputMode == 'Seleccionar' && value == null) {
@@ -276,12 +272,14 @@ class _CreateReportUserScreenState
         DropdownButtonFormField<String>(
           initialValue: _selectedLocation,
           decoration: const InputDecoration(labelText: 'Seleccionar Salón'),
-          items: _locations.map((location) {
-            return DropdownMenuItem(
-              value: location['idLocation'],
-              child: Text(location['location']!),
-            );
-          }).toList(),
+          items: _locations
+              .map(
+                (location) => DropdownMenuItem(
+                  value: location['idLocation'],
+                  child: Text(location['location']!),
+                ),
+              )
+              .toList(),
           onChanged: (value) => setState(() => _selectedLocation = value),
           validator: (value) {
             if (_locationInputMode == 'Seleccionar' && value == null) {
@@ -295,14 +293,20 @@ class _CreateReportUserScreenState
   }
 
   Widget _buildQrScannerButton(String idLocationQrScanner) {
+    final colors = Theme.of(context).colorScheme;
     final bool isScanned = idLocationQrScanner.isNotEmpty;
+
     return GestureDetector(
       onTap: () => context.push('/user/create-report/qr-scanner'),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
         decoration: BoxDecoration(
-          color: isScanned ? Colors.green.withOpacity(0.1) : Colors.transparent,
-          border: Border.all(color: isScanned ? Colors.green : Colors.grey),
+          color: isScanned
+              ? colors.tertiary.withOpacity(0.1)
+              : Colors.transparent,
+          border: Border.all(
+            color: isScanned ? colors.tertiary : colors.onSurface,
+          ),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
@@ -316,21 +320,21 @@ class _CreateReportUserScreenState
                   style: GoogleFonts.poppins(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: isScanned ? Colors.green.shade800 : Colors.black,
+                    color: isScanned ? colors.tertiary : colors.onBackground,
                   ),
                 ),
                 Text(
                   isScanned
                       ? 'ID: $idLocationQrScanner'
                       : 'Presionar para escanear',
-                  style: GoogleFonts.poppins(),
+                  style: GoogleFonts.poppins(color: colors.onSurface),
                 ),
               ],
             ),
             Icon(
               isScanned ? Icons.check_circle : Icons.qr_code_scanner,
               size: 40,
-              color: isScanned ? Colors.green.shade700 : Colors.grey.shade800,
+              color: isScanned ? colors.tertiary : colors.onSurface,
             ),
           ],
         ),
@@ -358,13 +362,14 @@ class _CreateReportUserScreenState
   }
 
   Widget _buildAudioRecorder() {
+    final colors = Theme.of(context).colorScheme;
     return Column(
       children: [
         Container(
           width: double.infinity,
           height: 150,
           decoration: BoxDecoration(
-            color: Colors.grey.shade200,
+            color: colors.surface,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
@@ -373,10 +378,10 @@ class _CreateReportUserScreenState
               IconButton(
                 iconSize: 60,
                 color: _isRecording
-                    ? Colors.red
+                    ? colors.error
                     : _recordingPath == null
-                    ? Colors.black
-                    : Colors.green,
+                    ? colors.onSurface
+                    : colors.tertiary,
                 icon: Icon(
                   _isRecording ? Icons.stop_circle_outlined : Icons.mic,
                 ),
@@ -384,11 +389,14 @@ class _CreateReportUserScreenState
               ),
               const SizedBox(height: 8),
               (_recordingPath != null && !_isRecording)
-                  ? const Text(
+                  ? Text(
                       'Audio grabado. ¡Listo para enviar!',
-                      style: TextStyle(color: Colors.green),
+                      style: TextStyle(color: colors.tertiary),
                     )
-                  : Text(_isRecording ? 'Grabando...' : 'Presione para grabar'),
+                  : Text(
+                      _isRecording ? 'Grabando...' : 'Presione para grabar',
+                      style: TextStyle(color: colors.onSurface),
+                    ),
             ],
           ),
         ),
@@ -418,21 +426,23 @@ class _CreateReportUserScreenState
         showMessage(
           context,
           'Se necesita permiso para usar el micrófono.',
-          Colors.red.shade700,
+          Theme.of(context).colorScheme.error,
         );
       }
     }
   }
 
   Widget _buildSubmitButton() {
+    final colors = Theme.of(context).colorScheme;
+
     return Padding(
       padding: const EdgeInsets.all(20),
       child: SizedBox(
         height: 80,
         child: ElevatedButton.icon(
           style: ElevatedButton.styleFrom(
-            backgroundColor: lightMode.colorScheme.secondary,
-            foregroundColor: Colors.white,
+            backgroundColor: colors.secondary,
+            foregroundColor: colors.onBackground,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(100),
             ),
@@ -445,12 +455,12 @@ class _CreateReportUserScreenState
           label: Text(
             'Enviar Reporte',
             style: GoogleFonts.poppins(
-              color: Colors.black,
+              color: colors.onBackground,
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
           ),
-          icon: const Icon(Icons.send, color: Colors.black, size: 24),
+          icon: Icon(Icons.send, color: colors.onBackground, size: 24),
         ),
       ),
     );
@@ -462,22 +472,19 @@ class _CreateReportUserScreenState
     String groupValue,
     VoidCallback onPressed,
   ) {
+    final colors = Theme.of(context).colorScheme;
     final bool isSelected = groupValue == value;
     return TextButton(
       onPressed: onPressed,
       style: TextButton.styleFrom(
         backgroundColor: isSelected
-            ? Theme.of(context).primaryColor.withOpacity(0.1)
-            : Colors.grey.withOpacity(0.1),
-        foregroundColor: isSelected
-            ? Theme.of(context).primaryColor
-            : Colors.black87,
+            ? colors.primary.withOpacity(0.1)
+            : colors.surface,
+        foregroundColor: isSelected ? colors.primary : colors.onBackground,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
           side: BorderSide(
-            color: isSelected
-                ? Theme.of(context).primaryColor
-                : Colors.transparent,
+            color: isSelected ? colors.primary : Colors.transparent,
             width: 1.5,
           ),
         ),

@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
-import 'package:reportes_unimayor/themes/light.theme.dart';
 import 'package:reportes_unimayor/widgets/app_bar_user.dart';
 import 'package:reportes_unimayor/widgets/big_badge_view_progress.dart';
 import 'package:reportes_unimayor/widgets/date_and_hour_container.dart';
@@ -34,6 +33,8 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
       (reports) => reports.isNotEmpty ? reports.first.estado : null,
     );
 
+    final colors = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: const AppBarUser(),
       drawer: DrawerUser(context: context),
@@ -50,8 +51,10 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
                   },
                   child: _buildReportsList(reports, context, ref),
                 ),
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, stack) => _buildErrorWidget(error, ref),
+                loading: () => Center(
+                  child: CircularProgressIndicator(color: colors.primary),
+                ),
+                error: (error, stack) => _buildErrorWidget(error, ref, colors),
               ),
             ),
           ],
@@ -60,10 +63,10 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
       bottomNavigationBar: reportsAsync.maybeWhen(
         data: (reports) {
           if (reports.isEmpty) {
-            return buttonAppBarCreateReport(context);
+            return buttonAppBarCreateReport(context, colors);
           }
           if (stateReport.value == 'Pendiente') {
-            return buttonAppBarCancelReport(ref, idReport);
+            return buttonAppBarCancelReport(ref, idReport, colors);
           }
           return null;
         },
@@ -121,25 +124,29 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
     );
   }
 
-  Center _buildErrorWidget(Object error, WidgetRef ref) {
+  Center _buildErrorWidget(Object error, WidgetRef ref, ColorScheme colors) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
+          Icon(Icons.error_outline, size: 64, color: colors.error),
           const SizedBox(height: 16),
           Text(
             'Error al cargar reportes',
             style: GoogleFonts.poppins(
               fontSize: 18,
               fontWeight: FontWeight.w600,
+              color: colors.onSurface,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             error.toString(),
             textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              color: colors.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: 16),
         ],
@@ -147,7 +154,10 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
     );
   }
 
-  BottomAppBar buttonAppBarCreateReport(BuildContext context) {
+  BottomAppBar buttonAppBarCreateReport(
+    BuildContext context,
+    ColorScheme colors,
+  ) {
     final router = GoRouter.of(context);
 
     return BottomAppBar(
@@ -157,7 +167,7 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: Material(
-          color: lightMode.colorScheme.secondary,
+          color: colors.secondary,
           borderRadius: BorderRadius.circular(100),
           child: InkWell(
             borderRadius: BorderRadius.circular(100),
@@ -168,14 +178,14 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.send, color: Colors.black, size: 24),
+                  Icon(Icons.send, color: colors.onSecondary, size: 24),
                   const SizedBox(width: 10),
                   Text(
                     "Realizar Reporte",
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.bold,
                       fontSize: 24,
-                      color: Colors.black,
+                      color: colors.onSecondary,
                     ),
                   ),
                 ],
@@ -190,6 +200,7 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
   BottomAppBar buttonAppBarCancelReport(
     WidgetRef ref,
     AsyncValue<int?> idReport,
+    ColorScheme colors,
   ) {
     return BottomAppBar(
       color: Colors.transparent,
@@ -198,7 +209,7 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: Material(
-          color: const Color(0xFFFF3737),
+          color: colors.error,
           borderRadius: BorderRadius.circular(100),
           child: InkWell(
             borderRadius: BorderRadius.circular(100),
@@ -212,18 +223,14 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(
-                    Icons.cancel_outlined,
-                    color: Colors.white,
-                    size: 24,
-                  ),
+                  Icon(Icons.cancel_outlined, color: colors.onError, size: 24),
                   const SizedBox(width: 10),
                   Text(
                     "Cancelar Reporte",
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.bold,
                       fontSize: 24,
-                      color: Colors.white,
+                      color: colors.onError,
                     ),
                   ),
                 ],
@@ -240,16 +247,22 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
       context: ref.context,
       builder: (BuildContext context) {
         bool isCancelling = false;
+        final colors = Theme.of(context).colorScheme;
+
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              title: const Text('Confirmar cancelación'),
-              content: const Text(
+              title: Text(
+                'Confirmar cancelación',
+                style: TextStyle(color: colors.onSurface),
+              ),
+              content: Text(
                 '¿Estás seguro de que quieres cancelar el reporte?',
+                style: TextStyle(color: colors.onSurfaceVariant),
               ),
               actions: <Widget>[
                 TextButton(
-                  child: const Text('No'),
+                  child: Text('No', style: TextStyle(color: colors.primary)),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
@@ -268,12 +281,15 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
                           }
                         },
                   child: isCancelling
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 20,
                           height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: colors.primary,
+                          ),
                         )
-                      : const Text('Sí'),
+                      : Text('Sí', style: TextStyle(color: colors.error)),
                 ),
               ],
             );

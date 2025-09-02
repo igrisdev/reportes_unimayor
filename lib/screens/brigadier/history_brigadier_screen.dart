@@ -18,8 +18,11 @@ class HistoryBrigadierScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final reportsAsync = ref.watch(reportListHistoryBrigadierProvider);
 
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 241, 241, 241),
+      backgroundColor: colors.surface, // fondo dinámico
       appBar: AppBarBrigadier(),
       drawer: DrawerBrigadier(context: context),
       body: Padding(
@@ -36,9 +39,10 @@ class HistoryBrigadierScreen extends ConsumerWidget {
                       children: [
                         Text(
                           'Historial de Reportes',
-                          style: GoogleFonts.poppins(
+                          style: textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.w600,
-                            fontSize: 20,
+                            fontFamily: GoogleFonts.poppins().fontFamily,
+                            color: colors.onSurface,
                           ),
                         ),
                       ],
@@ -56,8 +60,12 @@ class HistoryBrigadierScreen extends ConsumerWidget {
                   child: _buildReportsList(reports, context),
                 ),
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, stack) =>
-                    Center(child: Text('Error al cargar los reportes: $error')),
+                error: (error, stack) => Center(
+                  child: Text(
+                    'Error al cargar los reportes: $error',
+                    style: textTheme.bodyMedium?.copyWith(color: colors.error),
+                  ),
+                ),
               ),
             ),
           ],
@@ -68,9 +76,11 @@ class HistoryBrigadierScreen extends ConsumerWidget {
 
   Widget _buildReportsList(List<ReportsModel> reports, BuildContext context) {
     final router = GoRouter.of(context);
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     if (reports.isEmpty) {
-      return TextNoReports();
+      return const TextNoReports();
     }
 
     return ListView.separated(
@@ -82,26 +92,26 @@ class HistoryBrigadierScreen extends ConsumerWidget {
 
         final isFinalized = report.estado == 'Finalizado';
 
-        Color colorBackground = isFinalized
-            ? const Color(0xFF3882F1)
-            : Color(0xFFFF3737);
+        // ✅ colores centralizados en el tema
+        Color colorBackground = isFinalized ? colors.primary : colors.error;
 
         if (report.estado == 'Pendiente' || report.estado == 'En proceso') {
-          return null;
+          return const SizedBox.shrink();
         }
 
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
           child: Container(
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.black),
+              border: Border.all(color: colors.outline),
               borderRadius: BorderRadius.circular(5),
+              color: colors.surface,
             ),
             padding: const EdgeInsets.all(12),
             child: Column(
               children: [
                 ViewLocation(location: report.ubicacion),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 TextAndTitleContainer(
                   title: report.descripcion == '' ? 'Audio' : 'Descripción',
                   description: report.descripcion == ''
@@ -109,41 +119,43 @@ class HistoryBrigadierScreen extends ConsumerWidget {
                       : report.descripcion,
                   idReport: report.idReporte,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 DateAndHourContainer(
                   date: report.fechaCreacion,
                   hour: report.horaCreacion,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    // Estado
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
                           color: colorBackground,
                           borderRadius: BorderRadius.circular(5),
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8,
-                            horizontal: 20,
-                          ),
-                          child: Center(
-                            child: Text(
-                              report.estado,
-                              style: GoogleFonts.poppins(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 20,
+                        ),
+                        child: Center(
+                          child: Text(
+                            report.estado,
+                            style: textTheme.bodyMedium?.copyWith(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: colors.onPrimary,
+                              fontFamily: GoogleFonts.poppins().fontFamily,
                             ),
                           ),
                         ),
                       ),
                     ),
                     const SizedBox(width: 10),
+
+                    // Ver más
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
@@ -152,22 +164,21 @@ class HistoryBrigadierScreen extends ConsumerWidget {
                         child: Container(
                           decoration: BoxDecoration(
                             color: Colors.transparent,
-                            border: Border.all(color: Colors.black),
+                            border: Border.all(color: colors.outline),
                             borderRadius: BorderRadius.circular(100),
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 8,
-                              horizontal: 20,
-                            ),
-                            child: Center(
-                              child: Text(
-                                'Ver Más',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.black,
-                                ),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 8,
+                            horizontal: 20,
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Ver Más',
+                              style: textTheme.bodyMedium?.copyWith(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                color: colors.onSurface,
+                                fontFamily: GoogleFonts.poppins().fontFamily,
                               ),
                             ),
                           ),

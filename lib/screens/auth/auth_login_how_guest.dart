@@ -33,9 +33,7 @@ class _AuthScreenState extends ConsumerState<AuthLoginHowGuest> {
   }
 
   Future<void> _checkIfLoggedIn() async {
-    setState(() {
-      _isLoadingCheckIfLoggedIn = true;
-    });
+    setState(() => _isLoadingCheckIfLoggedIn = true);
 
     final token = await readTokenStorage('token');
 
@@ -50,9 +48,7 @@ class _AuthScreenState extends ConsumerState<AuthLoginHowGuest> {
       }
     } else {
       if (mounted) {
-        setState(() {
-          _isLoadingCheckIfLoggedIn = false;
-        });
+        setState(() => _isLoadingCheckIfLoggedIn = false);
       }
     }
   }
@@ -66,9 +62,12 @@ class _AuthScreenState extends ConsumerState<AuthLoginHowGuest> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       body: _isLoadingCheckIfLoggedIn
-          ? circularProgress()
+          ? circularProgress(colorScheme)
           : SafeArea(
               child: Center(
                 child: SingleChildScrollView(
@@ -88,6 +87,7 @@ class _AuthScreenState extends ConsumerState<AuthLoginHowGuest> {
                         style: GoogleFonts.poppins(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
+                          color: textTheme.titleLarge?.color,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -96,7 +96,7 @@ class _AuthScreenState extends ConsumerState<AuthLoginHowGuest> {
                         textAlign: TextAlign.center,
                         style: GoogleFonts.poppins(
                           fontSize: 16,
-                          color: Colors.grey.shade600,
+                          color: textTheme.bodyMedium?.color,
                         ),
                       ),
                       const SizedBox(height: 40),
@@ -134,7 +134,7 @@ class _AuthScreenState extends ConsumerState<AuthLoginHowGuest> {
                               },
                             ),
                             const SizedBox(height: 25),
-                            buttonLogin(),
+                            buttonLogin(colorScheme),
                           ],
                         ),
                       ),
@@ -146,22 +146,22 @@ class _AuthScreenState extends ConsumerState<AuthLoginHowGuest> {
     );
   }
 
-  Center circularProgress() {
-    return const Center(
+  Center circularProgress(ColorScheme colorScheme) {
+    return Center(
       child: CircularProgressIndicator(
-        color: Color.fromARGB(255, 0, 0, 0),
+        color: colorScheme.primary,
         strokeWidth: 3,
       ),
     );
   }
 
-  ElevatedButton buttonLogin() {
+  ElevatedButton buttonLogin(ColorScheme colorScheme) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        backgroundColor: const Color(0xFF003366), // Azul oscuro
-        foregroundColor: Colors.white,
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.onPrimary,
       ),
       onPressed: _isLoading ? null : _login,
       child: Row(
@@ -171,11 +171,11 @@ class _AuthScreenState extends ConsumerState<AuthLoginHowGuest> {
           Text('Iniciar sesión', style: GoogleFonts.poppins(fontSize: 16)),
           if (_isLoading) const SizedBox(width: 20),
           if (_isLoading)
-            const SizedBox(
+            SizedBox(
               height: 24,
               width: 24,
               child: CircularProgressIndicator(
-                color: Colors.white,
+                color: colorScheme.onPrimary,
                 strokeWidth: 3,
               ),
             ),
@@ -205,7 +205,11 @@ class _AuthScreenState extends ConsumerState<AuthLoginHowGuest> {
 
       if (token == null) {
         if (!mounted) return;
-        showMessage(context, 'Credenciales incorrectas', Colors.red.shade700);
+        showMessage(
+          context,
+          'Credenciales incorrectas',
+          Theme.of(context).colorScheme.error,
+        );
         return;
       }
 
@@ -232,7 +236,7 @@ class _AuthScreenState extends ConsumerState<AuthLoginHowGuest> {
       showMessage(
         context,
         'Error de conexión. Intenta nuevamente.',
-        Colors.red.shade700,
+        Theme.of(context).colorScheme.error,
       );
     } finally {
       if (mounted) {
