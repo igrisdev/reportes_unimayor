@@ -1,22 +1,16 @@
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/is_brigadier_provider.dart';
-import 'package:reportes_unimayor/providers/token_provider.dart';
 import 'package:reportes_unimayor/services/api_reports_service.dart';
+import 'package:reportes_unimayor/utils/get_token_user_storage.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'report_providers.g.dart';
 
 @riverpod
 Future<List<ReportsModel>> reportList(ReportListRef ref) async {
-  final token = ref.watch(tokenProvider);
-
-  if (token.isEmpty) {
-    return []; // o throw Exception('Token no disponible');
-  }
-
   try {
     final apiService = ApiReportsService();
-    final reports = await apiService.getReports(token);
+    final reports = await apiService.getReports();
 
     return reports;
   } catch (e) {
@@ -29,23 +23,17 @@ Future<List<ReportsModel>> reportList(ReportListRef ref) async {
 Future<List<ReportsModel>> reportListBrigadier(
   ReportListBrigadierRef ref,
 ) async {
-  final token = ref.watch(tokenProvider);
-
-  if (token.isEmpty) {
-    return []; // o throw Exception('Token no disponible');
-  }
-
   try {
     final apiService = ApiReportsService();
 
-    final reportAccepted = await apiService.getReportsBrigadierAssigned(token);
+    final reportAccepted = await apiService.getReportsBrigadierAssigned();
 
     final reports = reportAccepted
         .where((element) => element.estado == 'En proceso')
         .toList();
 
     if (reports.isEmpty) {
-      return await apiService.getReportsBrigadierPending(token);
+      return await apiService.getReportsBrigadierPending();
     }
 
     return reports;
@@ -59,16 +47,10 @@ Future<List<ReportsModel>> reportListBrigadier(
 Future<List<ReportsModel>> reportListHistoryBrigadier(
   ReportListHistoryBrigadierRef ref,
 ) async {
-  final token = ref.watch(tokenProvider);
-
-  if (token.isEmpty) {
-    return []; // o throw Exception('Token no disponible');
-  }
-
   try {
     final apiService = ApiReportsService();
 
-    final reportFinalized = await apiService.getReportsBrigadierAssigned(token);
+    final reportFinalized = await apiService.getReportsBrigadierAssigned();
 
     final reports = reportFinalized
         .where(
@@ -86,15 +68,9 @@ Future<List<ReportsModel>> reportListHistoryBrigadier(
 
 @riverpod
 Future<List<ReportsModel>> reportListPending(ReportListPendingRef ref) async {
-  final token = ref.watch(tokenProvider);
-
-  if (token.isEmpty) {
-    return []; // o throw Exception('Token no disponible');
-  }
-
   try {
     final apiService = ApiReportsService();
-    final reports = await apiService.getReports(token);
+    final reports = await apiService.getReports();
 
     final pendingReports = reports
         .where(
@@ -111,15 +87,9 @@ Future<List<ReportsModel>> reportListPending(ReportListPendingRef ref) async {
 
 @riverpod
 Future<ReportsModel> getReportById(GetReportByIdRef ref, String id) async {
-  final token = ref.watch(tokenProvider);
-
-  if (token.isEmpty) {
-    throw Exception('Token no disponible');
-  }
-
   try {
     final apiService = ApiReportsService();
-    final report = await apiService.getReportById(token, id);
+    final report = await apiService.getReportById(id);
 
     return report;
   } catch (e) {
@@ -133,20 +103,14 @@ Future<ReportsModel> getReportByIdBrigadier(
   GetReportByIdBrigadierRef ref,
   String id,
 ) async {
-  final token = ref.watch(tokenProvider);
-
-  if (token.isEmpty) {
-    throw Exception('Token no disponible');
-  }
-
   try {
     final apiService = ApiReportsService();
-    final reports = await apiService.getReportsBrigadierPending(token);
+    final reports = await apiService.getReportsBrigadierPending();
 
     final report = reports.where((report) => report.idReporte.toString() == id);
 
     if (report.isEmpty) {
-      final report = await apiService.getReportsBrigadierAssigned(token);
+      final report = await apiService.getReportsBrigadierAssigned();
       return report.firstWhere((report) => report.idReporte.toString() == id);
     }
 
@@ -163,21 +127,13 @@ Future<bool> createReportWrite(
   String idUbicacion,
   String descripcion,
 ) async {
-  final token = ref.watch(tokenProvider);
-
-  if (token.isEmpty) {
-    throw Exception('Token no disponible');
-  }
-
   try {
     final apiService = ApiReportsService();
     final response = await apiService.createReportWrite(
-      token,
       idUbicacion,
       descripcion,
     );
 
-    print('response: $response');
     if (response) {
       invalidateAllProvidersUser(ref);
       return true;
@@ -196,21 +152,10 @@ Future<bool> createReportRecord(
   String idUbicacion,
   String record,
 ) async {
-  final token = ref.watch(tokenProvider);
-
-  if (token.isEmpty) {
-    throw Exception('Token no disponible');
-  }
-
   try {
     final apiService = ApiReportsService();
-    final response = await apiService.createReportAudio(
-      token,
-      idUbicacion,
-      record,
-    );
+    final response = await apiService.createReportAudio(idUbicacion, record);
 
-    print('response: $response');
     if (response) {
       invalidateAllProvidersUser(ref);
       return true;
@@ -225,15 +170,9 @@ Future<bool> createReportRecord(
 
 @riverpod
 Future<bool> cancelReport(CancelReportRef ref, int id) async {
-  final token = ref.watch(tokenProvider);
-
-  if (token.isEmpty) {
-    throw Exception('Token no disponible');
-  }
-
   try {
     final apiService = ApiReportsService();
-    final response = await apiService.cancelReport(token, id);
+    final response = await apiService.cancelReport(id);
 
     if (response) {
       invalidateAllProvidersUser(ref);
@@ -249,15 +188,9 @@ Future<bool> cancelReport(CancelReportRef ref, int id) async {
 
 @riverpod
 Future<bool> acceptReport(AcceptReportRef ref, int id) async {
-  final token = ref.watch(tokenProvider);
-
-  if (token.isEmpty) {
-    throw Exception('Token no disponible');
-  }
-
   try {
     final apiService = ApiReportsService();
-    final response = await apiService.acceptReport(token, id);
+    final response = await apiService.acceptReport(id);
 
     if (response) {
       invalidateAllProvidersBrigadier(ref);
@@ -274,15 +207,9 @@ Future<bool> acceptReport(AcceptReportRef ref, int id) async {
 
 @riverpod
 Future<bool> endReport(EndReportRef ref, int id) async {
-  final token = ref.watch(tokenProvider);
-
-  if (token.isEmpty) {
-    throw Exception('Token no disponible');
-  }
-
   try {
     final apiService = ApiReportsService();
-    final response = await apiService.endReport(token, id);
+    final response = await apiService.endReport(id);
 
     if (response) {
       invalidateAllProvidersBrigadier(ref);
@@ -302,19 +229,9 @@ Future<String> getRecord(
   int idReport,
   String urlRecord,
 ) async {
-  final token = ref.watch(tokenProvider);
-
-  if (token.isEmpty) {
-    throw Exception('Token no disponible');
-  }
-
   try {
     final apiService = ApiReportsService();
-    final response = await apiService.getRecordReport(
-      token,
-      idReport,
-      urlRecord,
-    );
+    final response = await apiService.getRecordReport(idReport, urlRecord);
 
     if (response.isEmpty) {
       throw Exception('Error obteniendo el audio');

@@ -27,15 +27,13 @@ class _DrawerUserState extends ConsumerState<DrawerUser> {
       await ApiAuthWithGoogle().googleSingOut();
 
       String? deviceToken = await FirebaseMessaging.instance.getToken();
-      String? token = ref.read(tokenProvider);
 
-      if (deviceToken != null && token != null) {
+      if (deviceToken != null) {
         final res = await ApiTokenDeviceService().deleteTokenDevice(
           deviceToken,
-          token,
         );
 
-        await deleteTokenStorage('token');
+        await deleteStorage('token');
         ref.read(tokenProvider.notifier).removeToken();
 
         if (res && mounted) {

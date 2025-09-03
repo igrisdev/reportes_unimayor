@@ -6,7 +6,7 @@ part of 'report_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$reportListHash() => r'6a948831822ba21b2c2d473b6c08d1dd19a8bcd7';
+String _$reportListHash() => r'3ad5a6a8b72753bb1b0d0db02a2fa3d2484f14e5';
 
 /// See also [reportList].
 @ProviderFor(reportList)
@@ -25,7 +25,7 @@ final reportListProvider =
 // ignore: unused_element
 typedef ReportListRef = AutoDisposeFutureProviderRef<List<ReportsModel>>;
 String _$reportListBrigadierHash() =>
-    r'1e98709090ef2f00777f84b5b9ac9135004e6d54';
+    r'6af45b0c9311a815c3c2a8c1787ae13b8a8fb42f';
 
 /// See also [reportListBrigadier].
 @ProviderFor(reportListBrigadier)
@@ -45,7 +45,7 @@ final reportListBrigadierProvider =
 typedef ReportListBrigadierRef =
     AutoDisposeFutureProviderRef<List<ReportsModel>>;
 String _$reportListHistoryBrigadierHash() =>
-    r'49c6a17e010e69afa7de874231daa44d05343b2c';
+    r'8058d2804d28d117c60f1e9638849f514fde8403';
 
 /// See also [reportListHistoryBrigadier].
 @ProviderFor(reportListHistoryBrigadier)
@@ -64,7 +64,7 @@ final reportListHistoryBrigadierProvider =
 // ignore: unused_element
 typedef ReportListHistoryBrigadierRef =
     AutoDisposeFutureProviderRef<List<ReportsModel>>;
-String _$reportListPendingHash() => r'f1745be9334b55eea9ea2062e0b14da6f3408696';
+String _$reportListPendingHash() => r'b061340b1a231ce0a3dade3b8412d98fc727de4f';
 
 /// See also [reportListPending].
 @ProviderFor(reportListPending)
@@ -82,7 +82,7 @@ final reportListPendingProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef ReportListPendingRef = AutoDisposeFutureProviderRef<List<ReportsModel>>;
-String _$getReportByIdHash() => r'0873726a01838a31443e84b8f74d343cef7487ba';
+String _$getReportByIdHash() => r'f9a6ef5da251bee207256934e3110da35126568c';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -224,7 +224,7 @@ class _GetReportByIdProviderElement
 }
 
 String _$getReportByIdBrigadierHash() =>
-    r'dc38d8cbb59f651c27cc7d04a8f5e1fe6b19cf22';
+    r'2ac5e600aee41126a447a8c26f6e8bf1951d1902';
 
 /// See also [getReportByIdBrigadier].
 @ProviderFor(getReportByIdBrigadier)
@@ -345,7 +345,7 @@ class _GetReportByIdBrigadierProviderElement
   String get id => (origin as GetReportByIdBrigadierProvider).id;
 }
 
-String _$createReportWriteHash() => r'3b6112815566ba5d1b2853719ad05982fdb5d852';
+String _$createReportWriteHash() => r'a40c55dbb76eb3fdbfeae5f53aa056b0f4e2f3d2';
 
 /// See also [createReportWrite].
 @ProviderFor(createReportWrite)
@@ -482,7 +482,7 @@ class _CreateReportWriteProviderElement
 }
 
 String _$createReportRecordHash() =>
-    r'ff60555afd8eea40750b8610becc1d7fe465ecda';
+    r'53bf33f5925baf16e07def6e142b4f70e5d06afc';
 
 /// See also [createReportRecord].
 @ProviderFor(createReportRecord)
@@ -618,7 +618,7 @@ class _CreateReportRecordProviderElement
   String get record => (origin as CreateReportRecordProvider).record;
 }
 
-String _$cancelReportHash() => r'8089ebb85f35da5ac738fb3638b2700bbc37c7c1';
+String _$cancelReportHash() => r'8f7f576c3841a3b2196843fa0cb2ec9abe753038';
 
 /// See also [cancelReport].
 @ProviderFor(cancelReport)
@@ -738,7 +738,7 @@ class _CancelReportProviderElement
   int get id => (origin as CancelReportProvider).id;
 }
 
-String _$acceptReportHash() => r'936ff160aa2afd9d13eeb1b398c1b79b6f4060a6';
+String _$acceptReportHash() => r'61206a23f73c28fd6d474e87182ac327688e53a1';
 
 /// See also [acceptReport].
 @ProviderFor(acceptReport)
@@ -858,7 +858,7 @@ class _AcceptReportProviderElement
   int get id => (origin as AcceptReportProvider).id;
 }
 
-String _$endReportHash() => r'0e8ef819673ae222f200343390c4c21e7c86d110';
+String _$endReportHash() => r'0ad919f861d490c85e1db7d26df10a63d0607a9d';
 
 /// See also [endReport].
 @ProviderFor(endReport)
@@ -972,7 +972,7 @@ class _EndReportProviderElement extends AutoDisposeFutureProviderElement<bool>
   int get id => (origin as EndReportProvider).id;
 }
 
-String _$getRecordHash() => r'd55474228c99a528bb69a557bab0c93d5a955d46';
+String _$getRecordHash() => r'244e92aae4a71ca2d5ff1021b91948a988cc08d3';
 
 /// See also [getRecord].
 @ProviderFor(getRecord)

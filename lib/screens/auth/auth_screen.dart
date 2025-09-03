@@ -24,9 +24,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final String? token = await ApiAuthWithGoogle().signInWithGoogle();
+      final String? tokenGoogle = await ApiAuthWithGoogle().signInWithGoogle();
 
-      if (token == null) {
+      if (tokenGoogle == null) {
         if (!mounted) return;
         showMessage(
           context,
@@ -36,16 +36,16 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         return;
       }
 
-      await writeTokenStorage('token', token);
+      await writeStorage('token', tokenGoogle);
 
       String? deviceToken = await FirebaseMessaging.instance.getToken();
       if (deviceToken != null) {
-        await ApiTokenDeviceService().setTokenDevice(deviceToken, token);
+        await ApiTokenDeviceService().setTokenDevice(deviceToken);
       }
 
-      ref.read(tokenProvider.notifier).setToken(token);
+      ref.read(tokenProvider.notifier).setToken(tokenGoogle);
 
-      final userType = ref.read(isBrigadierProvider);
+      final userType = await ref.read(isBrigadierProvider.future);
 
       if (!mounted) return;
 

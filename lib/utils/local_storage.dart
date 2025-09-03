@@ -7,7 +7,7 @@ AndroidOptions _getAndroidOptions() =>
 final storage = FlutterSecureStorage(aOptions: _getAndroidOptions());
 
 // Read value
-Future<String?> readTokenStorage(String key) async {
+Future<String?> readStorage(String key) async {
   String? storedValue = await storage.read(key: key);
 
   return storedValue;
@@ -17,14 +17,16 @@ Future<String?> readTokenStorage(String key) async {
 // Map<String, String> allValues = await storage.readAll();
 
 // Delete value
-Future<void> deleteTokenStorage(String key) async {
+Future<void> deleteStorage(String key) async {
   await storage.delete(key: key);
 }
 
 // Delete all
-// await storage.deleteAll();
+Future<void> deleteAllStorage() async {
+  await storage.deleteAll();
+}
 
 // Write value
-Future<void> writeTokenStorage(String key, String value) async {
+Future<void> writeStorage(String key, String value) async {
   await storage.write(key: key, value: value);
 }

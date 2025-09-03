@@ -1,9 +1,9 @@
 import 'package:reportes_unimayor/services/base_dio_service.dart';
+import 'package:reportes_unimayor/utils/get_token_user_storage.dart';
 
 class ApiTokenDeviceService extends BaseDioService {
-  Future<bool> setTokenDevice(String tokenDevice, String token) async {
+  Future<bool> setTokenDevice(String tokenDevice) async {
     try {
-      dio.options.headers["Authorization"] = "Bearer $token";
       final response = await dio.post(
         '/dispositivos/registrar',
         data: {'token': tokenDevice},
@@ -19,9 +19,8 @@ class ApiTokenDeviceService extends BaseDioService {
     }
   }
 
-  Future<bool> deleteTokenDevice(String tokenDevice, String token) async {
+  Future<bool> deleteTokenDevice(String tokenDevice) async {
     try {
-      dio.options.headers["Authorization"] = "Bearer $token";
       final response = await dio.delete(
         '/dispositivos/eliminar',
         data: {'token': tokenDevice},

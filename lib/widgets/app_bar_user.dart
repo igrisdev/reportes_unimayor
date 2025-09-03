@@ -13,36 +13,42 @@ class AppBarUser extends ConsumerWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = GoRouter.of(context);
-    final isBrigadier = ref.watch(isBrigadierProvider);
-
     final colors = Theme.of(context).colorScheme;
+
+    final isBrigadierAsync = ref.watch(isBrigadierProvider);
 
     return AppBar(
       centerTitle: true,
-      backgroundColor: colors.primary, // color de fondo del AppBar
+      backgroundColor: colors.primary,
       title: Text(
         'Reportes UniMayor',
         style: GoogleFonts.poppins(
           fontWeight: FontWeight.w600,
           fontSize: 18,
-          color: colors.onPrimary, // texto sobre el primary
+          color: colors.onPrimary,
         ),
       ),
       actions: [
-        if (isBrigadier)
-          IconButton(
-            style: IconButton.styleFrom(
-              backgroundColor: colors.secondary, // fondo del botón
-              foregroundColor: colors.onSecondary, // icono dentro del botón
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              router.go('/brigadier');
-            },
-          ),
+        isBrigadierAsync.when(
+          data: (isBrigadier) {
+            if (isBrigadier) {
+              return IconButton(
+                style: IconButton.styleFrom(
+                  backgroundColor: colors.secondary,
+                  foregroundColor: colors.onSecondary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                icon: const Icon(Icons.person),
+                onPressed: () => router.go('/brigadier'),
+              );
+            }
+            return const SizedBox.shrink();
+          },
+          loading: () => const SizedBox.shrink(), // nada mientras carga
+          error: (err, _) => const SizedBox.shrink(), // nada en caso de error
+        ),
       ],
     );
   }

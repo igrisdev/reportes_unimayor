@@ -35,11 +35,11 @@ class _AuthScreenState extends ConsumerState<AuthLoginHowGuest> {
   Future<void> _checkIfLoggedIn() async {
     setState(() => _isLoadingCheckIfLoggedIn = true);
 
-    final token = await readTokenStorage('token');
+    final token = await readStorage('token');
 
     if (token != null && mounted) {
       ref.read(tokenProvider.notifier).setToken(token);
-      final userType = ref.read(isBrigadierProvider);
+      final userType = await ref.read(isBrigadierProvider.future);
 
       if (userType) {
         context.go('/brigadier');
@@ -213,16 +213,16 @@ class _AuthScreenState extends ConsumerState<AuthLoginHowGuest> {
         return;
       }
 
-      await writeTokenStorage('token', token);
+      await writeStorage('token', token);
 
       String? deviceToken = await FirebaseMessaging.instance.getToken();
 
       if (deviceToken != null) {
-        await ApiTokenDeviceService().setTokenDevice(deviceToken, token);
+        await ApiTokenDeviceService().setTokenDevice(deviceToken);
       }
 
       ref.read(tokenProvider.notifier).setToken(token);
-      final userType = ref.read(isBrigadierProvider);
+      final userType = await ref.read(isBrigadierProvider.future);
 
       if (!mounted) return;
 

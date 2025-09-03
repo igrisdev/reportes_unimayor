@@ -1,15 +1,13 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/services/base_dio_service.dart';
 
 class ApiReportsService extends BaseDioService {
-  Future<List<ReportsModel>> getReports(String token) async {
+  Future<List<ReportsModel>> getReports() async {
     try {
-      dio.options.headers["Authorization"] = "Bearer $token";
       final response = await dio.get('/reportes');
 
       if (response.data == null) {
@@ -29,12 +27,7 @@ class ApiReportsService extends BaseDioService {
     }
   }
 
-  Future<String> getRecordReport(
-    String token,
-    int idReport,
-    String urlRecord,
-  ) async {
-    dio.options.headers["Authorization"] = "Bearer $token";
+  Future<String> getRecordReport(int idReport, String urlRecord) async {
     final response = await dio.get(
       '/reportes/$idReport/audio',
       options: Options(responseType: ResponseType.bytes),
@@ -53,9 +46,8 @@ class ApiReportsService extends BaseDioService {
     return filePath;
   }
 
-  Future<List<ReportsModel>> getReportsBrigadierPending(String token) async {
+  Future<List<ReportsModel>> getReportsBrigadierPending() async {
     try {
-      dio.options.headers["Authorization"] = "Bearer $token";
       final response = await dio.get('/brigadista/reportes/pendientes');
 
       if (response.data == null) {
@@ -75,9 +67,8 @@ class ApiReportsService extends BaseDioService {
     }
   }
 
-  Future<List<ReportsModel>> getReportsBrigadierAssigned(String token) async {
+  Future<List<ReportsModel>> getReportsBrigadierAssigned() async {
     try {
-      dio.options.headers["Authorization"] = "Bearer $token";
       final response = await dio.get('/brigadista/reportes/asignados');
 
       if (response.data == null) {
@@ -97,9 +88,8 @@ class ApiReportsService extends BaseDioService {
     }
   }
 
-  Future<ReportsModel> getReportById(String token, String id) async {
+  Future<ReportsModel> getReportById(String id) async {
     try {
-      dio.options.headers["Authorization"] = "Bearer $token";
       final response = await dio.get('/reportes/$id');
 
       if (response.data == null) {
@@ -117,18 +107,13 @@ class ApiReportsService extends BaseDioService {
     }
   }
 
-  Future<bool> createReportWrite(
-    String token,
-    String id,
-    String description,
-  ) async {
+  Future<bool> createReportWrite(String id, String description) async {
     final formData = FormData.fromMap({
       'IdUbicacion': id,
       'Descripcion': description,
       // Para 'ArchivoAudio', el backend espera algo aunque sea vacío.
     });
     try {
-      dio.options.headers["Authorization"] = "Bearer $token";
       final response = await dio.post('/reportes', data: formData);
 
       if (response.statusCode != 200) {
@@ -142,7 +127,7 @@ class ApiReportsService extends BaseDioService {
     }
   }
 
-  Future<bool> createReportAudio(String token, String id, String record) async {
+  Future<bool> createReportAudio(String id, String record) async {
     final formData = FormData.fromMap({
       'IdUbicacion': id,
       'ArchivoAudio': await MultipartFile.fromFile(
@@ -153,7 +138,6 @@ class ApiReportsService extends BaseDioService {
     });
 
     try {
-      dio.options.headers["Authorization"] = "Bearer $token";
       final response = await dio.post('/reportes', data: formData);
 
       if (response.statusCode != 200) {
@@ -167,9 +151,8 @@ class ApiReportsService extends BaseDioService {
     }
   }
 
-  Future<bool> cancelReport(String token, int id) async {
+  Future<bool> cancelReport(int id) async {
     try {
-      dio.options.headers["Authorization"] = "Bearer $token";
       final response = await dio.put('/reportes/cancelar/$id');
 
       if (response.statusCode != 200) {
@@ -183,9 +166,8 @@ class ApiReportsService extends BaseDioService {
     }
   }
 
-  Future<bool> acceptReport(String token, int id) async {
+  Future<bool> acceptReport(int id) async {
     try {
-      dio.options.headers["Authorization"] = "Bearer $token";
       final response = await dio.put('/brigadista/reportes/aceptar/$id');
 
       if (response.statusCode != 200) {
@@ -200,9 +182,8 @@ class ApiReportsService extends BaseDioService {
     }
   }
 
-  Future<bool> endReport(String token, int id) async {
+  Future<bool> endReport(int id) async {
     try {
-      dio.options.headers["Authorization"] = "Bearer $token";
       final response = await dio.put('/brigadista/reportes/finalizar/$id');
 
       if (response.statusCode != 200) {
