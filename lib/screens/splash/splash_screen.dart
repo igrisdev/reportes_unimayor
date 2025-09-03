@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:reportes_unimayor/providers/is_brigadier_provider.dart';
-import 'package:reportes_unimayor/providers/token_provider.dart';
 import 'package:reportes_unimayor/utils/local_storage.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -25,7 +24,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     if (!mounted) return;
 
     if (token != null) {
-      ref.read(tokenProvider.notifier).setToken(token);
+      await writeStorage('token', token);
 
       final isBrigadier = await ref.read(isBrigadierProvider.future);
 

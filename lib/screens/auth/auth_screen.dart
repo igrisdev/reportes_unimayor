@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/providers/is_brigadier_provider.dart';
-import 'package:reportes_unimayor/providers/token_provider.dart';
 import 'package:reportes_unimayor/services/api_auth_with_google.dart';
 import 'package:reportes_unimayor/services/api_token_device_service.dart';
 import 'package:reportes_unimayor/utils/local_storage.dart';
@@ -43,7 +42,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         await ApiTokenDeviceService().setTokenDevice(deviceToken);
       }
 
-      ref.read(tokenProvider.notifier).setToken(tokenGoogle);
+      await writeStorage('token', tokenGoogle);
 
       final userType = await ref.read(isBrigadierProvider.future);
 
@@ -178,11 +177,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
         if (_isLoading)
           Container(
-            color: colorScheme.surface.withOpacity(0.6), // 👈 overlay
+            color: colorScheme.surface.withValues(alpha: 0.5),
             alignment: Alignment.center,
-            child: CircularProgressIndicator(
-              color: colorScheme.onSurface, // 👈 loading adaptado al tema
-            ),
+            child: CircularProgressIndicator(color: colorScheme.onSurface),
           ),
       ],
     );

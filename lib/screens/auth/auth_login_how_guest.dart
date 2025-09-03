@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/providers/is_brigadier_provider.dart';
-import 'package:reportes_unimayor/providers/token_provider.dart';
 import 'package:reportes_unimayor/services/api_auth_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:reportes_unimayor/services/api_token_device_service.dart';
@@ -38,7 +37,7 @@ class _AuthScreenState extends ConsumerState<AuthLoginHowGuest> {
     final token = await readStorage('token');
 
     if (token != null && mounted) {
-      ref.read(tokenProvider.notifier).setToken(token);
+      await writeStorage('token', token);
       final userType = await ref.read(isBrigadierProvider.future);
 
       if (userType) {
@@ -221,7 +220,6 @@ class _AuthScreenState extends ConsumerState<AuthLoginHowGuest> {
         await ApiTokenDeviceService().setTokenDevice(deviceToken);
       }
 
-      ref.read(tokenProvider.notifier).setToken(token);
       final userType = await ref.read(isBrigadierProvider.future);
 
       if (!mounted) return;

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:reportes_unimayor/providers/token_provider.dart';
 import 'package:reportes_unimayor/services/api_auth_with_google.dart';
 import 'package:reportes_unimayor/services/api_token_device_service.dart';
 import 'package:reportes_unimayor/utils/local_storage.dart';
@@ -34,7 +33,6 @@ class _DrawerBrigadierState extends ConsumerState<DrawerBrigadier> {
         );
 
         await deleteStorage('token');
-        ref.read(tokenProvider.notifier).removeToken();
 
         if (res && mounted) {
           GoRouter.of(context).go('/auth');
@@ -122,7 +120,7 @@ class _DrawerBrigadierState extends ConsumerState<DrawerBrigadier> {
         // Overlay loader
         if (_isLoading)
           Container(
-            color: Colors.black.withOpacity(0.5),
+            color: Colors.black.withValues(alpha: 0.5),
             alignment: Alignment.center,
             child: CircularProgressIndicator(color: colors.onPrimary),
           ),
