@@ -1,5 +1,4 @@
 import 'package:reportes_unimayor/services/base_dio_service.dart';
-import 'package:reportes_unimayor/utils/get_token_user_storage.dart';
 
 class ApiTokenDeviceService extends BaseDioService {
   Future<bool> setTokenDevice(String tokenDevice) async {
