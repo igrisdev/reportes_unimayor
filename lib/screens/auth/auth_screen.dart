@@ -104,7 +104,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                     ),
                     const SizedBox(height: 40),
 
-                    // Botón Google
                     TextButton(
                       style: ButtonStyle(
                         backgroundColor: WidgetStateProperty.all(
@@ -123,12 +122,23 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                         ),
                       ),
                       onPressed: login,
-                      child: Text(
-                        'Correo Unimayor',
-                        style: GoogleFonts.poppins(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                        ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Image.asset(
+                            'assets/icons/logo_google.png',
+                            height: 24,
+                            width: 24,
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            'Correo Unimayor',
+                            style: GoogleFonts.poppins(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
 
@@ -155,12 +165,19 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                       onPressed: () {
                         context.go('/auth/login-how-guest');
                       },
-                      child: Text(
-                        'Como Invitado',
-                        style: GoogleFonts.poppins(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                        ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.person, size: 24),
+                          const SizedBox(width: 12),
+                          Text(
+                            'Como Invitado',
+                            style: GoogleFonts.poppins(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
