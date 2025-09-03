@@ -5,13 +5,15 @@ class AppTheme {
     useMaterial3: true,
     colorScheme:
         ColorScheme.fromSeed(
-          seedColor: Colors.blue,
+          seedColor: const Color(0xFF024792),
           brightness: Brightness.light,
         ).copyWith(
-          surface: const Color(0xFFF5F5F5), // Fondo alternativo
+          surface: const Color(0xFFF5F5F5), // Fondo usuarios
           onSurface: Colors.black, // Texto general (subtítulos)
           error: Colors.red,
           onError: Colors.white,
+          secondary: const Color(0xFFFFCF01),
+          onSecondary: Colors.black,
           tertiary: Colors.green, // Éxito
           // Puedes usar surfaceContainer etc. si quieres más roles
         ),

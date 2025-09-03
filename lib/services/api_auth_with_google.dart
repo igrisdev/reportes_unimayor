@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:reportes_unimayor/services/base_dio_service.dart';
+import 'package:reportes_unimayor/utils/local_storage.dart';
 
 class ApiAuthWithGoogle extends BaseDioService {
   final auth = FirebaseAuth.instance;
@@ -32,6 +33,9 @@ class ApiAuthWithGoogle extends BaseDioService {
       final bool isLogged = FirebaseAuth.instance.currentUser != null;
 
       if (response.statusCode == 200 && isLogged) {
+        await writeStorage('token', response.data['token']);
+        await writeStorage('refresh_token', response.data['refreshToken']);
+
         return response.data['token'];
       } else {
         return null;

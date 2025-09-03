@@ -27,14 +27,17 @@ class _DrawerBrigadierState extends ConsumerState<DrawerBrigadier> {
 
       String? deviceToken = await FirebaseMessaging.instance.getToken();
 
+      print('Device ------------------------------ $deviceToken');
+
       if (deviceToken != null) {
         final res = await ApiTokenDeviceService().deleteTokenDevice(
           deviceToken,
         );
 
         await deleteStorage('token');
+        await deleteStorage('refresh_token');
 
-        if (res && mounted) {
+        if (res) {
           GoRouter.of(context).go('/auth');
         }
       }

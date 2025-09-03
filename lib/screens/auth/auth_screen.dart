@@ -6,7 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/providers/is_brigadier_provider.dart';
 import 'package:reportes_unimayor/services/api_auth_with_google.dart';
 import 'package:reportes_unimayor/services/api_token_device_service.dart';
-import 'package:reportes_unimayor/utils/local_storage.dart';
 import 'package:reportes_unimayor/utils/show_message.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
@@ -35,14 +34,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         return;
       }
 
-      await writeStorage('token', tokenGoogle);
-
       String? deviceToken = await FirebaseMessaging.instance.getToken();
       if (deviceToken != null) {
         await ApiTokenDeviceService().setTokenDevice(deviceToken);
       }
-
-      await writeStorage('token', tokenGoogle);
 
       final userType = await ref.read(isBrigadierProvider.future);
 

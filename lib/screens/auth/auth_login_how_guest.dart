@@ -37,8 +37,9 @@ class _AuthScreenState extends ConsumerState<AuthLoginHowGuest> {
     final token = await readStorage('token');
 
     if (token != null && mounted) {
-      await writeStorage('token', token);
       final userType = await ref.read(isBrigadierProvider.future);
+
+      if (!mounted) return;
 
       if (userType) {
         context.go('/brigadier');
@@ -211,8 +212,6 @@ class _AuthScreenState extends ConsumerState<AuthLoginHowGuest> {
         );
         return;
       }
-
-      await writeStorage('token', token);
 
       String? deviceToken = await FirebaseMessaging.instance.getToken();
 

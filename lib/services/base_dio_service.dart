@@ -32,11 +32,11 @@ class BaseDioService {
               try {
                 final response = await dio.post(
                   '/auth/refresh/refresh',
-                  data: {'refresh_token': refreshToken},
+                  data: {'refreshToken': refreshToken},
                 );
 
                 final newAccessToken = response.data['token'];
-                final newRefreshToken = response.data['refresh_token'];
+                final newRefreshToken = response.data['refreshToken'];
 
                 await writeStorage('token', newAccessToken);
                 await writeStorage('refresh_token', newRefreshToken);

@@ -11,12 +11,14 @@ class ApiAuthService extends BaseDioService {
       );
 
       if (response.statusCode == 200) {
+        await writeStorage('token', response.data['token']);
+        await writeStorage('refresh_token', response.data['refreshToken']);
+
         return response.data['token'];
       } else {
         return null;
       }
     } catch (e) {
-      print(e);
       return null;
     }
   }
