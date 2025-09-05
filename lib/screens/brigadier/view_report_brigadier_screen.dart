@@ -6,6 +6,7 @@ import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/widgets/app_bar_brigadier.dart';
 import 'package:reportes_unimayor/widgets/date_and_hour_container.dart';
+import 'package:reportes_unimayor/widgets/info_user.dart';
 import 'package:reportes_unimayor/widgets/text_and_title_container.dart';
 import 'package:reportes_unimayor/widgets/view_location.dart';
 
@@ -165,6 +166,11 @@ class ViewReportBrigadierScreen extends ConsumerWidget {
           DateAndHourContainer(
             date: report.fechaCreacion,
             hour: report.horaCreacion,
+          ),
+          const SizedBox(height: 20),
+          InfoUser(
+            name: report.usuario.nombre ?? "",
+            email: report.usuario.correo,
           ),
         ],
       ),

@@ -8,7 +8,7 @@ class ViewLocation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context); // 👈 accedemos al tema actual
+    final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
     return SizedBox(
@@ -16,11 +16,7 @@ class ViewLocation extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(
-            Icons.location_on_outlined,
-            size: 80,
-            color: colors.primary, // 👈 color principal del tema
-          ),
+          Icon(Icons.location_on_outlined, size: 80, color: colors.primary),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -31,7 +27,7 @@ class ViewLocation extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: colors.onBackground, // 👈 texto principal
+                    color: colors.onSurface,
                   ),
                 ),
                 Text(
@@ -39,7 +35,7 @@ class ViewLocation extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
-                    color: colors.onSurface, // 👈 texto secundario
+                    color: colors.onSurface,
                   ),
                 ),
                 Text(
@@ -47,7 +43,7 @@ class ViewLocation extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
-                    color: colors.onSurface, // 👈 texto secundario
+                    color: colors.onSurface,
                   ),
                 ),
                 if (location.descripcion.isNotEmpty)
@@ -56,7 +52,7 @@ class ViewLocation extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: colors.onSurfaceVariant, // 👈 aún más suave
+                      color: colors.onSurfaceVariant,
                     ),
                   ),
               ],

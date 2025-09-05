@@ -27,8 +27,6 @@ class _DrawerBrigadierState extends ConsumerState<DrawerBrigadier> {
 
       String? deviceToken = await FirebaseMessaging.instance.getToken();
 
-      print('Device ------------------------------ $deviceToken');
-
       if (deviceToken != null) {
         final res = await ApiTokenDeviceService().deleteTokenDevice(
           deviceToken,

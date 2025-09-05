@@ -25,7 +25,7 @@ class DateAndHourContainer extends StatelessWidget {
               Icon(
                 Icons.calendar_today_outlined,
                 size: 30,
-                color: colorScheme.onSurface, // texto/íconos principales
+                color: colorScheme.onSurface,
               ),
               const SizedBox(width: 10),
               Text(
@@ -33,7 +33,7 @@ class DateAndHourContainer extends StatelessWidget {
                 style: GoogleFonts.poppins(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: colorScheme.onSurface, // usa el tema
+                  color: colorScheme.onSurface,
                 ),
               ),
             ],
@@ -44,7 +44,7 @@ class DateAndHourContainer extends StatelessWidget {
               Icon(
                 Icons.access_time_outlined,
                 size: 30,
-                color: colorScheme.onSurface, // usa el tema
+                color: colorScheme.onSurface,
               ),
               const SizedBox(width: 10),
               Text(
@@ -52,7 +52,7 @@ class DateAndHourContainer extends StatelessWidget {
                 style: GoogleFonts.poppins(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: colorScheme.onSurface, // usa el tema
+                  color: colorScheme.onSurface,
                 ),
               ),
             ],

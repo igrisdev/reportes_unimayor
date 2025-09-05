@@ -13,15 +13,17 @@ String reportsModelToJson(List<ReportsModel> data) =>
 
 class ReportsModel {
   int idReporte;
+  Usuario usuario;
   Ubicacion ubicacion;
   String descripcion;
-  dynamic rutaAudio;
+  String rutaAudio;
   String estado;
   DateTime fechaCreacion;
   String horaCreacion;
 
   ReportsModel({
     required this.idReporte,
+    required this.usuario,
     required this.ubicacion,
     required this.descripcion,
     required this.rutaAudio,
@@ -32,14 +34,16 @@ class ReportsModel {
 
   ReportsModel copyWith({
     int? idReporte,
+    Usuario? usuario,
     Ubicacion? ubicacion,
     String? descripcion,
-    dynamic rutaAudio,
+    String? rutaAudio,
     String? estado,
     DateTime? fechaCreacion,
     String? horaCreacion,
   }) => ReportsModel(
     idReporte: idReporte ?? this.idReporte,
+    usuario: usuario ?? this.usuario,
     ubicacion: ubicacion ?? this.ubicacion,
     descripcion: descripcion ?? this.descripcion,
     rutaAudio: rutaAudio ?? this.rutaAudio,
@@ -50,9 +54,10 @@ class ReportsModel {
 
   factory ReportsModel.fromJson(Map<String, dynamic> json) => ReportsModel(
     idReporte: json["idReporte"],
+    usuario: Usuario.fromJson(json["usuario"]),
     ubicacion: Ubicacion.fromJson(json["ubicacion"]),
-    descripcion: json["descripcion"],
-    rutaAudio: json["rutaAudio"],
+    descripcion: json["descripcion"] ?? "",
+    rutaAudio: json["rutaAudio"] ?? "",
     estado: json["estado"],
     fechaCreacion: DateTime.parse(json["fechaCreacion"]),
     horaCreacion: json["horaCreacion"],
@@ -60,6 +65,7 @@ class ReportsModel {
 
   Map<String, dynamic> toJson() => {
     "idReporte": idReporte,
+    "usuario": usuario.toJson(),
     "ubicacion": ubicacion.toJson(),
     "descripcion": descripcion,
     "rutaAudio": rutaAudio,
@@ -131,5 +137,45 @@ class Ubicacion {
     "piso": piso,
     "rutaQr": rutaQr,
     "reportes": reportes,
+  };
+}
+
+class Usuario {
+  String correo;
+  String? nombre;
+  dynamic rutaFoto;
+  dynamic mensaje;
+
+  Usuario({
+    required this.correo,
+    required this.nombre,
+    required this.rutaFoto,
+    required this.mensaje,
+  });
+
+  Usuario copyWith({
+    String? correo,
+    String? nombre,
+    dynamic rutaFoto,
+    dynamic mensaje,
+  }) => Usuario(
+    correo: correo ?? this.correo,
+    nombre: nombre ?? this.nombre,
+    rutaFoto: rutaFoto ?? this.rutaFoto,
+    mensaje: mensaje ?? this.mensaje,
+  );
+
+  factory Usuario.fromJson(Map<String, dynamic> json) => Usuario(
+    correo: json["correo"],
+    nombre: json["nombre"],
+    rutaFoto: json["rutaFoto"],
+    mensaje: json["mensaje"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "correo": correo,
+    "nombre": nombre,
+    "rutaFoto": rutaFoto,
+    "mensaje": mensaje,
   };
 }

@@ -19,7 +19,6 @@ class MainBrigadierScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final reportsAsync = ref.watch(reportListBrigadierProvider);
     final colorScheme = Theme.of(context).colorScheme;
-    // final textTheme = Theme.of(context).textTheme;
 
     final idReport = reportsAsync.whenData(
       (reports) => reports.first.idReporte,
@@ -359,7 +358,7 @@ class MainBrigadierScreen extends ConsumerWidget {
             style: GoogleFonts.poppins(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: colorScheme.onBackground,
+              color: colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 8),
