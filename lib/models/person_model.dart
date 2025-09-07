@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final personModel = personModelFromJson(jsonString);
-
 import 'dart:convert';
 
 PersonModel personModelFromJson(String str) =>
@@ -19,16 +15,6 @@ class PersonModel {
     required this.contactos,
     required this.condicionesMedicas,
   });
-
-  PersonModel copyWith({
-    InfoUsuario? infoUsuario,
-    List<Contacto>? contactos,
-    List<CondicionesMedica>? condicionesMedicas,
-  }) => PersonModel(
-    infoUsuario: infoUsuario ?? this.infoUsuario,
-    contactos: contactos ?? this.contactos,
-    condicionesMedicas: condicionesMedicas ?? this.condicionesMedicas,
-  );
 
   factory PersonModel.fromJson(Map<String, dynamic> json) => PersonModel(
     infoUsuario: InfoUsuario.fromJson(json["infoUsuario"]),
@@ -52,43 +38,29 @@ class PersonModel {
 class CondicionesMedica {
   int idCondicionMedica;
   int idUsuario;
-  String nombre;
-  String descripcion;
-  DateTime fechaDiagnostico;
-  String mensaje;
+  String? nombre;
+  String? descripcion;
+  DateTime? fechaDiagnostico;
+  String? mensaje;
 
   CondicionesMedica({
     required this.idCondicionMedica,
     required this.idUsuario,
-    required this.nombre,
-    required this.descripcion,
-    required this.fechaDiagnostico,
-    required this.mensaje,
+    this.nombre,
+    this.descripcion,
+    this.fechaDiagnostico,
+    this.mensaje,
   });
-
-  CondicionesMedica copyWith({
-    int? idCondicionMedica,
-    int? idUsuario,
-    String? nombre,
-    String? descripcion,
-    DateTime? fechaDiagnostico,
-    String? mensaje,
-  }) => CondicionesMedica(
-    idCondicionMedica: idCondicionMedica ?? this.idCondicionMedica,
-    idUsuario: idUsuario ?? this.idUsuario,
-    nombre: nombre ?? this.nombre,
-    descripcion: descripcion ?? this.descripcion,
-    fechaDiagnostico: fechaDiagnostico ?? this.fechaDiagnostico,
-    mensaje: mensaje ?? this.mensaje,
-  );
 
   factory CondicionesMedica.fromJson(Map<String, dynamic> json) =>
       CondicionesMedica(
-        idCondicionMedica: json["idCondicionMedica"],
-        idUsuario: json["idUsuario"],
+        idCondicionMedica: json["idCondicionMedica"] ?? 0,
+        idUsuario: json["idUsuario"] ?? 0,
         nombre: json["nombre"],
         descripcion: json["descripcion"],
-        fechaDiagnostico: DateTime.parse(json["fechaDiagnostico"]),
+        fechaDiagnostico: json["fechaDiagnostico"] != null
+            ? DateTime.tryParse(json["fechaDiagnostico"])
+            : null,
         mensaje: json["mensaje"],
       );
 
@@ -97,7 +69,7 @@ class CondicionesMedica {
     "idUsuario": idUsuario,
     "nombre": nombre,
     "descripcion": descripcion,
-    "fechaDiagnostico": fechaDiagnostico.toIso8601String(),
+    "fechaDiagnostico": fechaDiagnostico?.toIso8601String(),
     "mensaje": mensaje,
   };
 }
@@ -105,57 +77,35 @@ class CondicionesMedica {
 class Contacto {
   int idContactoEmergencia;
   int idUsuario;
-  String nombre;
-  String relacion;
-  String telefono;
-  String telefonoAlternativo;
-  String email;
+  String? nombre;
+  String? relacion;
+  String? telefono;
+  String? telefonoAlternativo;
+  String? email;
   bool esPrincipal;
-  String mensaje;
+  String? mensaje;
 
   Contacto({
     required this.idContactoEmergencia,
     required this.idUsuario,
-    required this.nombre,
-    required this.relacion,
-    required this.telefono,
-    required this.telefonoAlternativo,
-    required this.email,
+    this.nombre,
+    this.relacion,
+    this.telefono,
+    this.telefonoAlternativo,
+    this.email,
     required this.esPrincipal,
-    required this.mensaje,
+    this.mensaje,
   });
 
-  Contacto copyWith({
-    int? idContactoEmergencia,
-    int? idUsuario,
-    String? nombre,
-    String? relacion,
-    String? telefono,
-    String? telefonoAlternativo,
-    String? email,
-    bool? esPrincipal,
-    String? mensaje,
-  }) => Contacto(
-    idContactoEmergencia: idContactoEmergencia ?? this.idContactoEmergencia,
-    idUsuario: idUsuario ?? this.idUsuario,
-    nombre: nombre ?? this.nombre,
-    relacion: relacion ?? this.relacion,
-    telefono: telefono ?? this.telefono,
-    telefonoAlternativo: telefonoAlternativo ?? this.telefonoAlternativo,
-    email: email ?? this.email,
-    esPrincipal: esPrincipal ?? this.esPrincipal,
-    mensaje: mensaje ?? this.mensaje,
-  );
-
   factory Contacto.fromJson(Map<String, dynamic> json) => Contacto(
-    idContactoEmergencia: json["idContactoEmergencia"],
-    idUsuario: json["idUsuario"],
+    idContactoEmergencia: json["idContactoEmergencia"] ?? 0,
+    idUsuario: json["idUsuario"] ?? 0,
     nombre: json["nombre"],
     relacion: json["relacion"],
     telefono: json["telefono"],
     telefonoAlternativo: json["telefonoAlternativo"],
     email: json["email"],
-    esPrincipal: json["esPrincipal"],
+    esPrincipal: json["esPrincipal"] ?? false,
     mensaje: json["mensaje"],
   );
 
@@ -176,31 +126,19 @@ class InfoUsuario {
   String correo;
   String nombre;
   String rutaFoto;
-  String mensaje;
+  String? mensaje;
 
   InfoUsuario({
     required this.correo,
     required this.nombre,
     required this.rutaFoto,
-    required this.mensaje,
+    this.mensaje,
   });
 
-  InfoUsuario copyWith({
-    String? correo,
-    String? nombre,
-    String? rutaFoto,
-    String? mensaje,
-  }) => InfoUsuario(
-    correo: correo ?? this.correo,
-    nombre: nombre ?? this.nombre,
-    rutaFoto: rutaFoto ?? this.rutaFoto,
-    mensaje: mensaje ?? this.mensaje,
-  );
-
   factory InfoUsuario.fromJson(Map<String, dynamic> json) => InfoUsuario(
-    correo: json["correo"],
-    nombre: json["nombre"],
-    rutaFoto: json["rutaFoto"],
+    correo: json["correo"] ?? "",
+    nombre: json["nombre"] ?? "",
+    rutaFoto: json["rutaFoto"] ?? "",
     mensaje: json["mensaje"],
   );
 

@@ -211,9 +211,9 @@ class ApiReportsService extends BaseDioService {
 
       final Map<String, dynamic> json = response.data as Map<String, dynamic>;
 
-      final PersonModel report = PersonModel.fromJson(json);
+      final PersonModel person = PersonModel.fromJson(json);
 
-      return report;
+      return person;
     } catch (e) {
       print('Error en ApiReportsService: $e');
       rethrow; // Re-lanzar el error para que lo maneje el provider

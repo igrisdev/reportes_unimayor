@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:reportes_unimayor/models/person_model.dart';
 import 'package:reportes_unimayor/services/api_reports_service.dart';
+import 'package:reportes_unimayor/utils/show_message.dart';
 import 'package:reportes_unimayor/widgets/app_bar_brigadier.dart';
 
 class SearchPerson extends ConsumerStatefulWidget {
@@ -16,6 +18,8 @@ class _AuthScreenState extends ConsumerState<SearchPerson> {
   final _formKey = GlobalKey<FormState>();
 
   final _emailController = TextEditingController();
+
+  PersonModel? _person;
 
   @override
   void initState() {
@@ -84,6 +88,133 @@ class _AuthScreenState extends ConsumerState<SearchPerson> {
                   ],
                 ),
               ),
+              if (_person != null) ...[
+                const Divider(height: 30),
+                Card(
+                  color: Theme.of(context).colorScheme.surface,
+                  elevation: 0,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.person,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            "Información del usuario",
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Text("Nombre: ${_person!.infoUsuario.nombre}"),
+                      Text("Correo: ${_person!.infoUsuario.correo}"),
+
+                      const Divider(height: 30),
+
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.contact_phone,
+                            color: Theme.of(context).colorScheme.onSecondary,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            "Contactos de emergencia",
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                              color: Theme.of(context).colorScheme.onSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+
+                      if (_person!.contactos.isNotEmpty &&
+                          _person!.contactos.first.mensaje != null)
+                        ListTile(
+                          leading: const Icon(
+                            Icons.info_outline,
+                            color: Colors.grey,
+                          ),
+                          title: Text(
+                            _person!.contactos.first.mensaje!,
+                            style: TextStyle(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withOpacity(0.7),
+                            ),
+                          ),
+                        )
+                      else
+                        ..._person!.contactos.map(
+                          (c) => ListTile(
+                            leading: const Icon(Icons.person),
+                            title: Text(c.nombre ?? "Sin nombre"),
+                            subtitle: Text(
+                              "${c.relacion ?? "Sin relación"} - ${c.telefono ?? "N/A"}",
+                            ),
+                          ),
+                        ),
+
+                      const Divider(height: 30),
+
+                      // Condiciones médicas
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.local_hospital,
+                            color: Theme.of(context).colorScheme.tertiary,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            "Condiciones médicas",
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                              color: Theme.of(context).colorScheme.tertiary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+
+                      if (_person!.condicionesMedicas.isNotEmpty &&
+                          _person!.condicionesMedicas.first.mensaje != null)
+                        ListTile(
+                          leading: const Icon(
+                            Icons.info_outline,
+                            color: Colors.grey,
+                          ),
+                          title: Text(
+                            _person!.condicionesMedicas.first.mensaje!,
+                            style: TextStyle(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withOpacity(0.7),
+                            ),
+                          ),
+                        )
+                      else
+                        ..._person!.condicionesMedicas.map(
+                          (cm) => ListTile(
+                            leading: const Icon(Icons.health_and_safety),
+                            title: Text(cm.nombre ?? ""),
+                            subtitle: Text(cm.descripcion ?? ""),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
             ],
           ),
         ),
@@ -140,19 +271,31 @@ class _AuthScreenState extends ConsumerState<SearchPerson> {
   void _search() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isLoading = true);
+    FocusScope.of(context).unfocus();
+
+    setState(() {
+      _isLoading = true;
+      _person = null;
+    });
 
     try {
       final email = _emailController.text.trim();
 
       final person = await ApiReportsService().searchPerson(email);
+
+      if (!mounted) return;
+
+      setState(() {
+        _person = person;
+      });
     } catch (e) {
       if (!mounted) return;
-      // showMessage(
-      //   context,
-      //   'Error de conexión. Intenta nuevamente.',
-      //   Theme.of(context).colorScheme.error,
-      // );
+      print(e);
+      showMessage(
+        context,
+        'Error al consultar al usuario. Intenta nuevamente.',
+        Theme.of(context).colorScheme.error,
+      );
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
