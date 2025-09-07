@@ -23,7 +23,7 @@ class InfoUser extends StatelessWidget {
               children: [
                 if (name.isNotEmpty)
                   Text(
-                    name,
+                    'Informante: $name',
                     style: GoogleFonts.poppins(
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
@@ -33,7 +33,7 @@ class InfoUser extends StatelessWidget {
 
                 if (name.isEmpty)
                   Text(
-                    'Invitado: $email',
+                    'Informante: Invitado $email',
                     style: GoogleFonts.poppins(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,

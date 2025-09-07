@@ -8,6 +8,7 @@ import 'package:reportes_unimayor/widgets/app_bar_brigadier.dart';
 import 'package:reportes_unimayor/widgets/big_badge_view_progress.dart';
 import 'package:reportes_unimayor/widgets/date_and_hour_container.dart';
 import 'package:reportes_unimayor/widgets/drawer_brigadier.dart';
+import 'package:reportes_unimayor/widgets/info_user.dart';
 import 'package:reportes_unimayor/widgets/text_and_title_container.dart';
 import 'package:reportes_unimayor/widgets/text_no_reports.dart';
 import 'package:reportes_unimayor/widgets/view_location.dart';
@@ -25,7 +26,7 @@ class MainBrigadierScreen extends ConsumerWidget {
     );
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       appBar: AppBarBrigadier(),
       drawer: DrawerBrigadier(context: context),
       body: Padding(
@@ -73,6 +74,37 @@ class MainBrigadierScreen extends ConsumerWidget {
         data: (reports) =>
             reports.isNotEmpty && reports.first.estado == 'En proceso'
             ? buttonAppBarFinalizeReport(ref, idReport, context)
+            : null,
+        orElse: () => null,
+      ),
+
+      floatingActionButton: reportsAsync.maybeWhen(
+        data: (reports) =>
+            reports.isNotEmpty && reports.first.estado == 'En proceso'
+            ? FloatingActionButton.extended(
+                onPressed: () {
+                  GoRouter.of(context).push('/brigadier/search-person');
+                },
+                backgroundColor: colorScheme.secondary,
+                elevation: 0,
+                highlightElevation: 0,
+                focusElevation: 0,
+                hoverElevation: 0,
+                disabledElevation: 0,
+                icon: Icon(
+                  Icons.search,
+                  color: colorScheme.onSecondary,
+                  size: 30,
+                ),
+                label: Text(
+                  "Consultar",
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: colorScheme.onSecondary,
+                  ),
+                ),
+              )
             : null,
         orElse: () => null,
       ),
@@ -285,8 +317,6 @@ class MainBrigadierScreen extends ConsumerWidget {
     ReportsModel report,
     BuildContext context,
   ) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Column(
@@ -306,6 +336,11 @@ class MainBrigadierScreen extends ConsumerWidget {
           DateAndHourContainer(
             date: report.fechaCreacion,
             hour: report.horaCreacion,
+          ),
+          const SizedBox(height: 20),
+          InfoUser(
+            name: report.usuario.nombre ?? "",
+            email: report.usuario.correo,
           ),
         ],
       ),

@@ -3,6 +3,7 @@ import 'package:reportes_unimayor/screens/auth/auth_login_how_guest.dart';
 import 'package:reportes_unimayor/screens/auth/auth_screen.dart';
 import 'package:reportes_unimayor/screens/brigadier/history_brigadier_screen.dart';
 import 'package:reportes_unimayor/screens/brigadier/main_brigadier_screen.dart';
+import 'package:reportes_unimayor/screens/brigadier/search_person_brigadier_screen.dart';
 import 'package:reportes_unimayor/screens/brigadier/view_report_brigadier_screen.dart';
 import 'package:reportes_unimayor/screens/splash/splash_screen.dart';
 import 'package:reportes_unimayor/screens/users/create_report_user_screen.dart';
@@ -62,6 +63,10 @@ final router = GoRouter(
         GoRoute(
           path: 'history',
           builder: (context, state) => const HistoryBrigadierScreen(),
+        ),
+        GoRoute(
+          path: 'search-person',
+          builder: (context, state) => const SearchPerson(),
         ),
       ],
     ),
