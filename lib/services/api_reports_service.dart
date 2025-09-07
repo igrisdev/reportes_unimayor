@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:reportes_unimayor/models/person_model.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/services/base_dio_service.dart';
 
@@ -192,6 +193,27 @@ class ApiReportsService extends BaseDioService {
 
       print('Reporte finalizado exitosamente');
       return true;
+    } catch (e) {
+      print('Error en ApiReportsService: $e');
+      rethrow; // Re-lanzar el error para que lo maneje el provider
+    }
+  }
+
+  Future<PersonModel> searchPerson(String email) async {
+    try {
+      final response = await dio.get(
+        '/brigadista/reportes/info-completa/$email',
+      );
+
+      if (response.data == null) {
+        throw Exception('Persona no encontrada');
+      }
+
+      final Map<String, dynamic> json = response.data as Map<String, dynamic>;
+
+      final PersonModel report = PersonModel.fromJson(json);
+
+      return report;
     } catch (e) {
       print('Error en ApiReportsService: $e');
       rethrow; // Re-lanzar el error para que lo maneje el provider

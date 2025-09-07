@@ -92,7 +92,6 @@ class HistoryBrigadierScreen extends ConsumerWidget {
 
         final isFinalized = report.estado == 'Finalizado';
 
-        // ✅ colores centralizados en el tema
         Color colorBackground = isFinalized ? colors.primary : colors.error;
 
         if (report.estado == 'Pendiente' || report.estado == 'En proceso') {

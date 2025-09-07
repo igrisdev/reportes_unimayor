@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:reportes_unimayor/services/api_reports_service.dart';
 import 'package:reportes_unimayor/widgets/app_bar_brigadier.dart';
 
 class SearchPerson extends ConsumerStatefulWidget {
@@ -107,7 +108,7 @@ class _AuthScreenState extends ConsumerState<SearchPerson> {
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
       ),
-      onPressed: _isLoading ? null : _login,
+      onPressed: _isLoading ? null : _search,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -136,7 +137,7 @@ class _AuthScreenState extends ConsumerState<SearchPerson> {
     );
   }
 
-  void _login() async {
+  void _search() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
@@ -144,7 +145,7 @@ class _AuthScreenState extends ConsumerState<SearchPerson> {
     try {
       final email = _emailController.text.trim();
 
-      // final String? token = await ApiAuthService().login(email);
+      final person = await ApiReportsService().searchPerson(email);
     } catch (e) {
       if (!mounted) return;
       // showMessage(
