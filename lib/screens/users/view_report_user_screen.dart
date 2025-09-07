@@ -114,8 +114,9 @@ class ViewReportUserScreen extends ConsumerWidget {
           const SizedBox(height: 30),
           TextAndTitleContainer(
             title: 'Nota Brigadista',
-            description:
-                'Se terminó con buen resultado, gracias por reportarlo, se salvó una vida',
+            description: report.detallesFinalizacion.isNotEmpty
+                ? report.detallesFinalizacion
+                : 'Sin nota',
           ),
         ],
       ),

@@ -21,7 +21,7 @@ class ViewReportBrigadierScreen extends ConsumerWidget {
     final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: colors.surface, // antes tenía un gris fijo
+      backgroundColor: colors.surface,
       appBar: const AppBarBrigadier(),
       body: Padding(
         padding: const EdgeInsets.only(left: 18, right: 18, top: 10),
@@ -48,12 +48,12 @@ class ViewReportBrigadierScreen extends ConsumerWidget {
             report.idReporte,
             colors,
           ),
-          'En proceso' => bottomAppBarMainInProgress(
-            context,
-            ref,
-            report.idReporte,
-            colors,
-          ),
+          // 'En proceso' => bottomAppBarMainInProgress(
+          //   context,
+          //   ref,
+          //   report.idReporte,
+          //   colors,
+          // ),
           _ => null,
         },
         orElse: () => null,
@@ -61,48 +61,48 @@ class ViewReportBrigadierScreen extends ConsumerWidget {
     );
   }
 
-  BottomAppBar bottomAppBarMainInProgress(
-    BuildContext context,
-    WidgetRef ref,
-    int id,
-    ColorScheme colors,
-  ) {
-    final router = GoRouter.of(context);
-    return BottomAppBar(
-      color: Colors.transparent,
-      elevation: 0,
-      height: 90,
-      child: Material(
-        color: colors.primary, // usas el color principal del tema
-        borderRadius: BorderRadius.circular(100),
-        child: InkWell(
-          onTap: () async {
-            final response = await ref.read(EndReportProvider(id).future);
-            if (response == true) {
-              router.push('/brigadier');
-            }
-          },
-          child: Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "Finalizar Reporte",
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: colors.onPrimary, // texto legible sobre primary
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Icon(Icons.check, color: colors.onPrimary),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  // BottomAppBar bottomAppBarMainInProgress(
+  //   BuildContext context,
+  //   WidgetRef ref,
+  //   int id,
+  //   ColorScheme colors,
+  // ) {
+  //   final router = GoRouter.of(context);
+  //   return BottomAppBar(
+  //     color: Colors.transparent,
+  //     elevation: 0,
+  //     height: 90,
+  //     child: Material(
+  //       color: colors.primary,
+  //       borderRadius: BorderRadius.circular(100),
+  //       child: InkWell(
+  //         onTap: () async {
+  //           final response = await ref.read(EndReportProvider(id).future);
+  //           if (response == true) {
+  //             router.push('/brigadier');
+  //           }
+  //         },
+  //         child: Center(
+  //           child: Row(
+  //             mainAxisSize: MainAxisSize.min,
+  //             children: [
+  //               Text(
+  //                 "Finalizar Reporte",
+  //                 style: GoogleFonts.poppins(
+  //                   fontWeight: FontWeight.bold,
+  //                   fontSize: 16,
+  //                   color: colors.onPrimary, // texto legible sobre primary
+  //                 ),
+  //               ),
+  //               const SizedBox(width: 10),
+  //               Icon(Icons.check, color: colors.onPrimary),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   BottomAppBar bottomAppBarMainPending(
     BuildContext context,
@@ -116,7 +116,7 @@ class ViewReportBrigadierScreen extends ConsumerWidget {
       elevation: 0,
       height: 90,
       child: Material(
-        color: colors.tertiary, // ejemplo: verde de “acción positiva”
+        color: colors.tertiary,
         borderRadius: BorderRadius.circular(100),
         child: InkWell(
           onTap: () async {
@@ -171,6 +171,13 @@ class ViewReportBrigadierScreen extends ConsumerWidget {
           InfoUser(
             name: report.usuario.nombre ?? "",
             email: report.usuario.correo,
+          ),
+          const SizedBox(height: 20),
+          TextAndTitleContainer(
+            title: 'Nota Brigadista',
+            description: report.detallesFinalizacion.isNotEmpty
+                ? report.detallesFinalizacion
+                : 'Sin nota',
           ),
         ],
       ),

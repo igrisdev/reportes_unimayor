@@ -130,7 +130,7 @@ class MainBrigadierScreen extends ConsumerWidget {
             if (idReport.isLoading || idReport.value == null) {
               return;
             }
-            showDialogIfCancel(ref, idReport);
+            showDialogIfFinalized(ref, idReport);
           },
           child: Center(
             child: Row(
@@ -154,33 +154,78 @@ class MainBrigadierScreen extends ConsumerWidget {
     );
   }
 
-  Future<dynamic> showDialogIfCancel(WidgetRef ref, AsyncValue<int> idReport) {
+  Future<dynamic> showDialogIfFinalized(
+    WidgetRef ref,
+    AsyncValue<int> idReport,
+  ) {
+    final TextEditingController descriptionController = TextEditingController();
+
     return showDialog(
       context: ref.context,
       builder: (BuildContext context) {
         final colorScheme = Theme.of(context).colorScheme;
-        return AlertDialog(
-          title: Text(
-            'Confirmar Finalizar El Reporte',
-            style: TextStyle(color: colorScheme.onBackground),
-          ),
-          content: Text(
-            '¿Estás seguro de que quieres finalizar el reporte?',
-            style: TextStyle(color: colorScheme.onSurface),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('No'),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            TextButton(
-              child: const Text('Sí'),
-              onPressed: () {
-                Navigator.of(context).pop();
-                ref.read(endReportProvider(idReport.value!));
-              },
-            ),
-          ],
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              title: Text(
+                'Confirmar Finalizar El Reporte',
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.onSurface,
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Escribe el estado del paciente hasta el momento en que terminaste tu intervención.',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: descriptionController,
+                    maxLines: 3,
+                    onChanged: (_) => setState(() {}),
+                    decoration: InputDecoration(
+                      hintText: 'El paciente ...',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Cancelar'),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+                TextButton(
+                  child: const Text('Finalizar'),
+                  onPressed: descriptionController.text.trim().isEmpty
+                      ? null
+                      : () {
+                          Navigator.of(context).pop();
+                          ref.read(
+                            endReportProvider(
+                              idReport.value!,
+                              descriptionController.text.trim(),
+                            ),
+                          );
+                        },
+                ),
+              ],
+            );
+          },
         );
       },
     );

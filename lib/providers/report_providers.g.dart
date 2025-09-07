@@ -858,7 +858,7 @@ class _AcceptReportProviderElement
   int get id => (origin as AcceptReportProvider).id;
 }
 
-String _$endReportHash() => r'0ad919f861d490c85e1db7d26df10a63d0607a9d';
+String _$endReportHash() => r'9fff44374d4ef479e1cadd767d0400c6b6ebd58b';
 
 /// See also [endReport].
 @ProviderFor(endReport)
@@ -870,13 +870,13 @@ class EndReportFamily extends Family<AsyncValue<bool>> {
   const EndReportFamily();
 
   /// See also [endReport].
-  EndReportProvider call(int id) {
-    return EndReportProvider(id);
+  EndReportProvider call(int id, String description) {
+    return EndReportProvider(id, description);
   }
 
   @override
   EndReportProvider getProviderOverride(covariant EndReportProvider provider) {
-    return call(provider.id);
+    return call(provider.id, provider.description);
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -897,9 +897,9 @@ class EndReportFamily extends Family<AsyncValue<bool>> {
 /// See also [endReport].
 class EndReportProvider extends AutoDisposeFutureProvider<bool> {
   /// See also [endReport].
-  EndReportProvider(int id)
+  EndReportProvider(int id, String description)
     : this._internal(
-        (ref) => endReport(ref as EndReportRef, id),
+        (ref) => endReport(ref as EndReportRef, id, description),
         from: endReportProvider,
         name: r'endReportProvider',
         debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -908,6 +908,7 @@ class EndReportProvider extends AutoDisposeFutureProvider<bool> {
         dependencies: EndReportFamily._dependencies,
         allTransitiveDependencies: EndReportFamily._allTransitiveDependencies,
         id: id,
+        description: description,
       );
 
   EndReportProvider._internal(
@@ -918,9 +919,11 @@ class EndReportProvider extends AutoDisposeFutureProvider<bool> {
     required super.debugGetCreateSourceHash,
     required super.from,
     required this.id,
+    required this.description,
   }) : super.internal();
 
   final int id;
+  final String description;
 
   @override
   Override overrideWith(FutureOr<bool> Function(EndReportRef provider) create) {
@@ -934,6 +937,7 @@ class EndReportProvider extends AutoDisposeFutureProvider<bool> {
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
         id: id,
+        description: description,
       ),
     );
   }
@@ -945,13 +949,16 @@ class EndReportProvider extends AutoDisposeFutureProvider<bool> {
 
   @override
   bool operator ==(Object other) {
-    return other is EndReportProvider && other.id == id;
+    return other is EndReportProvider &&
+        other.id == id &&
+        other.description == description;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, id.hashCode);
+    hash = _SystemHash.combine(hash, description.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -962,6 +969,9 @@ class EndReportProvider extends AutoDisposeFutureProvider<bool> {
 mixin EndReportRef on AutoDisposeFutureProviderRef<bool> {
   /// The parameter `id` of this provider.
   int get id;
+
+  /// The parameter `description` of this provider.
+  String get description;
 }
 
 class _EndReportProviderElement extends AutoDisposeFutureProviderElement<bool>
@@ -970,6 +980,8 @@ class _EndReportProviderElement extends AutoDisposeFutureProviderElement<bool>
 
   @override
   int get id => (origin as EndReportProvider).id;
+  @override
+  String get description => (origin as EndReportProvider).description;
 }
 
 String _$getRecordHash() => r'244e92aae4a71ca2d5ff1021b91948a988cc08d3';

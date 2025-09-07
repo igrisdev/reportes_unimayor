@@ -16,6 +16,7 @@ class ReportsModel {
   Usuario usuario;
   Ubicacion ubicacion;
   String descripcion;
+  String detallesFinalizacion;
   String rutaAudio;
   String estado;
   DateTime fechaCreacion;
@@ -26,6 +27,7 @@ class ReportsModel {
     required this.usuario,
     required this.ubicacion,
     required this.descripcion,
+    required this.detallesFinalizacion,
     required this.rutaAudio,
     required this.estado,
     required this.fechaCreacion,
@@ -37,6 +39,7 @@ class ReportsModel {
     Usuario? usuario,
     Ubicacion? ubicacion,
     String? descripcion,
+    String? detallesFinalizacion,
     String? rutaAudio,
     String? estado,
     DateTime? fechaCreacion,
@@ -46,6 +49,7 @@ class ReportsModel {
     usuario: usuario ?? this.usuario,
     ubicacion: ubicacion ?? this.ubicacion,
     descripcion: descripcion ?? this.descripcion,
+    detallesFinalizacion: detallesFinalizacion ?? this.detallesFinalizacion,
     rutaAudio: rutaAudio ?? this.rutaAudio,
     estado: estado ?? this.estado,
     fechaCreacion: fechaCreacion ?? this.fechaCreacion,
@@ -57,6 +61,7 @@ class ReportsModel {
     usuario: Usuario.fromJson(json["usuario"]),
     ubicacion: Ubicacion.fromJson(json["ubicacion"]),
     descripcion: json["descripcion"] ?? "",
+    detallesFinalizacion: json["detallesFinalizacion"] ?? "",
     rutaAudio: json["rutaAudio"] ?? "",
     estado: json["estado"],
     fechaCreacion: DateTime.parse(json["fechaCreacion"]),
@@ -68,6 +73,7 @@ class ReportsModel {
     "usuario": usuario.toJson(),
     "ubicacion": ubicacion.toJson(),
     "descripcion": descripcion,
+    "detallesFinalizacion": detallesFinalizacion,
     "rutaAudio": rutaAudio,
     "estado": estado,
     "fechaCreacion":

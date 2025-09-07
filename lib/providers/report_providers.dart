@@ -206,10 +206,10 @@ Future<bool> acceptReport(AcceptReportRef ref, int id) async {
 }
 
 @riverpod
-Future<bool> endReport(EndReportRef ref, int id) async {
+Future<bool> endReport(EndReportRef ref, int id, String description) async {
   try {
     final apiService = ApiReportsService();
-    final response = await apiService.endReport(id);
+    final response = await apiService.endReport(id, description);
 
     if (response) {
       invalidateAllProvidersBrigadier(ref);

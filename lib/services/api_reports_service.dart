@@ -183,15 +183,17 @@ class ApiReportsService extends BaseDioService {
     }
   }
 
-  Future<bool> endReport(int id) async {
+  Future<bool> endReport(int id, String description) async {
     try {
-      final response = await dio.put('/brigadista/reportes/finalizar/$id');
+      final response = await dio.put(
+        '/brigadista/reportes/finalizar/$id',
+        data: {'detallesFinalizacion': description},
+      );
 
       if (response.statusCode != 200) {
         throw Exception('Error al cancelar el reporte');
       }
 
-      print('Reporte finalizado exitosamente');
       return true;
     } catch (e) {
       print('Error en ApiReportsService: $e');

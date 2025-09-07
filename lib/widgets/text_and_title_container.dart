@@ -29,18 +29,16 @@ class _TextAndTitleContainerState extends ConsumerState<TextAndTitleContainer> {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
 
-    // 🎨 Colores base del contenedor
     Color colorBackground = Colors.transparent;
 
     if (widget.isImportant) {
-      colorBackground = scheme.error.withOpacity(0.15); // fondo de error suave
+      colorBackground = scheme.error.withValues(alpha: 0.15);
     }
 
     if (widget.isImportant && widget.title == 'Nota Brigadista') {
-      colorBackground = scheme.surface; // fondo alternativo (neutral)
+      colorBackground = scheme.primary.withValues(alpha: 0.15);
     }
 
-    // 🎵 Caso especial: Audio
     if (widget.title == 'Audio') {
       final audioState = ref.watch(audioPlayerNotifierProvider);
       final audioUrlAsync = ref.watch(
@@ -83,7 +81,6 @@ class _TextAndTitleContainerState extends ConsumerState<TextAndTitleContainer> {
       );
     }
 
-    // 📝 Texto normal
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -107,7 +104,7 @@ class _TextAndTitleContainerState extends ConsumerState<TextAndTitleContainer> {
                 style: GoogleFonts.poppins(
                   fontSize: 25,
                   fontWeight: FontWeight.w600,
-                  color: scheme.onSurface, // título
+                  color: scheme.onSurface,
                 ),
               ),
               const SizedBox(height: 5),
@@ -116,7 +113,7 @@ class _TextAndTitleContainerState extends ConsumerState<TextAndTitleContainer> {
                 style: GoogleFonts.poppins(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: scheme.onSurfaceVariant, // subtítulo
+                  color: scheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -125,7 +122,7 @@ class _TextAndTitleContainerState extends ConsumerState<TextAndTitleContainer> {
         Icon(
           isPlaying ? Icons.pause : Icons.play_arrow,
           size: 40,
-          color: scheme.primary, // ícono según tema
+          color: scheme.primary,
         ),
       ],
     );
@@ -140,7 +137,7 @@ class _TextAndTitleContainerState extends ConsumerState<TextAndTitleContainer> {
           style: GoogleFonts.poppins(
             fontSize: 20,
             fontWeight: FontWeight.w600,
-            color: scheme.onSurface, // texto principal
+            color: scheme.onSurface,
           ),
         ),
         const SizedBox(height: 10),
@@ -149,7 +146,7 @@ class _TextAndTitleContainerState extends ConsumerState<TextAndTitleContainer> {
           style: GoogleFonts.poppins(
             fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: scheme.onSurfaceVariant, // texto secundario
+            color: scheme.onSurfaceVariant,
           ),
         ),
       ],
