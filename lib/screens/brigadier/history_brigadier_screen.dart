@@ -55,7 +55,7 @@ class HistoryBrigadierScreen extends ConsumerWidget {
               child: reportsAsync.when(
                 data: (reports) => RefreshIndicator(
                   onRefresh: () async {
-                    ref.invalidate(reportListBrigadierProvider);
+                    ref.invalidate(reportListHistoryBrigadierProvider);
                   },
                   child: _buildReportsList(reports, context),
                 ),

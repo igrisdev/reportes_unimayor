@@ -254,4 +254,5 @@ void invalidateAllProvidersBrigadier(ref) {
   invalidateAllProvidersUser(ref);
   ref.invalidate(reportListBrigadierProvider);
   ref.invalidate(getReportByIdBrigadierProvider);
+  ref.invalidate(reportListHistoryBrigadierProvider);
 }
