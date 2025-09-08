@@ -171,9 +171,9 @@ class MainBrigadierScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               title: Text(
-                'Confirmar Finalizar El Reporte',
+                'Confirmar finalización del reporte',
                 style: GoogleFonts.poppins(
-                  fontSize: 16,
+                  fontSize: 18,
                   fontWeight: FontWeight.w600,
                   color: colorScheme.onSurface,
                 ),
@@ -183,7 +183,7 @@ class MainBrigadierScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Escribe el estado del paciente hasta el momento en que terminaste tu intervención.',
+                    'Detalles de finalización del reporte',
                     style: GoogleFonts.poppins(
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
@@ -294,7 +294,7 @@ class MainBrigadierScreen extends ConsumerWidget {
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.green, // aquí podrías usar tertiary
+                            color: Colors.green,
                             borderRadius: BorderRadius.circular(100),
                           ),
                           child: Padding(
@@ -320,7 +320,9 @@ class MainBrigadierScreen extends ConsumerWidget {
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-                          router.push('/brigadier/report/${report.idReporte}');
+                          router.push(
+                            '/brigadier/report-process/${report.idReporte}',
+                          );
                         },
                         child: Container(
                           decoration: BoxDecoration(

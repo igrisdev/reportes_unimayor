@@ -5,6 +5,7 @@ import 'package:reportes_unimayor/screens/brigadier/history_brigadier_screen.dar
 import 'package:reportes_unimayor/screens/brigadier/main_brigadier_screen.dart';
 import 'package:reportes_unimayor/screens/brigadier/search_person_brigadier_screen.dart';
 import 'package:reportes_unimayor/screens/brigadier/view_report_brigadier_screen.dart';
+import 'package:reportes_unimayor/screens/brigadier/view_report_process_brigadier_screen.dart';
 import 'package:reportes_unimayor/screens/splash/splash_screen.dart';
 import 'package:reportes_unimayor/screens/users/create_report_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/history_user_screen.dart';
@@ -55,6 +56,11 @@ final router = GoRouter(
       path: '/brigadier',
       builder: (context, state) => const MainBrigadierScreen(),
       routes: [
+        GoRoute(
+          path: 'report-process/:id',
+          builder: (context, state) =>
+              ViewReportProcessBrigadierScreen(id: state.pathParameters['id']!),
+        ),
         GoRoute(
           path: 'report/:id',
           builder: (context, state) =>

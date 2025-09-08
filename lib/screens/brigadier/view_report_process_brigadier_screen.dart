@@ -4,47 +4,58 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
-import 'package:reportes_unimayor/widgets/app_bar_user.dart';
-import 'package:reportes_unimayor/widgets/big_badge_view_progress.dart';
+import 'package:reportes_unimayor/widgets/app_bar_brigadier.dart';
 import 'package:reportes_unimayor/widgets/date_and_hour_container.dart';
+import 'package:reportes_unimayor/widgets/info_user.dart';
 import 'package:reportes_unimayor/widgets/text_and_title_container.dart';
 import 'package:reportes_unimayor/widgets/view_location.dart';
 
-class ViewReportUserScreen extends ConsumerWidget {
+class ViewReportProcessBrigadierScreen extends ConsumerWidget {
   final String id;
 
-  const ViewReportUserScreen({super.key, required this.id});
+  const ViewReportProcessBrigadierScreen({super.key, required this.id});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final asyncReport = ref.watch(getReportByIdProvider(id));
+    final asyncReport = ref.watch(getReportByIdBrigadierProvider(id));
     final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBarUser(),
+      backgroundColor: colors.surface,
+      appBar: const AppBarBrigadier(),
       body: Padding(
         padding: const EdgeInsets.only(left: 18, right: 18, top: 10),
         child: asyncReport.when(
-          data: (report) => infoReport(report, colors),
-          error: (error, stackTrace) => Center(
-            child: Text(
-              error.toString(),
-              style: TextStyle(color: colors.error),
+          data: (report) => RefreshIndicator(
+            onRefresh: () async {
+              ref.invalidate(getReportByIdBrigadierProvider(id));
+            },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: infoReport(report, context),
             ),
           ),
-          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stackTrace) => Center(child: Text(error.toString())),
+          loading: () =>
+              Center(child: CircularProgressIndicator(color: colors.primary)),
         ),
       ),
       bottomNavigationBar: asyncReport.maybeWhen(
-        data: (report) => report.estado == 'Pendiente'
-            ? bottomAppBarMain(context, ref, report.idReporte, colors)
-            : null,
+        data: (report) => switch (report.estado) {
+          'Pendiente' => bottomAppBarMainPending(
+            context,
+            ref,
+            report.idReporte,
+            colors,
+          ),
+          _ => null,
+        },
         orElse: () => null,
       ),
     );
   }
 
-  BottomAppBar bottomAppBarMain(
+  BottomAppBar bottomAppBarMainPending(
     BuildContext context,
     WidgetRef ref,
     int id,
@@ -56,32 +67,29 @@ class ViewReportUserScreen extends ConsumerWidget {
       elevation: 0,
       height: 90,
       child: Material(
-        color: colors.errorContainer,
+        color: colors.tertiary,
         borderRadius: BorderRadius.circular(100),
         child: InkWell(
           onTap: () async {
-            final response = await ref.read(CancelReportProvider(id).future);
-
+            final response = await ref.read(AcceptReportProvider(id).future);
             if (response == true) {
-              router.push('/user');
-              return;
+              router.push('/brigadier');
             }
           },
-          borderRadius: BorderRadius.circular(100),
           child: Center(
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  "Cancelar Reporte",
+                  "Aceptar Reporte",
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
-                    color: colors.tertiary,
+                    color: colors.onTertiary, // contraste automático
                   ),
                 ),
                 const SizedBox(width: 10),
-                Icon(Icons.cancel, color: colors.tertiary),
+                Icon(Icons.check, color: colors.onTertiary),
               ],
             ),
           ),
@@ -90,33 +98,30 @@ class ViewReportUserScreen extends ConsumerWidget {
     );
   }
 
-  Padding infoReport(ReportsModel report, ColorScheme colors) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+  SizedBox infoReport(ReportsModel report, BuildContext context) {
+    return SizedBox(
+      height: MediaQuery.sizeOf(context).height * 0.7,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          BigBadgeViewProgress(text: report.estado),
-          const SizedBox(height: 20),
           ViewLocation(location: report.ubicacion),
-          const SizedBox(height: 30),
+          const SizedBox(height: 20),
           TextAndTitleContainer(
-            title: report.descripcion == '' ? 'Audio' : 'Descripción',
-            description: report.descripcion == ''
+            title: report.descripcion.isEmpty ? 'Audio' : 'Descripción',
+            description: report.descripcion.isEmpty
                 ? report.rutaAudio
                 : report.descripcion,
             idReport: report.idReporte,
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 20),
           DateAndHourContainer(
             date: report.fechaCreacion,
             hour: report.horaCreacion,
           ),
-          const SizedBox(height: 30),
-          TextAndTitleContainer(
-            title: 'Nota Brigadista',
-            description: report.detallesFinalizacion.isNotEmpty
-                ? report.detallesFinalizacion
-                : 'Sin nota',
+          const SizedBox(height: 20),
+          InfoUser(
+            name: report.usuario.nombre ?? "",
+            email: report.usuario.correo,
           ),
         ],
       ),
