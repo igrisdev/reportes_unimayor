@@ -22,7 +22,7 @@ class HistoryBrigadierScreen extends ConsumerWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      backgroundColor: colors.surface, // fondo dinámico
+      backgroundColor: colors.surface,
       appBar: AppBarBrigadier(),
       drawer: DrawerBrigadier(context: context),
       body: Padding(
@@ -55,7 +55,7 @@ class HistoryBrigadierScreen extends ConsumerWidget {
               child: reportsAsync.when(
                 data: (reports) => RefreshIndicator(
                   onRefresh: () async {
-                    ref.invalidate(reportListProvider);
+                    ref.invalidate(reportListBrigadierProvider);
                   },
                   child: _buildReportsList(reports, context),
                 ),
@@ -128,7 +128,6 @@ class HistoryBrigadierScreen extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Estado
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
@@ -154,7 +153,6 @@ class HistoryBrigadierScreen extends ConsumerWidget {
                     ),
                     const SizedBox(width: 10),
 
-                    // Ver más
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
