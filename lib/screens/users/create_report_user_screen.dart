@@ -21,10 +21,10 @@ class _CreateReportUserScreenState
     extends ConsumerState<CreateReportUserScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  final List<String> _headquarters = ['Bicentenario', 'Encarnación'];
-  final List<String> _buildings = ['Edificio 1'];
+  final List<String> _headquarters = ['Bicentenario'];
+  final List<String> _buildings = ['Único'];
   final List<Map<String, String>> _locations = [
-    {'idLocation': '1', 'location': 'Salón 101'},
+    {'idLocation': '1', 'location': 'Salón 202'},
   ];
 
   String? _selectedHeadquarter;
