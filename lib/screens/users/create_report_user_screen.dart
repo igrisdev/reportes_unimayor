@@ -22,7 +22,7 @@ class _CreateReportUserScreenState
   final _formKey = GlobalKey<FormState>();
 
   final List<String> _headquarters = ['Bicentenario'];
-  final List<String> _buildings = ['Único'];
+  final List<String> _buildings = ['1'];
   final List<Map<String, String>> _locations = [
     {'idLocation': '1', 'location': 'Salón 202'},
   ];
