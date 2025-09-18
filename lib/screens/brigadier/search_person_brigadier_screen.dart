@@ -150,7 +150,7 @@ class _AuthScreenState extends ConsumerState<SearchPerson> {
                             style: TextStyle(
                               color: Theme.of(
                                 context,
-                              ).colorScheme.onSurface.withOpacity(0.7),
+                              ).colorScheme.onSurface.withValues(alpha: 0.7),
                             ),
                           ),
                         )
@@ -199,7 +199,7 @@ class _AuthScreenState extends ConsumerState<SearchPerson> {
                             style: TextStyle(
                               color: Theme.of(
                                 context,
-                              ).colorScheme.onSurface.withOpacity(0.7),
+                              ).colorScheme.onSurface.withValues(alpha: 0.7),
                             ),
                           ),
                         )

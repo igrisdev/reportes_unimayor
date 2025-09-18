@@ -44,7 +44,7 @@ class MainBrigadierScreen extends ConsumerWidget {
                           style: GoogleFonts.poppins(
                             fontWeight: FontWeight.w600,
                             fontSize: 20,
-                            color: colorScheme.onBackground,
+                            color: colorScheme.onSurface,
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -210,7 +210,6 @@ class MainBrigadierScreen extends ConsumerWidget {
                   onPressed: () => Navigator.of(context).pop(),
                 ),
                 TextButton(
-                  child: const Text('Finalizar'),
                   onPressed: descriptionController.text.trim().isEmpty
                       ? null
                       : () {
@@ -222,6 +221,7 @@ class MainBrigadierScreen extends ConsumerWidget {
                             ),
                           );
                         },
+                  child: const Text('Finalizar'),
                 ),
               ],
             );
@@ -402,7 +402,7 @@ class MainBrigadierScreen extends ConsumerWidget {
         return AlertDialog(
           title: Text(
             'Confirmar aceptación',
-            style: TextStyle(color: colorScheme.onBackground),
+            style: TextStyle(color: colorScheme.onSurface),
           ),
           content: Text(
             '¿Estás seguro de que quieres aceptar el reporte?',

@@ -40,6 +40,7 @@ class _CreateReportUserScreenState
   bool _isRecording = false;
 
   bool _isSending = false;
+  bool _isManualMode = false;
 
   @override
   void dispose() {
@@ -157,53 +158,17 @@ class _CreateReportUserScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSectionHeader(
-                title: 'Ubicación',
-                children: [
-                  _buildToggleButton(
-                    'Escáner Qr',
-                    'Qr',
-                    _locationInputMode,
-                    () => setState(() => _locationInputMode = 'Qr'),
-                  ),
-                  const SizedBox(width: 10),
-                  _buildToggleButton(
-                    'Seleccionar',
-                    'Seleccionar',
-                    _locationInputMode,
-                    () => setState(() => _locationInputMode = 'Seleccionar'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              if (_locationInputMode == 'Seleccionar')
-                _buildManualLocationSelector()
-              else
-                _buildQrScannerButton(idLocationQrScanner),
-              const SizedBox(height: 30),
-              _buildSectionHeader(
-                title: 'Descripción',
-                children: [
-                  _buildToggleButton(
-                    'Audio',
-                    'Audio',
-                    _descriptionInputMode,
-                    () => setState(() => _descriptionInputMode = 'Audio'),
-                  ),
-                  const SizedBox(width: 10),
-                  _buildToggleButton(
-                    'Escribir',
-                    'Escribir',
-                    _descriptionInputMode,
-                    () => setState(() => _descriptionInputMode = 'Escribir'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              if (_descriptionInputMode == 'Escribir')
-                _buildDescriptionTextField()
-              else
-                _buildAudioRecorder(),
+              sectionHeader(title: 'Ubicación*'),
+              const SizedBox(height: 10),
+              qrScannerButton(idLocationQrScanner),
+              const SizedBox(height: 12),
+              buttonManualMode(colors),
+              if (_isManualMode) const SizedBox(height: 10),
+              if (_isManualMode) manualLocationSelector(),
+              const SizedBox(height: 14),
+              sectionHeader(title: 'Descripción*'),
+              const SizedBox(height: 10),
+              descriptionField(),
               const SizedBox(height: 20),
             ],
           ),
@@ -213,151 +178,31 @@ class _CreateReportUserScreenState
     );
   }
 
-  Widget _buildSectionHeader({
-    required String title,
-    required List<Widget> children,
-  }) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          title,
-          style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        Row(children: children),
-      ],
-    );
-  }
-
-  Widget _buildManualLocationSelector() {
+  Widget descriptionField() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        DropdownButtonFormField<String>(
-          initialValue: _selectedHeadquarter,
-          decoration: const InputDecoration(labelText: 'Seleccionar Sede'),
-          items: _headquarters
-              .map(
-                (headquarter) => DropdownMenuItem(
-                  value: headquarter,
-                  child: Text(headquarter),
-                ),
-              )
-              .toList(),
-          onChanged: (value) => setState(() => _selectedHeadquarter = value),
+        TextFormField(
+          minLines: 2,
+          maxLines: 7,
+          onChanged: (value) => _description = value,
+          decoration: InputDecoration(
+            hintText: "Descripción del reporte",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
+            suffixIcon: IconButton(
+              icon: const Icon(Icons.mic, color: Colors.black, size: 30),
+              onPressed: () {},
+            ),
+          ),
           validator: (value) {
-            if (_locationInputMode == 'Seleccionar' && value == null) {
-              return 'Seleccione una sede';
-            }
-            return null;
-          },
-        ),
-        const SizedBox(height: 20),
-        DropdownButtonFormField<String>(
-          initialValue: _selectedBuilding,
-          decoration: const InputDecoration(labelText: 'Seleccionar Edificio'),
-          items: _buildings
-              .map(
-                (build) => DropdownMenuItem(value: build, child: Text(build)),
-              )
-              .toList(),
-          onChanged: (value) => setState(() => _selectedBuilding = value),
-          validator: (value) {
-            if (_locationInputMode == 'Seleccionar' && value == null) {
-              return 'Seleccione un edificio';
-            }
-            return null;
-          },
-        ),
-        const SizedBox(height: 20),
-        DropdownButtonFormField<String>(
-          initialValue: _selectedLocation,
-          decoration: const InputDecoration(labelText: 'Seleccionar Salón'),
-          items: _locations
-              .map(
-                (location) => DropdownMenuItem(
-                  value: location['idLocation'],
-                  child: Text(location['location']!),
-                ),
-              )
-              .toList(),
-          onChanged: (value) => setState(() => _selectedLocation = value),
-          validator: (value) {
-            if (_locationInputMode == 'Seleccionar' && value == null) {
-              return 'Seleccione un salón';
+            if (_descriptionInputMode == 'Escribir' &&
+                (value == null || value.trim().isEmpty)) {
+              return 'Por favor escriba una descripción';
             }
             return null;
           },
         ),
       ],
-    );
-  }
-
-  Widget _buildQrScannerButton(String idLocationQrScanner) {
-    final colors = Theme.of(context).colorScheme;
-    final bool isScanned = idLocationQrScanner.isNotEmpty;
-
-    return GestureDetector(
-      onTap: () => context.push('/user/create-report/qr-scanner'),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-        decoration: BoxDecoration(
-          color: isScanned
-              ? colors.tertiary.withOpacity(0.1)
-              : Colors.transparent,
-          border: Border.all(
-            color: isScanned ? colors.tertiary : colors.onSurface,
-          ),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  isScanned ? 'Ubicación Escaneada' : 'Escanear QR',
-                  style: GoogleFonts.poppins(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: isScanned ? colors.tertiary : colors.onBackground,
-                  ),
-                ),
-                Text(
-                  isScanned
-                      ? 'ID: $idLocationQrScanner'
-                      : 'Presionar para escanear',
-                  style: GoogleFonts.poppins(color: colors.onSurface),
-                ),
-              ],
-            ),
-            Icon(
-              isScanned ? Icons.check_circle : Icons.qr_code_scanner,
-              size: 40,
-              color: isScanned ? colors.tertiary : colors.onSurface,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDescriptionTextField() {
-    return TextFormField(
-      maxLines: 7,
-      decoration: const InputDecoration(
-        labelText: 'Descripción del reporte',
-        alignLabelWithHint: true,
-        border: OutlineInputBorder(),
-      ),
-      onChanged: (value) => _description = value,
-      validator: (value) {
-        if (_descriptionInputMode == 'Escribir' &&
-            (value == null || value.trim().isEmpty)) {
-          return 'Por favor escriba una descripción';
-        }
-        return null;
-      },
     );
   }
 
@@ -404,6 +249,232 @@ class _CreateReportUserScreenState
     );
   }
 
+  TextButton buttonManualMode(ColorScheme colors) {
+    return TextButton(
+      onPressed: () {
+        setState(() => _isManualMode = !_isManualMode);
+      },
+      style: TextButton.styleFrom(
+        backgroundColor: colors.primary,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Seleccionar de forma manual',
+            textAlign: TextAlign.left,
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: colors.onTertiary,
+            ),
+          ),
+          const SizedBox(width: 10),
+          if (!_isManualMode)
+            Icon(
+              Icons.keyboard_arrow_up_sharp,
+              size: 30,
+              color: colors.onTertiary,
+            )
+          else
+            Icon(
+              Icons.keyboard_arrow_down_sharp,
+              size: 30,
+              color: colors.onTertiary,
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget sectionHeader({required String title}) {
+    return Row(
+      children: [
+        Text(
+          title,
+          style: GoogleFonts.poppins(fontSize: 28, fontWeight: FontWeight.w700),
+        ),
+      ],
+    );
+  }
+
+  Widget manualLocationSelector() {
+    final colors = Theme.of(context).colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          DropdownButtonFormField<String>(
+            initialValue: _selectedHeadquarter,
+            decoration: InputDecoration(
+              labelText: 'Seleccionar Sede',
+              labelStyle: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: colors.primary,
+              ),
+            ),
+            items: _headquarters
+                .map(
+                  (headquarter) => DropdownMenuItem(
+                    value: headquarter,
+                    child: Text(
+                      headquarter,
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
+            onChanged: (value) => setState(() => _selectedHeadquarter = value),
+            validator: (value) {
+              if (_locationInputMode == 'Seleccionar' && value == null) {
+                return 'Seleccione una sede';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 20),
+          DropdownButtonFormField<String>(
+            initialValue: _selectedBuilding,
+            decoration: InputDecoration(
+              labelText: 'Seleccionar Edificio',
+              labelStyle: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: colors.primary,
+              ),
+            ),
+            items: _buildings
+                .map(
+                  (build) => DropdownMenuItem(
+                    value: build,
+                    child: Text(
+                      build,
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
+            onChanged: (value) => setState(() => _selectedBuilding = value),
+            validator: (value) {
+              if (_locationInputMode == 'Seleccionar' && value == null) {
+                return 'Seleccione un edificio';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 20),
+          DropdownButtonFormField<String>(
+            initialValue: _selectedLocation,
+            decoration: InputDecoration(
+              labelText: 'Seleccionar Salón',
+              labelStyle: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: colors.primary,
+              ),
+            ),
+            items: _locations
+                .map(
+                  (location) => DropdownMenuItem(
+                    value: location['idLocation'],
+                    child: Text(
+                      location['location']!,
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
+            onChanged: (value) => setState(() => _selectedLocation = value),
+            validator: (value) {
+              if (_locationInputMode == 'Seleccionar' && value == null) {
+                return 'Seleccione un salón';
+              }
+              return null;
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget qrScannerButton(String idLocationQrScanner) {
+    final colors = Theme.of(context).colorScheme;
+    final bool isScanned = idLocationQrScanner.isNotEmpty;
+
+    return GestureDetector(
+      onTap: () => context.push('/user/create-report/qr-scanner'),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        decoration: BoxDecoration(
+          color: isScanned
+              ? colors.tertiary.withValues(alpha: 0.1)
+              : colors.secondary,
+          border: Border.all(
+            color: isScanned ? colors.tertiary : colors.onSurface,
+          ),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isScanned ? 'Ubicación Escaneada' : 'QR MAS CERCANO',
+                    style: GoogleFonts.poppins(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w700,
+                      color: isScanned ? colors.tertiary : colors.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    isScanned
+                        ? 'ID: $idLocationQrScanner'
+                        : 'Presionar para escanear la ubicación',
+                    style: GoogleFonts.poppins(
+                      color: colors.onSurface,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              isScanned ? Icons.check_circle : Icons.qr_code_scanner,
+              size: 80,
+              color: isScanned ? colors.tertiary : colors.onSurface,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _toggleRecording() async {
     if (_isRecording) {
       final path = await _audioRecorder.stop();
@@ -442,7 +513,7 @@ class _CreateReportUserScreenState
         child: ElevatedButton.icon(
           style: ElevatedButton.styleFrom(
             backgroundColor: colors.secondary,
-            foregroundColor: colors.onBackground,
+            foregroundColor: colors.onSurface,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(100),
             ),
@@ -455,12 +526,12 @@ class _CreateReportUserScreenState
           label: Text(
             'Enviar Reporte',
             style: GoogleFonts.poppins(
-              color: colors.onBackground,
+              color: colors.onSurface,
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
           ),
-          icon: Icon(Icons.send, color: colors.onBackground, size: 24),
+          icon: Icon(Icons.send, color: colors.onSurface, size: 24),
         ),
       ),
     );
@@ -478,9 +549,9 @@ class _CreateReportUserScreenState
       onPressed: onPressed,
       style: TextButton.styleFrom(
         backgroundColor: isSelected
-            ? colors.primary.withOpacity(0.1)
+            ? colors.primary.withValues(alpha: 0.1)
             : colors.surface,
-        foregroundColor: isSelected ? colors.primary : colors.onBackground,
+        foregroundColor: isSelected ? colors.primary : colors.onSurface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
           side: BorderSide(

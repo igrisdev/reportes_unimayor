@@ -117,8 +117,8 @@ class _DrawerUserState extends ConsumerState<DrawerUser> {
         // Overlay loader
         if (_isLoading)
           Container(
-            color: colorScheme.scrim.withOpacity(
-              0.5,
+            color: colorScheme.scrim.withValues(
+              alpha: 0.5,
             ), // Overlay adaptado al tema
             alignment: Alignment.center,
             child: CircularProgressIndicator(

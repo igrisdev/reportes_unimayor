@@ -40,7 +40,7 @@ class ApiAuthWithGoogle extends BaseDioService {
       } else {
         return null;
       }
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException {
       return null;
     }
   }
