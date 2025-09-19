@@ -121,16 +121,18 @@ Future<ReportsModel> getReportByIdBrigadier(
 }
 
 @riverpod
-Future<bool> createReportWrite(
-  CreateReportWriteRef ref,
+Future<bool> createReport(
+  CreateReportRef ref,
   String idUbicacion,
-  String descripcion,
+  String? descripcion,
+  String? record,
 ) async {
   try {
     final apiService = ApiReportsService();
-    final response = await apiService.createReportWrite(
+    final response = await apiService.createReport(
       idUbicacion,
       descripcion,
+      record,
     );
 
     if (response) {
@@ -145,27 +147,52 @@ Future<bool> createReportWrite(
   }
 }
 
-@riverpod
-Future<bool> createReportRecord(
-  CreateReportRecordRef ref,
-  String idUbicacion,
-  String record,
-) async {
-  try {
-    final apiService = ApiReportsService();
-    final response = await apiService.createReportAudio(idUbicacion, record);
+// @riverpod
+// Future<bool> createReportWrite(
+//   CreateReportWriteRef ref,
+//   String idUbicacion,
+//   String descripcion,
+// ) async {
+//   try {
+//     final apiService = ApiReportsService();
+//     final response = await apiService.createReportWrite(
+//       idUbicacion,
+//       descripcion,
+//     );
 
-    if (response) {
-      invalidateAllProvidersUser(ref);
-      return true;
-    }
+//     if (response) {
+//       invalidateAllProvidersUser(ref);
+//       return true;
+//     }
 
-    return false;
-  } catch (e) {
-    print('Error crear reporte con audio: $e');
-    rethrow; // Riverpod manejará el error
-  }
-}
+//     return false;
+//   } catch (e) {
+//     print('Error en report provider: $e');
+//     rethrow; // Riverpod manejará el error
+//   }
+// }
+
+// @riverpod
+// Future<bool> createReportRecord(
+//   CreateReportRecordRef ref,
+//   String idUbicacion,
+//   String record,
+// ) async {
+//   try {
+//     final apiService = ApiReportsService();
+//     final response = await apiService.createReportAudio(idUbicacion, record);
+
+//     if (response) {
+//       invalidateAllProvidersUser(ref);
+//       return true;
+//     }
+
+//     return false;
+//   } catch (e) {
+//     print('Error crear reporte con audio: $e');
+//     rethrow; // Riverpod manejará el error
+//   }
+// }
 
 @riverpod
 Future<bool> cancelReport(CancelReportRef ref, int id) async {

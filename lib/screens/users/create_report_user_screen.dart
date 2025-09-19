@@ -27,20 +27,18 @@ class _CreateReportUserScreenState
     {'idLocation': '1', 'location': 'Salón 202'},
   ];
 
-  String? _selectedHeadquarter;
-  String? _selectedBuilding;
-  String? _selectedLocation;
-  String? _description;
-
-  String _locationInputMode = 'Qr'; // 'Qr' o 'Seleccionar'
-  String _descriptionInputMode = 'Audio'; // 'Audio' o 'Escribir'
+  String? formSelectedHeadquarter;
+  String? formSelectedBuilding;
+  String? formSelectedLocation;
+  String? formDescription;
 
   final AudioRecorder _audioRecorder = AudioRecorder();
   String? _recordingPath;
   bool _isRecording = false;
 
-  bool _isSending = false;
   bool _isManualMode = false;
+
+  bool _isReadyToSend = formDescription.isNotEmpty();
 
   @override
   void dispose() {
@@ -55,26 +53,26 @@ class _CreateReportUserScreenState
       return;
     }
 
-    if (_locationInputMode == 'Qr' &&
-        ref.read(idLocationQrScannerProvider).isEmpty) {
-      showMessage(
-        context,
-        'Por favor, escanee un código QR para la ubicación.',
-        Theme.of(context).colorScheme.error,
-      );
-      return;
-    }
+    // if (_locationInputMode == 'Qr' &&
+    //     ref.read(idLocationQrScannerProvider).isEmpty) {
+    //   showMessage(
+    //     context,
+    //     'Por favor, escanee un código QR para la ubicación.',
+    //     Theme.of(context).colorScheme.error,
+    //   );
+    //   return;
+    // }
 
-    if (_descriptionInputMode == 'Audio' && _recordingPath == null) {
-      showMessage(
-        context,
-        'Por favor, grabe un audio para la descripción.',
-        Theme.of(context).colorScheme.error,
-      );
-      return;
-    }
+    // if (_descriptionInputMode == 'Audio' && _recordingPath == null) {
+    //   showMessage(
+    //     context,
+    //     'Por favor, grabe un audio para la descripción.',
+    //     Theme.of(context).colorScheme.error,
+    //   );
+    //   return;
+    // }
 
-    setState(() => _isSending = true);
+    setState(() => _isReadyToSend = false);
 
     showDialog(
       context: context,
@@ -102,19 +100,15 @@ class _CreateReportUserScreenState
       final idLocationFromQr = ref.read(idLocationQrScannerProvider);
       final locationToSend = idLocationFromQr.isNotEmpty
           ? idLocationFromQr
-          : _selectedLocation;
+          : formSelectedLocation;
 
-      bool? response;
-
-      if (_descriptionInputMode == 'Audio') {
-        response = await ref.read(
-          createReportRecordProvider(locationToSend!, _recordingPath!).future,
-        );
-      } else {
-        response = await ref.read(
-          createReportWriteProvider(locationToSend!, _description!).future,
-        );
-      }
+      bool response = await ref.read(
+        createReportProvider(
+          locationToSend!,
+          formDescription,
+          _recordingPath,
+        ).future,
+      );
 
       if (mounted) Navigator.of(context).pop();
 
@@ -139,7 +133,7 @@ class _CreateReportUserScreenState
       );
     } finally {
       if (mounted) {
-        setState(() => _isSending = false);
+        setState(() => _isReadyToSend = true);
       }
     }
   }
@@ -158,7 +152,7 @@ class _CreateReportUserScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              sectionHeader(title: 'Ubicación*'),
+              sectionHeader(title: 'Ubicación *'),
               const SizedBox(height: 10),
               qrScannerButton(idLocationQrScanner),
               const SizedBox(height: 12),
@@ -166,7 +160,7 @@ class _CreateReportUserScreenState
               if (_isManualMode) const SizedBox(height: 10),
               if (_isManualMode) manualLocationSelector(),
               const SizedBox(height: 14),
-              sectionHeader(title: 'Descripción*'),
+              sectionHeader(title: 'Descripción *'),
               const SizedBox(height: 10),
               descriptionField(),
               const SizedBox(height: 20),
@@ -174,77 +168,51 @@ class _CreateReportUserScreenState
           ),
         ),
       ),
-      bottomNavigationBar: _buildSubmitButton(),
+      bottomNavigationBar: buttonSubmitReport(),
     );
   }
 
   Widget descriptionField() {
+    final colors = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TextFormField(
-          minLines: 2,
+          minLines: 3,
           maxLines: 7,
-          onChanged: (value) => _description = value,
+          onChanged: (value) => formDescription = value,
           decoration: InputDecoration(
             hintText: "Descripción del reporte",
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
             suffixIcon: IconButton(
-              icon: const Icon(Icons.mic, color: Colors.black, size: 30),
-              onPressed: () {},
+              iconSize: 40,
+              color: _isRecording
+                  ? colors.error
+                  : _recordingPath == null
+                  ? colors.onSurface
+                  : colors.tertiary,
+              icon: Icon(_isRecording ? Icons.stop_circle_outlined : Icons.mic),
+              onPressed: _toggleRecording,
             ),
           ),
           validator: (value) {
-            if (_descriptionInputMode == 'Escribir' &&
-                (value == null || value.trim().isEmpty)) {
+            if (value == null || value.trim().isEmpty) {
               return 'Por favor escriba una descripción';
             }
             return null;
           },
         ),
-      ],
-    );
-  }
-
-  Widget _buildAudioRecorder() {
-    final colors = Theme.of(context).colorScheme;
-    return Column(
-      children: [
-        Container(
-          width: double.infinity,
-          height: 150,
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                iconSize: 60,
-                color: _isRecording
-                    ? colors.error
-                    : _recordingPath == null
-                    ? colors.onSurface
-                    : colors.tertiary,
-                icon: Icon(
-                  _isRecording ? Icons.stop_circle_outlined : Icons.mic,
-                ),
-                onPressed: _toggleRecording,
+        const SizedBox(height: 8),
+        (_recordingPath != null && !_isRecording)
+            ? Text(
+                'Audio grabado. ¡Listo para enviar!',
+                style: TextStyle(color: colors.tertiary),
+              )
+            : Text(
+                _isRecording ? 'Grabando...' : 'Presione para grabar',
+                style: TextStyle(color: colors.onSurface),
               ),
-              const SizedBox(height: 8),
-              (_recordingPath != null && !_isRecording)
-                  ? Text(
-                      'Audio grabado. ¡Listo para enviar!',
-                      style: TextStyle(color: colors.tertiary),
-                    )
-                  : Text(
-                      _isRecording ? 'Grabando...' : 'Presione para grabar',
-                      style: TextStyle(color: colors.onSurface),
-                    ),
-            ],
-          ),
-        ),
       ],
     );
   }
@@ -313,7 +281,7 @@ class _CreateReportUserScreenState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           DropdownButtonFormField<String>(
-            initialValue: _selectedHeadquarter,
+            initialValue: formSelectedHeadquarter,
             decoration: InputDecoration(
               labelText: 'Seleccionar Sede',
               labelStyle: TextStyle(
@@ -337,9 +305,10 @@ class _CreateReportUserScreenState
                   ),
                 )
                 .toList(),
-            onChanged: (value) => setState(() => _selectedHeadquarter = value),
+            onChanged: (value) =>
+                setState(() => formSelectedHeadquarter = value),
             validator: (value) {
-              if (_locationInputMode == 'Seleccionar' && value == null) {
+              if (value == null) {
                 return 'Seleccione una sede';
               }
               return null;
@@ -347,7 +316,7 @@ class _CreateReportUserScreenState
           ),
           const SizedBox(height: 20),
           DropdownButtonFormField<String>(
-            initialValue: _selectedBuilding,
+            initialValue: formSelectedBuilding,
             decoration: InputDecoration(
               labelText: 'Seleccionar Edificio',
               labelStyle: TextStyle(
@@ -371,9 +340,9 @@ class _CreateReportUserScreenState
                   ),
                 )
                 .toList(),
-            onChanged: (value) => setState(() => _selectedBuilding = value),
+            onChanged: (value) => setState(() => formSelectedBuilding = value),
             validator: (value) {
-              if (_locationInputMode == 'Seleccionar' && value == null) {
+              if (value == null) {
                 return 'Seleccione un edificio';
               }
               return null;
@@ -381,7 +350,7 @@ class _CreateReportUserScreenState
           ),
           const SizedBox(height: 20),
           DropdownButtonFormField<String>(
-            initialValue: _selectedLocation,
+            initialValue: formSelectedLocation,
             decoration: InputDecoration(
               labelText: 'Seleccionar Salón',
               labelStyle: TextStyle(
@@ -405,9 +374,9 @@ class _CreateReportUserScreenState
                   ),
                 )
                 .toList(),
-            onChanged: (value) => setState(() => _selectedLocation = value),
+            onChanged: (value) => setState(() => formSelectedLocation = value),
             validator: (value) {
-              if (_locationInputMode == 'Seleccionar' && value == null) {
+              if (value == null) {
                 return 'Seleccione un salón';
               }
               return null;
@@ -503,7 +472,7 @@ class _CreateReportUserScreenState
     }
   }
 
-  Widget _buildSubmitButton() {
+  Widget buttonSubmitReport() {
     final colors = Theme.of(context).colorScheme;
 
     return Padding(
@@ -513,7 +482,6 @@ class _CreateReportUserScreenState
         child: ElevatedButton.icon(
           style: ElevatedButton.styleFrom(
             backgroundColor: colors.secondary,
-            foregroundColor: colors.onSurface,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(100),
             ),
@@ -522,45 +490,18 @@ class _CreateReportUserScreenState
               fontWeight: FontWeight.bold,
             ),
           ),
-          onPressed: _isRecording || _isSending ? null : _submitReport,
+          onPressed: _isReadyToSend ? _submitReport : null,
           label: Text(
             'Enviar Reporte',
             style: GoogleFonts.poppins(
               color: colors.onSurface,
-              fontSize: 20,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
           ),
           icon: Icon(Icons.send, color: colors.onSurface, size: 24),
         ),
       ),
-    );
-  }
-
-  Widget _buildToggleButton(
-    String text,
-    String value,
-    String groupValue,
-    VoidCallback onPressed,
-  ) {
-    final colors = Theme.of(context).colorScheme;
-    final bool isSelected = groupValue == value;
-    return TextButton(
-      onPressed: onPressed,
-      style: TextButton.styleFrom(
-        backgroundColor: isSelected
-            ? colors.primary.withValues(alpha: 0.1)
-            : colors.surface,
-        foregroundColor: isSelected ? colors.primary : colors.onSurface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-          side: BorderSide(
-            color: isSelected ? colors.primary : Colors.transparent,
-            width: 1.5,
-          ),
-        ),
-      ),
-      child: Text(text, style: const TextStyle(fontWeight: FontWeight.w500)),
     );
   }
 }
