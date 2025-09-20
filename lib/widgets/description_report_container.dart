@@ -86,7 +86,6 @@ class DescriptionReportContainer extends ConsumerWidget {
                     audioPlayerNotifierProvider.notifier,
                   );
 
-                  // 👇 fuerza la carga de metadata al mostrar el widget
                   if (audioState.currentUrl != url ||
                       audioState.duration == Duration.zero) {
                     audioNotifier.load(url);
@@ -118,10 +117,8 @@ class DescriptionReportContainer extends ConsumerWidget {
                         ),
                         const SizedBox(height: 10),
 
-                        // 🔹 Fila con slider y botón
                         Row(
                           children: [
-                            // Slider expandido a la izquierda
                             Expanded(
                               child: Column(
                                 children: [
@@ -141,7 +138,6 @@ class DescriptionReportContainer extends ConsumerWidget {
                                       );
                                     },
                                   ),
-                                  // tiempos debajo del slider
                                   Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -168,7 +164,6 @@ class DescriptionReportContainer extends ConsumerWidget {
 
                             const SizedBox(width: 12),
 
-                            // Botón de play/pause a la derecha
                             GestureDetector(
                               onTap: () async {
                                 if (isPlaying) {
@@ -207,7 +202,6 @@ class DescriptionReportContainer extends ConsumerWidget {
     );
   }
 
-  /// 🔹 Formato de duración mm:ss
   String _formatDuration(Duration d) {
     final minutes = d.inMinutes.remainder(60).toString().padLeft(2, '0');
     final seconds = d.inSeconds.remainder(60).toString().padLeft(2, '0');
