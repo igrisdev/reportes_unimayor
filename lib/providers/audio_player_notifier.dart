@@ -3,12 +3,11 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'audio_player_notifier.g.dart';
 
-/// Estado del reproductor
 class AudioPlayerState {
   final bool isPlaying;
   final String? currentUrl;
-  final Duration position;
-  final Duration duration;
+  final Duration? position;
+  final Duration? duration;
 
   AudioPlayerState({
     this.isPlaying = false,
@@ -40,7 +39,7 @@ class AudioPlayerNotifier extends _$AudioPlayerNotifier {
   AudioPlayerState build() {
     _player = AudioPlayer();
 
-    // 🔹 Escucha cambios en el estado del reproductor
+    // 🔹 Escuchar el estado de reproducción
     _player.playerStateStream.listen((playerState) {
       final isPlaying = playerState.playing;
       final processingState = playerState.processingState;
@@ -50,20 +49,20 @@ class AudioPlayerNotifier extends _$AudioPlayerNotifier {
       }
 
       if (processingState == ProcessingState.completed) {
-        state = state.copyWith(isPlaying: false, position: Duration.zero);
+        state = state.copyWith(isPlaying: false);
       }
     });
 
-    // 🔹 Escucha duración del audio
-    _player.durationStream.listen((duration) {
-      if (duration != null) {
-        state = state.copyWith(duration: duration);
-      }
+    // 🔹 Escuchar posición
+    _player.positionStream.listen((pos) {
+      state = state.copyWith(position: pos);
     });
 
-    // 🔹 Escucha posición actual
-    _player.positionStream.listen((position) {
-      state = state.copyWith(position: position);
+    // 🔹 Escuchar duración
+    _player.durationStream.listen((dur) {
+      if (dur != null) {
+        state = state.copyWith(duration: dur);
+      }
     });
 
     ref.onDispose(() {
@@ -93,18 +92,15 @@ class AudioPlayerNotifier extends _$AudioPlayerNotifier {
 
   Future<void> pause() async {
     await _player.pause();
+    state = state.copyWith(isPlaying: false);
   }
 
   Future<void> stop() async {
     await _player.stop();
-    state = state.copyWith(
-      isPlaying: false,
-      currentUrl: null,
-      position: Duration.zero,
-      duration: Duration.zero,
-    );
+    state = state.copyWith(isPlaying: false, currentUrl: null);
   }
 
+  // 🔹 Nuevo método para mover el slider
   Future<void> seek(Duration position) async {
     await _player.seek(position);
   }

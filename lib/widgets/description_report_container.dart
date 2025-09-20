@@ -28,17 +28,16 @@ class DescriptionReportContainer extends ConsumerWidget {
     Color colorBackground = Colors.transparent;
 
     if (isImportant) {
-      colorBackground = scheme.error.withValues(alpha: 0.15);
+      colorBackground = scheme.error.withValues(alpha: 0.1);
     }
 
     if (isImportant && title == 'Nota Brigadista') {
-      colorBackground = scheme.primary.withValues(alpha: 0.15);
+      colorBackground = scheme.primary.withValues(alpha: 0.1);
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // 🔹 Bloque de descripción
         if (description.isNotEmpty)
           Container(
             width: double.infinity,
@@ -47,7 +46,7 @@ class DescriptionReportContainer extends ConsumerWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             padding: const EdgeInsets.all(12),
-            margin: const EdgeInsets.only(bottom: 12),
+            margin: const EdgeInsets.only(bottom: 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -86,10 +85,13 @@ class DescriptionReportContainer extends ConsumerWidget {
                   final isPlaying =
                       audioState.isPlaying && audioState.currentUrl == url;
 
-                  final position = audioState.position;
-                  final duration = audioState.duration == Duration.zero
-                      ? Duration(seconds: 1)
-                      : audioState.duration;
+                  // 🔹 Manejo seguro de null
+                  final position = audioState.position ?? Duration.zero;
+                  final duration =
+                      (audioState.duration == null ||
+                          audioState.duration == Duration.zero)
+                      ? const Duration(seconds: 1)
+                      : audioState.duration!;
 
                   final audioNotifier = ref.read(
                     audioPlayerNotifierProvider.notifier,
@@ -98,7 +100,7 @@ class DescriptionReportContainer extends ConsumerWidget {
                   return Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: scheme.surfaceVariant.withOpacity(0.2),
+                      color: scheme.error.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     padding: const EdgeInsets.all(12),
@@ -129,8 +131,8 @@ class DescriptionReportContainer extends ConsumerWidget {
                                         .clamp(0, duration.inSeconds)
                                         .toDouble(),
                                     activeColor: scheme.primary,
-                                    inactiveColor: scheme.primary.withOpacity(
-                                      0.3,
+                                    inactiveColor: scheme.primary.withValues(
+                                      alpha: 0.3,
                                     ),
                                     onChanged: (value) {
                                       audioNotifier.seek(
