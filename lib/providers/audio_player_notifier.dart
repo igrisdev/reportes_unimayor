@@ -3,16 +3,31 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'audio_player_notifier.g.dart';
 
+/// Estado del reproductor
 class AudioPlayerState {
   final bool isPlaying;
   final String? currentUrl;
+  final Duration position;
+  final Duration duration;
 
-  AudioPlayerState({this.isPlaying = false, this.currentUrl});
+  AudioPlayerState({
+    this.isPlaying = false,
+    this.currentUrl,
+    this.position = Duration.zero,
+    this.duration = Duration.zero,
+  });
 
-  AudioPlayerState copyWith({bool? isPlaying, String? currentUrl}) {
+  AudioPlayerState copyWith({
+    bool? isPlaying,
+    String? currentUrl,
+    Duration? position,
+    Duration? duration,
+  }) {
     return AudioPlayerState(
       isPlaying: isPlaying ?? this.isPlaying,
       currentUrl: currentUrl ?? this.currentUrl,
+      position: position ?? this.position,
+      duration: duration ?? this.duration,
     );
   }
 }
@@ -25,6 +40,7 @@ class AudioPlayerNotifier extends _$AudioPlayerNotifier {
   AudioPlayerState build() {
     _player = AudioPlayer();
 
+    // 🔹 Escucha cambios en el estado del reproductor
     _player.playerStateStream.listen((playerState) {
       final isPlaying = playerState.playing;
       final processingState = playerState.processingState;
@@ -34,8 +50,20 @@ class AudioPlayerNotifier extends _$AudioPlayerNotifier {
       }
 
       if (processingState == ProcessingState.completed) {
-        state = state.copyWith(isPlaying: false);
+        state = state.copyWith(isPlaying: false, position: Duration.zero);
       }
+    });
+
+    // 🔹 Escucha duración del audio
+    _player.durationStream.listen((duration) {
+      if (duration != null) {
+        state = state.copyWith(duration: duration);
+      }
+    });
+
+    // 🔹 Escucha posición actual
+    _player.positionStream.listen((position) {
+      state = state.copyWith(position: position);
     });
 
     ref.onDispose(() {
@@ -64,12 +92,20 @@ class AudioPlayerNotifier extends _$AudioPlayerNotifier {
   }
 
   Future<void> pause() async {
-    await _player.seek(Duration.zero);
     await _player.pause();
   }
 
   Future<void> stop() async {
     await _player.stop();
-    state = state.copyWith(isPlaying: false, currentUrl: null);
+    state = state.copyWith(
+      isPlaying: false,
+      currentUrl: null,
+      position: Duration.zero,
+      duration: Duration.zero,
+    );
+  }
+
+  Future<void> seek(Duration position) async {
+    await _player.seek(position);
   }
 }
