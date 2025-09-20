@@ -39,7 +39,6 @@ class AudioPlayerNotifier extends _$AudioPlayerNotifier {
   AudioPlayerState build() {
     _player = AudioPlayer();
 
-    // 🔹 Estado de reproducción
     _player.playerStateStream.listen((playerState) {
       final isPlaying = playerState.playing;
       final processingState = playerState.processingState;
@@ -53,12 +52,10 @@ class AudioPlayerNotifier extends _$AudioPlayerNotifier {
       }
     });
 
-    // 🔹 Escuchar posición
     _player.positionStream.listen((pos) {
       state = state.copyWith(position: pos);
     });
 
-    // 🔹 Escuchar duración
     _player.durationStream.listen((dur) {
       if (dur != null) {
         state = state.copyWith(duration: dur);
@@ -72,7 +69,6 @@ class AudioPlayerNotifier extends _$AudioPlayerNotifier {
     return AudioPlayerState();
   }
 
-  /// 🔹 Nuevo método para cargar metadatos (duración) sin reproducir
   Future<void> load(String url) async {
     try {
       if (state.currentUrl != url) {

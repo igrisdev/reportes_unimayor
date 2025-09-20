@@ -71,13 +71,12 @@ class DescriptionReportContainer extends ConsumerWidget {
             ),
           ),
 
-        // 🔹 Bloque de audio
         if (audio.isNotEmpty)
           Consumer(
             builder: (context, ref, _) {
               final audioState = ref.watch(audioPlayerNotifierProvider);
               final audioUrlAsync = ref.watch(
-                getRecordProvider(idReport, description),
+                getRecordProvider(idReport, audio),
               );
 
               return audioUrlAsync.when(
@@ -115,6 +114,7 @@ class DescriptionReportContainer extends ConsumerWidget {
                             color: scheme.onSurface,
                           ),
                         ),
+
                         const SizedBox(height: 10),
 
                         Row(
