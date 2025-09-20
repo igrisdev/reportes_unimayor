@@ -71,30 +71,26 @@ class DescriptionReportContainer extends ConsumerWidget {
             ),
           ),
 
+        // 🔹 Bloque de audio
         if (audio.isNotEmpty)
           Consumer(
             builder: (context, ref, _) {
               final audioState = ref.watch(audioPlayerNotifierProvider);
+              final audioNotifier = ref.read(
+                audioPlayerNotifierProvider.notifier,
+              );
+
               final audioUrlAsync = ref.watch(
-                getRecordProvider(idReport, audio),
+                getRecordProvider(idReport, description),
               );
 
               return audioUrlAsync.when(
                 data: (url) {
-                  final audioNotifier = ref.read(
-                    audioPlayerNotifierProvider.notifier,
-                  );
-
-                  if (audioState.currentUrl != url ||
-                      audioState.duration == Duration.zero) {
-                    audioNotifier.load(url);
-                  }
-
                   final isPlaying =
                       audioState.isPlaying && audioState.currentUrl == url;
 
-                  final position = audioState.position ?? Duration.zero;
-                  final duration = audioState.duration ?? Duration.zero;
+                  final position = audioState.position;
+                  final duration = audioState.duration;
 
                   return Container(
                     width: double.infinity,
@@ -114,11 +110,11 @@ class DescriptionReportContainer extends ConsumerWidget {
                             color: scheme.onSurface,
                           ),
                         ),
-
                         const SizedBox(height: 10),
 
                         Row(
                           children: [
+                            // 🔹 Slider a la izquierda
                             Expanded(
                               child: Column(
                                 children: [
@@ -138,6 +134,7 @@ class DescriptionReportContainer extends ConsumerWidget {
                                       );
                                     },
                                   ),
+                                  // tiempos debajo del slider
                                   Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -164,6 +161,7 @@ class DescriptionReportContainer extends ConsumerWidget {
 
                             const SizedBox(width: 12),
 
+                            // 🔹 Botón de play/pause
                             GestureDetector(
                               onTap: () async {
                                 if (isPlaying) {
@@ -202,6 +200,7 @@ class DescriptionReportContainer extends ConsumerWidget {
     );
   }
 
+  /// 🔹 Formato mm:ss
   String _formatDuration(Duration d) {
     final minutes = d.inMinutes.remainder(60).toString().padLeft(2, '0');
     final seconds = d.inSeconds.remainder(60).toString().padLeft(2, '0');

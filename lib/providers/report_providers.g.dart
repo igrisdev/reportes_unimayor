@@ -863,7 +863,7 @@ class _EndReportProviderElement extends AutoDisposeFutureProviderElement<bool>
   String get description => (origin as EndReportProvider).description;
 }
 
-String _$getRecordHash() => r'244e92aae4a71ca2d5ff1021b91948a988cc08d3';
+String _$getRecordHash() => r'69274c4887ec4403050a0a53cc7ecd321a3b17d8';
 
 /// See also [getRecord].
 @ProviderFor(getRecord)

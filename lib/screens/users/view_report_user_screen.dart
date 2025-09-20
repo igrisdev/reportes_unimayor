@@ -7,6 +7,7 @@ import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/widgets/app_bar_user.dart';
 import 'package:reportes_unimayor/widgets/big_badge_view_progress.dart';
 import 'package:reportes_unimayor/widgets/date_and_hour_container.dart';
+import 'package:reportes_unimayor/widgets/description_report_container.dart';
 import 'package:reportes_unimayor/widgets/text_and_title_container.dart';
 import 'package:reportes_unimayor/widgets/view_location.dart';
 
@@ -99,12 +100,10 @@ class ViewReportUserScreen extends ConsumerWidget {
           const SizedBox(height: 20),
           ViewLocation(location: report.ubicacion),
           const SizedBox(height: 30),
-          TextAndTitleContainer(
-            title: report.descripcion == '' ? 'Audio' : 'Descripción',
-            description: report.descripcion == ''
-                ? report.rutaAudio
-                : report.descripcion,
+          DescriptionReportContainer(
             idReport: report.idReporte,
+            description: report.descripcion == '' ? '' : report.descripcion,
+            audio: report.rutaAudio == '' ? '' : report.rutaAudio,
           ),
           const SizedBox(height: 30),
           DateAndHourContainer(

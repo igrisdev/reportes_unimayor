@@ -1,4 +1,5 @@
 import 'package:reportes_unimayor/models/reports_model.dart';
+import 'package:reportes_unimayor/providers/audio_player_notifier.dart';
 import 'package:reportes_unimayor/providers/is_brigadier_provider.dart';
 import 'package:reportes_unimayor/services/api_reports_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -216,10 +217,13 @@ Future<String> getRecord(
       throw Exception('Error obteniendo el audio');
     }
 
+    final audioNotifier = ref.read(audioPlayerNotifierProvider.notifier);
+    await audioNotifier.load(response);
+
     return response;
   } catch (e) {
     print('Error obtener audio: $e');
-    rethrow; // Riverpod manejará el error
+    rethrow;
   }
 }
 
