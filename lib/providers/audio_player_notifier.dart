@@ -39,7 +39,7 @@ class AudioPlayerNotifier extends _$AudioPlayerNotifier {
   AudioPlayerState build() {
     _player = AudioPlayer();
 
-    // 🔹 Escuchar el estado de reproducción
+    // 🔹 Estado de reproducción
     _player.playerStateStream.listen((playerState) {
       final isPlaying = playerState.playing;
       final processingState = playerState.processingState;
@@ -72,11 +72,29 @@ class AudioPlayerNotifier extends _$AudioPlayerNotifier {
     return AudioPlayerState();
   }
 
+  /// 🔹 Nuevo método para cargar metadatos (duración) sin reproducir
+  Future<void> load(String url) async {
+    try {
+      if (state.currentUrl != url) {
+        final duration = await _player.setUrl(url);
+        state = state.copyWith(
+          currentUrl: url,
+          duration: duration ?? Duration.zero,
+        );
+      }
+    } catch (e) {
+      print("Error loading audio: $e");
+    }
+  }
+
   Future<void> play(String url) async {
     try {
       if (state.currentUrl != url) {
-        await _player.setUrl(url);
-        state = state.copyWith(currentUrl: url);
+        final duration = await _player.setUrl(url);
+        state = state.copyWith(
+          currentUrl: url,
+          duration: duration ?? Duration.zero,
+        );
       }
 
       if (_player.processingState == ProcessingState.completed) {
@@ -100,7 +118,6 @@ class AudioPlayerNotifier extends _$AudioPlayerNotifier {
     state = state.copyWith(isPlaying: false, currentUrl: null);
   }
 
-  // 🔹 Nuevo método para mover el slider
   Future<void> seek(Duration position) async {
     await _player.seek(position);
   }

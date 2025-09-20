@@ -82,20 +82,21 @@ class DescriptionReportContainer extends ConsumerWidget {
 
               return audioUrlAsync.when(
                 data: (url) {
-                  final isPlaying =
-                      audioState.isPlaying && audioState.currentUrl == url;
-
-                  // 🔹 Manejo seguro de null
-                  final position = audioState.position ?? Duration.zero;
-                  final duration =
-                      (audioState.duration == null ||
-                          audioState.duration == Duration.zero)
-                      ? const Duration(seconds: 1)
-                      : audioState.duration!;
-
                   final audioNotifier = ref.read(
                     audioPlayerNotifierProvider.notifier,
                   );
+
+                  // 👇 fuerza la carga de metadata al mostrar el widget
+                  if (audioState.currentUrl != url ||
+                      audioState.duration == Duration.zero) {
+                    audioNotifier.load(url);
+                  }
+
+                  final isPlaying =
+                      audioState.isPlaying && audioState.currentUrl == url;
+
+                  final position = audioState.position ?? Duration.zero;
+                  final duration = audioState.duration ?? Duration.zero;
 
                   return Container(
                     width: double.infinity,
