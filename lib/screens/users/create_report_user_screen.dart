@@ -62,6 +62,14 @@ class _CreateReportUserScreenState
 
     final hasContent = hasDescription || hasAudio;
 
+    // 🔹 Bloqueo adicional: si está grabando, no puede enviar
+    if (_isRecording) {
+      setState(() {
+        _isReadyToSend = false;
+      });
+      return;
+    }
+
     final ready = (hasManualLocation || hasQrLocation) && hasContent;
 
     setState(() {
