@@ -112,11 +112,10 @@ class HistoryUserScreen extends ConsumerWidget {
                 ViewLocation(location: report.ubicacion),
                 const SizedBox(height: 20),
                 TextAndTitleContainer(
-                  title: report.descripcion == '' ? 'Audio' : 'Descripción',
-                  description: report.descripcion == ''
-                      ? report.rutaAudio
-                      : report.descripcion,
-                  idReport: report.idReporte,
+                  title: 'Nota Brigadista',
+                  description: report.detallesFinalizacion.isNotEmpty
+                      ? report.detallesFinalizacion
+                      : 'Sin nota',
                 ),
                 const SizedBox(height: 20),
                 DateAndHourContainer(
