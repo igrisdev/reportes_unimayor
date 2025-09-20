@@ -37,13 +37,36 @@ class _CreateReportUserScreenState
   bool _isRecording = false;
 
   bool _isManualMode = false;
-
-  bool _isReadyToSend = formDescription.isNotEmpty();
+  bool _isReadyToSend = false;
 
   @override
   void dispose() {
     _audioRecorder.dispose();
     super.dispose();
+  }
+
+  void _checkIfReadyToSend() {
+    final idLocationFromQr = ref.read(idLocationQrScannerProvider);
+
+    final hasManualLocation =
+        formSelectedHeadquarter != null &&
+        formSelectedBuilding != null &&
+        formSelectedLocation != null;
+
+    final hasQrLocation = idLocationFromQr.isNotEmpty;
+
+    final hasDescription =
+        formDescription != null && formDescription!.trim().isNotEmpty;
+
+    final hasAudio = _recordingPath != null;
+
+    final hasContent = hasDescription || hasAudio;
+
+    final ready = (hasManualLocation || hasQrLocation) && hasContent;
+
+    setState(() {
+      _isReadyToSend = ready;
+    });
   }
 
   Future<void> _submitReport() async {
@@ -52,25 +75,6 @@ class _CreateReportUserScreenState
     if (!_formKey.currentState!.validate()) {
       return;
     }
-
-    // if (_locationInputMode == 'Qr' &&
-    //     ref.read(idLocationQrScannerProvider).isEmpty) {
-    //   showMessage(
-    //     context,
-    //     'Por favor, escanee un código QR para la ubicación.',
-    //     Theme.of(context).colorScheme.error,
-    //   );
-    //   return;
-    // }
-
-    // if (_descriptionInputMode == 'Audio' && _recordingPath == null) {
-    //   showMessage(
-    //     context,
-    //     'Por favor, grabe un audio para la descripción.',
-    //     Theme.of(context).colorScheme.error,
-    //   );
-    //   return;
-    // }
 
     setState(() => _isReadyToSend = false);
 
@@ -133,7 +137,7 @@ class _CreateReportUserScreenState
       );
     } finally {
       if (mounted) {
-        setState(() => _isReadyToSend = true);
+        _checkIfReadyToSend();
       }
     }
   }
@@ -142,6 +146,10 @@ class _CreateReportUserScreenState
   Widget build(BuildContext context) {
     final idLocationQrScanner = ref.watch(idLocationQrScannerProvider);
     final colors = Theme.of(context).colorScheme;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkIfReadyToSend();
+    });
 
     return Scaffold(
       appBar: const AppBarUser(),
@@ -181,7 +189,10 @@ class _CreateReportUserScreenState
         TextFormField(
           minLines: 3,
           maxLines: 7,
-          onChanged: (value) => formDescription = value,
+          onChanged: (value) {
+            formDescription = value;
+            _checkIfReadyToSend();
+          },
           decoration: InputDecoration(
             hintText: "Descripción del reporte",
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
@@ -196,12 +207,6 @@ class _CreateReportUserScreenState
               onPressed: _toggleRecording,
             ),
           ),
-          validator: (value) {
-            if (value == null || value.trim().isEmpty) {
-              return 'Por favor escriba una descripción';
-            }
-            return null;
-          },
         ),
         const SizedBox(height: 8),
         (_recordingPath != null && !_isRecording)
@@ -221,6 +226,7 @@ class _CreateReportUserScreenState
     return TextButton(
       onPressed: () {
         setState(() => _isManualMode = !_isManualMode);
+        _checkIfReadyToSend();
       },
       style: TextButton.styleFrom(
         backgroundColor: colors.primary,
@@ -305,13 +311,9 @@ class _CreateReportUserScreenState
                   ),
                 )
                 .toList(),
-            onChanged: (value) =>
-                setState(() => formSelectedHeadquarter = value),
-            validator: (value) {
-              if (value == null) {
-                return 'Seleccione una sede';
-              }
-              return null;
+            onChanged: (value) {
+              setState(() => formSelectedHeadquarter = value);
+              _checkIfReadyToSend();
             },
           ),
           const SizedBox(height: 20),
@@ -340,12 +342,9 @@ class _CreateReportUserScreenState
                   ),
                 )
                 .toList(),
-            onChanged: (value) => setState(() => formSelectedBuilding = value),
-            validator: (value) {
-              if (value == null) {
-                return 'Seleccione un edificio';
-              }
-              return null;
+            onChanged: (value) {
+              setState(() => formSelectedBuilding = value);
+              _checkIfReadyToSend();
             },
           ),
           const SizedBox(height: 20),
@@ -374,12 +373,9 @@ class _CreateReportUserScreenState
                   ),
                 )
                 .toList(),
-            onChanged: (value) => setState(() => formSelectedLocation = value),
-            validator: (value) {
-              if (value == null) {
-                return 'Seleccione un salón';
-              }
-              return null;
+            onChanged: (value) {
+              setState(() => formSelectedLocation = value);
+              _checkIfReadyToSend();
             },
           ),
         ],
@@ -451,6 +447,7 @@ class _CreateReportUserScreenState
         _isRecording = false;
         _recordingPath = path;
       });
+      _checkIfReadyToSend();
     } else {
       if (await _audioRecorder.hasPermission()) {
         final appDocumentsDir = await getApplicationDocumentsDirectory();
