@@ -128,7 +128,7 @@ class _CreateReportUserScreenState
         ref
             .read(idLocationQrScannerProvider.notifier)
             .removeIdLocationQrScanner();
-        context.go('/user');
+        context.pushReplacement('/user');
       } else {
         showMessage(
           context,

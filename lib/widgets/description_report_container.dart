@@ -81,7 +81,7 @@ class DescriptionReportContainer extends ConsumerWidget {
               );
 
               final audioUrlAsync = ref.watch(
-                getRecordProvider(idReport, description),
+                getRecordProvider(idReport, audio),
               );
 
               return audioUrlAsync.when(
