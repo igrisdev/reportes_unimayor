@@ -67,21 +67,32 @@ Future<List<ReportsModel>> reportListHistoryBrigadier(
 }
 
 @riverpod
-Future<List<ReportsModel>> reportListPending(ReportListPendingRef ref) async {
-  try {
+class ReportListPending extends _$ReportListPending {
+  @override
+  Future<List<ReportsModel>> build() async {
     final apiService = ApiReportsService();
     final reports = await apiService.getReports();
-
-    final pendingReports = reports
-        .where(
-          (report) =>
-              report.estado != 'Finalizado' && report.estado != 'Cancelado',
-        )
+    return reports
+        .where((r) => r.estado != 'Finalizado' && r.estado != 'Cancelado')
         .toList();
-    return pendingReports;
-  } catch (e) {
-    print('Error Report List Pending ***: $e');
-    rethrow; // Riverpod manejará el error
+  }
+
+  Future<void> cancelReport(int id) async {
+    final apiService = ApiReportsService();
+
+    final previous = state.asData?.value ?? [];
+    final updated = previous.where((r) => r.idReporte != id).toList();
+    state = AsyncData(updated);
+
+    try {
+      final response = await apiService.cancelReport(id);
+      if (!response) {
+        state = AsyncData(previous);
+      }
+    } catch (_) {
+      state = AsyncData(previous);
+      rethrow;
+    }
   }
 }
 
@@ -137,6 +148,38 @@ Future<bool> createReport(
     );
 
     if (response) {
+      final previous = ref.read(reportListPendingProvider).asData?.value ?? [];
+
+      final now = DateTime.now();
+      String hora =
+          "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
+
+      final newReport = ReportsModel(
+        idReporte: -1,
+        usuario: Usuario(correo: "", nombre: "", rutaFoto: null, mensaje: null),
+        ubicacion: Ubicacion(
+          idUbicacion: int.tryParse(idUbicacion) ?? -1,
+          descripcion: "Ubicación seleccionada",
+          sede: "cargando ...",
+          edificio: "cargando ...",
+          lugar: "cargando ...",
+          piso: "cargando ...",
+          rutaQr: "",
+          reportes: null,
+        ),
+        descripcion: descripcion ?? 'cargando ...',
+        detallesFinalizacion: '',
+        rutaAudio: record ?? '',
+        estado: 'Pendiente',
+        fechaCreacion: now,
+        horaCreacion: hora,
+      );
+
+      ref.read(reportListPendingProvider.notifier).state = AsyncData([
+        ...previous,
+        newReport,
+      ]);
+
       invalidateAllProvidersUser(ref);
       return true;
     }
@@ -144,25 +187,7 @@ Future<bool> createReport(
     return false;
   } catch (e) {
     print('Error en report provider: $e');
-    rethrow; // Riverpod manejará el error
-  }
-}
-
-@riverpod
-Future<bool> cancelReport(CancelReportRef ref, int id) async {
-  try {
-    final apiService = ApiReportsService();
-    final response = await apiService.cancelReport(id);
-
-    if (response) {
-      invalidateAllProvidersUser(ref);
-      return true;
-    }
-
-    return false;
-  } catch (e) {
-    print('Error en report provider: $e');
-    rethrow; // Riverpod manejará el error
+    rethrow;
   }
 }
 

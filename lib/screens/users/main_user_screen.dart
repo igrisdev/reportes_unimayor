@@ -9,6 +9,7 @@ import 'package:reportes_unimayor/widgets/big_badge_view_progress.dart';
 import 'package:reportes_unimayor/widgets/date_and_hour_container.dart';
 import 'package:reportes_unimayor/widgets/description_report_container.dart';
 import 'package:reportes_unimayor/widgets/drawer_user.dart';
+import 'package:reportes_unimayor/widgets/general/confirm_dialog.dart';
 import 'package:reportes_unimayor/widgets/text_no_reports.dart';
 import 'package:reportes_unimayor/widgets/text_note.dart';
 import 'package:reportes_unimayor/widgets/view_location.dart';
@@ -212,11 +213,28 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
           child: InkWell(
             borderRadius: BorderRadius.circular(100),
             onTap: () {
-              if (idReport.isLoading || idReport.value == null) {
-                return;
-              }
-              showDialogIfCancel(ref, idReport.value!);
+              if (idReport.isLoading || idReport.value == null) return;
+
+              showDialog(
+                context: context,
+                barrierDismissible: false, // no se cierra tocando afuera
+                builder: (context) {
+                  return ConfirmDialog(
+                    title: "Confirmar cancelación",
+                    message:
+                        "¿Estás seguro de que quieres cancelar el reporte?",
+                    confirmText: "Aceptar",
+                    cancelText: "Cancelar",
+                    onConfirm: () async {
+                      await ref
+                          .read(reportListPendingProvider.notifier)
+                          .cancelReport(idReport.value!);
+                    },
+                  );
+                },
+              );
             },
+
             child: Center(
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -237,63 +255,6 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  Future<void> showDialogIfCancel(WidgetRef ref, int idReport) {
-    return showDialog(
-      context: ref.context,
-      builder: (BuildContext context) {
-        bool isCancelling = false;
-        final colors = Theme.of(context).colorScheme;
-
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              title: Text(
-                'Confirmar cancelación',
-                style: TextStyle(color: colors.onSurface),
-              ),
-              content: Text(
-                '¿Estás seguro de que quieres cancelar el reporte?',
-                style: TextStyle(color: colors.onSurfaceVariant),
-              ),
-              actions: <Widget>[
-                TextButton(
-                  child: Text('No', style: TextStyle(color: colors.primary)),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                TextButton(
-                  onPressed: isCancelling
-                      ? null
-                      : () async {
-                          setDialogState(() {
-                            isCancelling = true;
-                          });
-                          await ref.read(cancelReportProvider(idReport).future);
-
-                          if (context.mounted) {
-                            Navigator.of(context).pop();
-                          }
-                        },
-                  child: isCancelling
-                      ? SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: colors.primary,
-                          ),
-                        )
-                      : Text('Sí', style: TextStyle(color: colors.error)),
-                ),
-              ],
-            );
-          },
-        );
-      },
     );
   }
 }

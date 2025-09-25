@@ -31,6 +31,10 @@ class _TextAndTitleContainerState extends ConsumerState<TextAndTitleContainer> {
 
     Color colorBackground = Colors.transparent;
 
+    if (widget.description == 'Sin nota') {
+      return Container();
+    }
+
     if (widget.isImportant) {
       colorBackground = scheme.error.withValues(alpha: 0.15);
     }

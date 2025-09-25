@@ -110,14 +110,15 @@ class HistoryUserScreen extends ConsumerWidget {
             child: Column(
               children: [
                 ViewLocation(location: report.ubicacion),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 TextAndTitleContainer(
                   title: 'Nota Brigadista',
                   description: report.detallesFinalizacion.isNotEmpty
                       ? report.detallesFinalizacion
                       : 'Sin nota',
                 ),
-                const SizedBox(height: 20),
+                if (report.detallesFinalizacion.isNotEmpty)
+                  const SizedBox(height: 10),
                 DateAndHourContainer(
                   date: report.fechaCreacion,
                   hour: report.horaCreacion,
