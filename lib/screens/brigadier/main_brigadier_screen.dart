@@ -5,13 +5,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/widgets/brigadier/app_bar_brigadier.dart';
+import 'package:reportes_unimayor/widgets/general/description_report_container.dart';
 import 'package:reportes_unimayor/widgets/general/big_badge_view_progress.dart';
-import 'package:reportes_unimayor/widgets/date_and_hour_container.dart';
+import 'package:reportes_unimayor/widgets/general/date_and_hour_container.dart';
 import 'package:reportes_unimayor/widgets/brigadier/drawer_brigadier.dart';
-import 'package:reportes_unimayor/widgets/info_user.dart';
-import 'package:reportes_unimayor/widgets/text_and_title_container.dart';
-import 'package:reportes_unimayor/widgets/text_no_reports.dart';
-import 'package:reportes_unimayor/widgets/view_location.dart';
+import 'package:reportes_unimayor/widgets/general/info_user.dart';
+import 'package:reportes_unimayor/widgets/general/text_note_brigadier.dart';
+import 'package:reportes_unimayor/widgets/general/text_no_reports.dart';
+import 'package:reportes_unimayor/widgets/general/view_location.dart';
 
 class MainBrigadierScreen extends ConsumerWidget {
   const MainBrigadierScreen({super.key});
@@ -270,12 +271,11 @@ class MainBrigadierScreen extends ConsumerWidget {
               children: [
                 ViewLocation(location: report.ubicacion),
                 const SizedBox(height: 20),
-                TextAndTitleContainer(
+                TextNoteBrigadier(
                   title: report.descripcion == '' ? 'Audio' : 'Descripción',
                   description: report.descripcion == ''
                       ? report.rutaAudio
                       : report.descripcion,
-                  idReport: report.idReporte,
                 ),
                 const SizedBox(height: 20),
                 DateAndHourContainer(
@@ -372,12 +372,10 @@ class MainBrigadierScreen extends ConsumerWidget {
           const SizedBox(height: 20),
           ViewLocation(location: report.ubicacion),
           const SizedBox(height: 20),
-          TextAndTitleContainer(
-            title: report.descripcion == '' ? 'Audio' : 'Descripción',
-            description: report.descripcion == ''
-                ? report.rutaAudio
-                : report.descripcion,
+          DescriptionReportContainer(
             idReport: report.idReporte,
+            description: report.descripcion == '' ? '' : report.descripcion,
+            audio: report.rutaAudio == '' ? '' : report.rutaAudio,
           ),
           const SizedBox(height: 20),
           DateAndHourContainer(

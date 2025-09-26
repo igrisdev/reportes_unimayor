@@ -4,10 +4,10 @@ import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/widgets/users/app_bar_user.dart';
 import 'package:reportes_unimayor/widgets/general/big_badge_view_progress.dart';
-import 'package:reportes_unimayor/widgets/date_and_hour_container.dart';
-import 'package:reportes_unimayor/widgets/description_report_container.dart';
-import 'package:reportes_unimayor/widgets/text_and_title_container.dart';
-import 'package:reportes_unimayor/widgets/view_location.dart';
+import 'package:reportes_unimayor/widgets/general/date_and_hour_container.dart';
+import 'package:reportes_unimayor/widgets/general/description_report_container.dart';
+import 'package:reportes_unimayor/widgets/general/text_note_brigadier.dart';
+import 'package:reportes_unimayor/widgets/general/view_location.dart';
 
 class ViewReportUserScreen extends ConsumerWidget {
   final String id;
@@ -57,7 +57,7 @@ class ViewReportUserScreen extends ConsumerWidget {
             hour: report.horaCreacion,
           ),
           const SizedBox(height: 30),
-          TextAndTitleContainer(
+          TextNoteBrigadier(
             title: 'Nota Brigadista',
             description: report.detallesFinalizacion.isNotEmpty
                 ? report.detallesFinalizacion

@@ -5,11 +5,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/widgets/users/app_bar_user.dart';
-import 'package:reportes_unimayor/widgets/date_and_hour_container.dart';
+import 'package:reportes_unimayor/widgets/general/date_and_hour_container.dart';
 import 'package:reportes_unimayor/widgets/users/drawer_user.dart';
-import 'package:reportes_unimayor/widgets/text_and_title_container.dart';
-import 'package:reportes_unimayor/widgets/text_no_reports.dart';
-import 'package:reportes_unimayor/widgets/view_location.dart';
+import 'package:reportes_unimayor/widgets/general/text_note_brigadier.dart';
+import 'package:reportes_unimayor/widgets/general/text_no_reports.dart';
+import 'package:reportes_unimayor/widgets/general/view_location.dart';
 
 class HistoryUserScreen extends ConsumerWidget {
   const HistoryUserScreen({super.key});
@@ -111,7 +111,7 @@ class HistoryUserScreen extends ConsumerWidget {
               children: [
                 ViewLocation(location: report.ubicacion),
                 const SizedBox(height: 10),
-                TextAndTitleContainer(
+                TextNoteBrigadier(
                   title: 'Nota Brigadista',
                   description: report.detallesFinalizacion.isNotEmpty
                       ? report.detallesFinalizacion

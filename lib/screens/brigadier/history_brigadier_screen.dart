@@ -5,11 +5,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/widgets/brigadier/app_bar_brigadier.dart';
-import 'package:reportes_unimayor/widgets/date_and_hour_container.dart';
+import 'package:reportes_unimayor/widgets/general/date_and_hour_container.dart';
 import 'package:reportes_unimayor/widgets/brigadier/drawer_brigadier.dart';
-import 'package:reportes_unimayor/widgets/text_and_title_container.dart';
-import 'package:reportes_unimayor/widgets/text_no_reports.dart';
-import 'package:reportes_unimayor/widgets/view_location.dart';
+import 'package:reportes_unimayor/widgets/general/text_note_brigadier.dart';
+import 'package:reportes_unimayor/widgets/general/text_no_reports.dart';
+import 'package:reportes_unimayor/widgets/general/view_location.dart';
 
 class HistoryBrigadierScreen extends ConsumerWidget {
   const HistoryBrigadierScreen({super.key});
@@ -110,15 +110,15 @@ class HistoryBrigadierScreen extends ConsumerWidget {
             child: Column(
               children: [
                 ViewLocation(location: report.ubicacion),
-                const SizedBox(height: 20),
-                TextAndTitleContainer(
-                  title: report.descripcion == '' ? 'Audio' : 'Descripción',
-                  description: report.descripcion == ''
-                      ? report.rutaAudio
-                      : report.descripcion,
-                  idReport: report.idReporte,
+                const SizedBox(height: 10),
+                TextNoteBrigadier(
+                  title: 'Nota Brigadista',
+                  description: report.detallesFinalizacion.isNotEmpty
+                      ? report.detallesFinalizacion
+                      : 'Sin nota',
                 ),
-                const SizedBox(height: 20),
+                if (report.detallesFinalizacion.isNotEmpty)
+                  const SizedBox(height: 10),
                 DateAndHourContainer(
                   date: report.fechaCreacion,
                   hour: report.horaCreacion,

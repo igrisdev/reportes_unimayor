@@ -21,7 +21,7 @@ class TextNote extends StatelessWidget {
             style: GoogleFonts.poppins(
               fontSize: 20,
               fontWeight: FontWeight.w600,
-              color: colorScheme.onSurface, // texto principal
+              color: colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 5),
@@ -30,7 +30,7 @@ class TextNote extends StatelessWidget {
             style: GoogleFonts.poppins(
               fontSize: 16,
               fontWeight: FontWeight.w500,
-              color: colorScheme.onSurfaceVariant, // texto secundario
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
         ],
