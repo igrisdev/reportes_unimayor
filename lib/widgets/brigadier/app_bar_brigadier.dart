@@ -35,7 +35,7 @@ class AppBarBrigadier extends StatelessWidget implements PreferredSizeWidget {
           ),
           icon: const Icon(Icons.engineering),
           onPressed: () {
-            router.push('/user');
+            router.pushReplacement('/user');
           },
         ),
       ],

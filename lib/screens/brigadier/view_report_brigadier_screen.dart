@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
-import 'package:reportes_unimayor/widgets/app_bar_brigadier.dart';
+import 'package:reportes_unimayor/widgets/brigadier/app_bar_brigadier.dart';
 import 'package:reportes_unimayor/widgets/date_and_hour_container.dart';
 import 'package:reportes_unimayor/widgets/info_user.dart';
 import 'package:reportes_unimayor/widgets/text_and_title_container.dart';

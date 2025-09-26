@@ -21,7 +21,7 @@ class AppBarUser extends ConsumerWidget implements PreferredSizeWidget {
       centerTitle: true,
       backgroundColor: colors.primary,
       title: Text(
-        'Reportes UniMayor',
+        'Reportes Unimayor',
         style: GoogleFonts.poppins(
           fontWeight: FontWeight.w600,
           fontSize: 18,
@@ -41,13 +41,13 @@ class AppBarUser extends ConsumerWidget implements PreferredSizeWidget {
                   ),
                 ),
                 icon: const Icon(Icons.person),
-                onPressed: () => router.go('/brigadier'),
+                onPressed: () => router.pushReplacement('/brigadier'),
               );
             }
             return const SizedBox.shrink();
           },
-          loading: () => const SizedBox.shrink(), // nada mientras carga
-          error: (err, _) => const SizedBox.shrink(), // nada en caso de error
+          loading: () => const SizedBox.shrink(),
+          error: (err, _) => const SizedBox.shrink(),
         ),
       ],
     );

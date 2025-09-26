@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:reportes_unimayor/providers/id_location_qr_scanner.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
-import 'package:reportes_unimayor/widgets/app_bar_user.dart';
+import 'package:reportes_unimayor/widgets/users/app_bar_user.dart';
 import 'package:path/path.dart' as p;
 import 'package:reportes_unimayor/utils/show_message.dart';
 import 'package:reportes_unimayor/widgets/general/confirm_dialog.dart';
@@ -491,7 +491,7 @@ class _CreateReportUserScreenState
             .removeIdLocationQrScanner();
 
         if (mounted) {
-          context.pushReplacement('/user'); // 🚀 llega con datos ya refrescados
+          context.pushReplacement('/user');
         }
       } else {
         showMessage(
@@ -512,48 +512,4 @@ class _CreateReportUserScreenState
       }
     }
   }
-
-  // Future<void> _submitReport() async {
-  //   FocusScope.of(context).unfocus();
-
-  //   if (!_formKey.currentState!.validate()) return;
-
-  //   try {
-  //     final idLocationFromQr = ref.read(idLocationQrScannerProvider);
-  //     final locationToSend = idLocationFromQr.isNotEmpty
-  //         ? idLocationFromQr
-  //         : formSelectedLocation;
-
-  //     bool response = await ref.read(
-  //       createReportProvider(
-  //         locationToSend!,
-  //         formDescription,
-  //         _recordingPath,
-  //       ).future,
-  //     );
-
-  //     if (response == true && mounted) {
-  //       ref
-  //           .read(idLocationQrScannerProvider.notifier)
-  //           .removeIdLocationQrScanner();
-  //       context.pushReplacement('/user');
-  //     } else {
-  //       showMessage(
-  //         context,
-  //         'No se pudo enviar el reporte. Intente de nuevo.',
-  //         Theme.of(context).colorScheme.error,
-  //       );
-  //     }
-  //   } catch (e) {
-  //     showMessage(
-  //       context,
-  //       'Ocurrió un error: ${e.toString()}',
-  //       Theme.of(context).colorScheme.error,
-  //     );
-  //   } finally {
-  //     if (mounted) {
-  //       _checkIfReadyToSend();
-  //     }
-  //   }
-  // }
 }

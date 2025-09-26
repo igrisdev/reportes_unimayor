@@ -11,7 +11,7 @@ import 'package:reportes_unimayor/screens/users/create_report_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/history_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/main_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/view_report_user_screen.dart';
-import 'package:reportes_unimayor/widgets/qr_scanner.dart';
+import 'package:reportes_unimayor/widgets/users/qr_scanner.dart';
 
 final router = GoRouter(
   initialLocation: '/',

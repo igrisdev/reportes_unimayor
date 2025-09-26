@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/person_model.dart';
 import 'package:reportes_unimayor/services/api_reports_service.dart';
 import 'package:reportes_unimayor/utils/show_message.dart';
-import 'package:reportes_unimayor/widgets/app_bar_brigadier.dart';
+import 'package:reportes_unimayor/widgets/brigadier/app_bar_brigadier.dart';
 
 class SearchPerson extends ConsumerStatefulWidget {
   const SearchPerson({super.key});
