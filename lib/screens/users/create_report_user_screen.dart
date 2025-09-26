@@ -63,7 +63,6 @@ class _CreateReportUserScreenState
 
     final hasContent = hasDescription || hasAudio;
 
-    // 🔹 Bloqueo adicional: si está grabando, no puede enviar
     if (_isRecording) {
       setState(() {
         _isReadyToSend = false;
@@ -77,79 +76,6 @@ class _CreateReportUserScreenState
       _isReadyToSend = ready;
     });
   }
-
-  // Future<void> _submitReport() async {
-  //   FocusScope.of(context).unfocus();
-
-  //   if (!_formKey.currentState!.validate()) {
-  //     return;
-  //   }
-
-  //   setState(() => _isReadyToSend = false);
-
-  //   showDialog(
-  //     context: context,
-  //     barrierDismissible: false,
-  //     builder: (_) => Dialog(
-  //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-  //       child: Padding(
-  //         padding: const EdgeInsets.all(24),
-  //         child: Row(
-  //           mainAxisSize: MainAxisSize.min,
-  //           children: [
-  //             const CircularProgressIndicator(strokeWidth: 3),
-  //             const SizedBox(width: 20),
-  //             Text(
-  //               'Enviando reporte...',
-  //               style: GoogleFonts.poppins(fontSize: 16),
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-
-  //   try {
-  //     final idLocationFromQr = ref.read(idLocationQrScannerProvider);
-  //     final locationToSend = idLocationFromQr.isNotEmpty
-  //         ? idLocationFromQr
-  //         : formSelectedLocation;
-
-  //     bool response = await ref.read(
-  //       createReportProvider(
-  //         locationToSend!,
-  //         formDescription,
-  //         _recordingPath,
-  //       ).future,
-  //     );
-
-  //     if (mounted) Navigator.of(context).pop();
-
-  //     if (response == true && mounted) {
-  //       ref
-  //           .read(idLocationQrScannerProvider.notifier)
-  //           .removeIdLocationQrScanner();
-  //       context.pushReplacement('/user');
-  //     } else {
-  //       showMessage(
-  //         context,
-  //         'No se pudo enviar el reporte. Intente de nuevo.',
-  //         Theme.of(context).colorScheme.error,
-  //       );
-  //     }
-  //   } catch (e) {
-  //     if (mounted) Navigator.of(context).pop();
-  //     showMessage(
-  //       context,
-  //       'Ocurrió un error: ${e.toString()}',
-  //       Theme.of(context).colorScheme.error,
-  //     );
-  //   } finally {
-  //     if (mounted) {
-  //       _checkIfReadyToSend();
-  //     }
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -202,6 +128,7 @@ class _CreateReportUserScreenState
             formDescription = value;
             _checkIfReadyToSend();
           },
+          style: GoogleFonts.poppins(fontSize: 20),
           decoration: InputDecoration(
             hintText: "Descripción del reporte",
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
@@ -221,11 +148,19 @@ class _CreateReportUserScreenState
         (_recordingPath != null && !_isRecording)
             ? Text(
                 'Audio grabado. ¡Listo para enviar!',
-                style: TextStyle(color: colors.tertiary),
+                style: GoogleFonts.poppins(
+                  color: colors.tertiary,
+                  fontSize: 18,
+                ),
               )
             : Text(
-                _isRecording ? 'Grabando...' : 'Presione para grabar',
-                style: TextStyle(color: colors.onSurface),
+                _isRecording
+                    ? 'Grabando..., click para parar'
+                    : 'Un toque para grabar',
+                style: GoogleFonts.poppins(
+                  color: colors.onSurface,
+                  fontSize: 18,
+                ),
               ),
       ],
     );
@@ -426,9 +361,9 @@ class _CreateReportUserScreenState
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    isScanned
-                        ? 'ID: $idLocationQrScanner'
-                        : 'Presionar para escanear la ubicación',
+                    // isScanned
+                    // ? 'ID: $idLocationQrScanner':
+                    'Presionar para escanear la ubicación',
                     style: GoogleFonts.poppins(
                       color: colors.onSurface,
                       fontSize: 18,
@@ -477,39 +412,6 @@ class _CreateReportUserScreenState
       }
     }
   }
-
-  // Widget buttonSubmitReport() {
-  //   final colors = Theme.of(context).colorScheme;
-
-  //   return Padding(
-  //     padding: const EdgeInsets.all(20),
-  //     child: SizedBox(
-  //       height: 80,
-  //       child: ElevatedButton.icon(
-  //         style: ElevatedButton.styleFrom(
-  //           backgroundColor: colors.secondary,
-  //           shape: RoundedRectangleBorder(
-  //             borderRadius: BorderRadius.circular(100),
-  //           ),
-  //           textStyle: GoogleFonts.poppins(
-  //             fontSize: 18,
-  //             fontWeight: FontWeight.bold,
-  //           ),
-  //         ),
-  //         onPressed: _isReadyToSend ? _submitReport : null,
-  //         label: Text(
-  //           'Enviar Reporte',
-  //           style: GoogleFonts.poppins(
-  //             color: colors.onSurface,
-  //             fontSize: 24,
-  //             fontWeight: FontWeight.bold,
-  //           ),
-  //         ),
-  //         icon: Icon(Icons.send, color: colors.onSurface, size: 24),
-  //       ),
-  //     ),
-  //   );
-  // }
 
   Widget buttonSubmitReport() {
     final colors = Theme.of(context).colorScheme;
