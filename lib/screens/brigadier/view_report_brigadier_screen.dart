@@ -150,7 +150,6 @@ class ViewReportBrigadierScreen extends ConsumerWidget {
 
   SizedBox infoReport(ReportsModel report, BuildContext context) {
     return SizedBox(
-      height: MediaQuery.sizeOf(context).height * 0.7,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -160,6 +159,7 @@ class ViewReportBrigadierScreen extends ConsumerWidget {
             idReport: report.idReporte,
             description: report.descripcion == '' ? '' : report.descripcion,
             audio: report.rutaAudio == '' ? '' : report.rutaAudio,
+            isTextBig: true,
           ),
           const SizedBox(height: 20),
           DateAndHourContainer(
@@ -178,6 +178,7 @@ class ViewReportBrigadierScreen extends ConsumerWidget {
                 ? report.detallesFinalizacion
                 : 'Sin nota',
           ),
+          const SizedBox(height: 30),
         ],
       ),
     );

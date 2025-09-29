@@ -11,6 +11,8 @@ class DescriptionReportContainer extends ConsumerWidget {
   final int idReport;
   final bool isImportant;
 
+  final bool isTextBig;
+
   const DescriptionReportContainer({
     super.key,
     this.description = '',
@@ -18,6 +20,7 @@ class DescriptionReportContainer extends ConsumerWidget {
     this.audio = '',
     this.idReport = 0,
     this.isImportant = true,
+    this.isTextBig = false,
   });
 
   @override
@@ -62,10 +65,14 @@ class DescriptionReportContainer extends ConsumerWidget {
                 Text(
                   description,
                   style: GoogleFonts.poppins(
-                    fontSize: 16,
+                    fontSize: 18,
                     fontWeight: FontWeight.w500,
                     color: scheme.onSurfaceVariant,
                   ),
+                  maxLines: isTextBig ? null : 4,
+                  overflow: isTextBig
+                      ? TextOverflow.visible
+                      : TextOverflow.ellipsis,
                 ),
               ],
             ),

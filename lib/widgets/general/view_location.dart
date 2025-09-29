@@ -25,7 +25,7 @@ class ViewLocation extends StatelessWidget {
                 Text(
                   'Sede ${location.sede}',
                   style: GoogleFonts.poppins(
-                    fontSize: 18,
+                    fontSize: 24,
                     fontWeight: FontWeight.w600,
                     color: colors.onSurface,
                   ),
@@ -33,7 +33,7 @@ class ViewLocation extends StatelessWidget {
                 Text(
                   'Edificio ${location.edificio}, Piso ${location.piso}',
                   style: GoogleFonts.poppins(
-                    fontSize: 16,
+                    fontSize: 20,
                     fontWeight: FontWeight.w500,
                     color: colors.onSurface,
                   ),
@@ -41,7 +41,7 @@ class ViewLocation extends StatelessWidget {
                 Text(
                   'Lugar ${location.lugar}',
                   style: GoogleFonts.poppins(
-                    fontSize: 16,
+                    fontSize: 20,
                     fontWeight: FontWeight.w500,
                     color: colors.onSurface,
                   ),
@@ -50,7 +50,7 @@ class ViewLocation extends StatelessWidget {
                   Text(
                     'Descripción: ${location.descripcion}',
                     style: GoogleFonts.poppins(
-                      fontSize: 14,
+                      fontSize: 20,
                       fontWeight: FontWeight.w500,
                       color: colors.onSurfaceVariant,
                     ),

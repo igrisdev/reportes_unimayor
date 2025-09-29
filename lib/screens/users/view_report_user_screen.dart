@@ -24,7 +24,8 @@ class ViewReportUserScreen extends ConsumerWidget {
       body: Padding(
         padding: const EdgeInsets.only(left: 18, right: 18, top: 10),
         child: asyncReport.when(
-          data: (report) => infoReport(report, colors),
+          data: (report) =>
+              SingleChildScrollView(child: infoReport(report, colors)),
           error: (error, stackTrace) => Center(
             child: Text(
               error.toString(),
@@ -37,21 +38,25 @@ class ViewReportUserScreen extends ConsumerWidget {
     );
   }
 
-  Padding infoReport(ReportsModel report, ColorScheme colors) {
+  Widget infoReport(ReportsModel report, ColorScheme colors) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           BigBadgeViewProgress(text: report.estado),
           const SizedBox(height: 20),
           ViewLocation(location: report.ubicacion),
-          const SizedBox(height: 30),
+          const SizedBox(height: 20),
           DescriptionReportContainer(
             idReport: report.idReporte,
-            description: report.descripcion == '' ? '' : report.descripcion,
-            audio: report.rutaAudio == '' ? '' : report.rutaAudio,
+            description: report.descripcion.isNotEmpty
+                ? report.descripcion
+                : '',
+            audio: report.rutaAudio.isNotEmpty ? report.rutaAudio : '',
+            isTextBig: true,
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 10),
           DateAndHourContainer(
             date: report.fechaCreacion,
             hour: report.horaCreacion,
@@ -63,6 +68,8 @@ class ViewReportUserScreen extends ConsumerWidget {
                 ? report.detallesFinalizacion
                 : 'Sin nota',
           ),
+          if (report.detallesFinalizacion.isNotEmpty)
+            const SizedBox(height: 30),
         ],
       ),
     );

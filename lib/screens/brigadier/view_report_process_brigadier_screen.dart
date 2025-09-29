@@ -5,10 +5,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/widgets/brigadier/app_bar_brigadier.dart';
+import 'package:reportes_unimayor/widgets/general/confirm_dialog.dart';
 import 'package:reportes_unimayor/widgets/general/description_report_container.dart';
 import 'package:reportes_unimayor/widgets/general/date_and_hour_container.dart';
 import 'package:reportes_unimayor/widgets/general/info_user.dart';
-import 'package:reportes_unimayor/widgets/general/text_note_brigadier.dart';
 import 'package:reportes_unimayor/widgets/general/view_location.dart';
 
 class ViewReportProcessBrigadierScreen extends ConsumerWidget {
@@ -72,10 +72,27 @@ class ViewReportProcessBrigadierScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(100),
         child: InkWell(
           onTap: () async {
-            final response = await ref.read(AcceptReportProvider(id).future);
-            if (response == true) {
-              router.push('/brigadier');
-            }
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) {
+                return ConfirmDialog(
+                  title: "Confirmar aceptación",
+                  message: "¿Estás seguro de enviar este aceptar el reporte?",
+                  confirmText: "Aceptar",
+                  cancelText: "Cancelar",
+                  onConfirm: () async {
+                    final response = await ref.read(
+                      AcceptReportProvider(id).future,
+                    );
+
+                    if (response == true) {
+                      router.push('/brigadier');
+                    }
+                  },
+                );
+              },
+            );
           },
           child: Center(
             child: Row(
@@ -101,7 +118,6 @@ class ViewReportProcessBrigadierScreen extends ConsumerWidget {
 
   SizedBox infoReport(ReportsModel report, BuildContext context) {
     return SizedBox(
-      height: MediaQuery.sizeOf(context).height * 0.7,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -111,6 +127,7 @@ class ViewReportProcessBrigadierScreen extends ConsumerWidget {
             idReport: report.idReporte,
             description: report.descripcion == '' ? '' : report.descripcion,
             audio: report.rutaAudio == '' ? '' : report.rutaAudio,
+            isTextBig: true,
           ),
           const SizedBox(height: 20),
           DateAndHourContainer(

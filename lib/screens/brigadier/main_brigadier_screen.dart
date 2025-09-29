@@ -5,12 +5,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/widgets/brigadier/app_bar_brigadier.dart';
+import 'package:reportes_unimayor/widgets/general/finalize_report_dialog.dart';
+import 'package:reportes_unimayor/widgets/general/confirm_dialog.dart';
 import 'package:reportes_unimayor/widgets/general/description_report_container.dart';
 import 'package:reportes_unimayor/widgets/general/big_badge_view_progress.dart';
 import 'package:reportes_unimayor/widgets/general/date_and_hour_container.dart';
 import 'package:reportes_unimayor/widgets/brigadier/drawer_brigadier.dart';
 import 'package:reportes_unimayor/widgets/general/info_user.dart';
-import 'package:reportes_unimayor/widgets/general/text_note_brigadier.dart';
 import 'package:reportes_unimayor/widgets/general/text_no_reports.dart';
 import 'package:reportes_unimayor/widgets/general/view_location.dart';
 
@@ -60,7 +61,7 @@ class MainBrigadierScreen extends ConsumerWidget {
                   onRefresh: () async {
                     ref.invalidate(reportListBrigadierProvider);
                   },
-                  child: _buildReportsList(reports, context, ref),
+                  child: _reportsList(reports, context, ref),
                 ),
                 loading: () => Center(
                   child: CircularProgressIndicator(color: colorScheme.primary),
@@ -131,7 +132,19 @@ class MainBrigadierScreen extends ConsumerWidget {
             if (idReport.isLoading || idReport.value == null) {
               return;
             }
-            showDialogIfFinalized(ref, idReport);
+            showDialog(
+              context: context,
+              builder: (context) {
+                return FinalizeReportDialog(
+                  title: 'Confirmar finalización del reporte',
+                  message: 'Detalles de finalización del reporte',
+                  hintText: 'El paciente ...',
+                  onConfirm: (description) {
+                    ref.read(endReportProvider(idReport.value!, description));
+                  },
+                );
+              },
+            );
           },
           child: Center(
             child: Row(
@@ -155,84 +168,7 @@ class MainBrigadierScreen extends ConsumerWidget {
     );
   }
 
-  Future<dynamic> showDialogIfFinalized(
-    WidgetRef ref,
-    AsyncValue<int> idReport,
-  ) {
-    final TextEditingController descriptionController = TextEditingController();
-
-    return showDialog(
-      context: ref.context,
-      builder: (BuildContext context) {
-        final colorScheme = Theme.of(context).colorScheme;
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              title: Text(
-                'Confirmar finalización del reporte',
-                style: GoogleFonts.poppins(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: colorScheme.onSurface,
-                ),
-              ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Detalles de finalización del reporte',
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: colorScheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: descriptionController,
-                    maxLines: 3,
-                    onChanged: (_) => setState(() {}),
-                    decoration: InputDecoration(
-                      hintText: 'El paciente ...',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('Cancelar'),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-                TextButton(
-                  onPressed: descriptionController.text.trim().isEmpty
-                      ? null
-                      : () {
-                          Navigator.of(context).pop();
-                          ref.read(
-                            endReportProvider(
-                              idReport.value!,
-                              descriptionController.text.trim(),
-                            ),
-                          );
-                        },
-                  child: const Text('Finalizar'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildReportsList(
+  Widget _reportsList(
     List<ReportsModel> reports,
     BuildContext context,
     WidgetRef ref,
@@ -271,11 +207,12 @@ class MainBrigadierScreen extends ConsumerWidget {
               children: [
                 ViewLocation(location: report.ubicacion),
                 const SizedBox(height: 20),
-                TextNoteBrigadier(
-                  title: report.descripcion == '' ? 'Audio' : 'Descripción',
+                DescriptionReportContainer(
+                  idReport: report.idReporte,
                   description: report.descripcion == ''
-                      ? report.rutaAudio
+                      ? ''
                       : report.descripcion,
+                  audio: report.rutaAudio == '' ? '' : report.rutaAudio,
                 ),
                 const SizedBox(height: 20),
                 DateAndHourContainer(
@@ -290,7 +227,24 @@ class MainBrigadierScreen extends ConsumerWidget {
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-                          showDialogIfAccept(ref, report);
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) {
+                              return ConfirmDialog(
+                                title: "Confirmar aceptación",
+                                message: "¿Estás seguro de aceptar el reporte?",
+                                confirmText: "Aceptar",
+                                cancelText: "Cancelar",
+                                onConfirm: () async {
+                                  Navigator.of(context).pop();
+                                  ref.read(
+                                    acceptReportProvider(report.idReporte),
+                                  );
+                                },
+                              );
+                            },
+                          );
                         },
                         child: Container(
                           decoration: BoxDecoration(
@@ -306,9 +260,9 @@ class MainBrigadierScreen extends ConsumerWidget {
                               child: Text(
                                 'Aceptar',
                                 style: GoogleFonts.poppins(
-                                  fontSize: 16,
+                                  fontSize: 20,
                                   fontWeight: FontWeight.w600,
-                                  color: colorScheme.onTertiaryContainer,
+                                  color: colorScheme.onTertiary,
                                 ),
                               ),
                             ),
@@ -339,7 +293,7 @@ class MainBrigadierScreen extends ConsumerWidget {
                               child: Text(
                                 'Ver Más',
                                 style: GoogleFonts.poppins(
-                                  fontSize: 16,
+                                  fontSize: 20,
                                   fontWeight: FontWeight.w400,
                                   color: colorScheme.onSurface,
                                 ),
@@ -389,38 +343,6 @@ class MainBrigadierScreen extends ConsumerWidget {
           ),
         ],
       ),
-    );
-  }
-
-  showDialogIfAccept(ref, report) {
-    return showDialog(
-      context: ref.context,
-      builder: (BuildContext context) {
-        final colorScheme = Theme.of(context).colorScheme;
-        return AlertDialog(
-          title: Text(
-            'Confirmar aceptación',
-            style: TextStyle(color: colorScheme.onSurface),
-          ),
-          content: Text(
-            '¿Estás seguro de que quieres aceptar el reporte?',
-            style: TextStyle(color: colorScheme.onSurface),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('No'),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            TextButton(
-              child: const Text('Sí'),
-              onPressed: () {
-                Navigator.of(context).pop();
-                ref.read(acceptReportProvider(report.idReporte));
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 
