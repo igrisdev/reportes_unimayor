@@ -139,8 +139,25 @@ class MainBrigadierScreen extends ConsumerWidget {
                   title: 'Confirmar finalización del reporte',
                   message: 'Detalles de finalización del reporte',
                   hintText: 'El paciente ...',
-                  onConfirm: (description) {
-                    ref.read(endReportProvider(idReport.value!, description));
+                  onConfirm: (description) async {
+                    final result = await ref.read(
+                      endReportProvider(idReport.value!, description).future,
+                    );
+
+                    if (result) {
+                      Navigator.of(context).pop();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Reporte finalizado correctamente"),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("No se pudo finalizar el reporte"),
+                        ),
+                      );
+                    }
                   },
                 );
               },
@@ -237,10 +254,23 @@ class MainBrigadierScreen extends ConsumerWidget {
                                 confirmText: "Aceptar",
                                 cancelText: "Cancelar",
                                 onConfirm: () async {
-                                  Navigator.of(context).pop();
-                                  ref.read(
-                                    acceptReportProvider(report.idReporte),
+                                  final result = await ref.read(
+                                    acceptReportProvider(
+                                      report.idReporte,
+                                    ).future,
                                   );
+
+                                  if (result) {
+                                    Navigator.of(context).pop();
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          "No se pudo aceptar el reporte",
+                                        ),
+                                      ),
+                                    );
+                                  }
                                 },
                               );
                             },
