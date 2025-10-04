@@ -3,6 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 
+// Importamos el provider real
+import 'package:reportes_unimayor/providers/settings_provider.dart';
+
+// ----------------------------------------------------------------------
+// 1. MODELO DE DATOS (Incluye fromJson para la API)
+// ----------------------------------------------------------------------
+
 class EmergencyContact {
   final String id;
   String nombre;
@@ -21,42 +28,28 @@ class EmergencyContact {
     this.email,
     this.esPrincipal = false,
   });
+
+  // Constructor factory para deserializar desde el JSON de la API
+  factory EmergencyContact.fromJson(Map<String, dynamic> json) {
+    // La API parece usar "idContactoEmergencia" como ID y puede ser int o string
+    final idValue = json['idContactoEmergencia'] ?? json['id'] ?? '';
+    // Nos aseguramos de que el ID sea un String
+    final String contactId = idValue is int
+        ? idValue.toString()
+        : (idValue as String);
+
+    return EmergencyContact(
+      id: contactId,
+      nombre: json['nombre'] as String,
+      relacion: json['relacion'] as String,
+      telefono: json['telefono'] as String,
+      telefonoAlternativo: json['telefonoAlternativo'] as String?,
+      email: json['email'] as String?,
+      // Aseguramos que 'esPrincipal' sea un booleano (la API lo envía como bool)
+      esPrincipal: json['esPrincipal'] as bool,
+    );
+  }
 }
-
-final List<EmergencyContact> mockContacts = [
-  EmergencyContact(
-    id: '1',
-    nombre: 'Elena Rodríguez',
-    relacion: 'Madre',
-    telefono: '3101234567',
-    email: 'elena@example.com',
-    esPrincipal: true,
-  ),
-  EmergencyContact(
-    id: '2',
-    nombre: 'Javier Pérez',
-    relacion: 'Hermano',
-    telefono: '3209876543',
-    telefonoAlternativo: '6015551234',
-    esPrincipal: false,
-  ),
-  EmergencyContact(
-    id: '3',
-    nombre: 'Dr. López',
-    relacion: 'Médico de cabecera',
-    telefono: '3001112233',
-    esPrincipal: false,
-  ),
-];
-
-// Provider para obtener la lista de contactos de emergencia
-final emergencyContactsListProvider = FutureProvider<List<EmergencyContact>>((
-  ref,
-) async {
-  // Simular un retraso de red de 800ms
-  await Future.delayed(const Duration(milliseconds: 800));
-  return mockContacts;
-});
 
 // ----------------------------------------------------------------------
 // 3. WIDGET PRINCIPAL (Lista de Contactos)
@@ -69,11 +62,8 @@ class EmergencyContactsUserScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
+    // Usamos el provider REAL de settings_provider.dart
     final contactsAsyncValue = ref.watch(emergencyContactsListProvider);
-
-    // Path de navegación (obtenido del GoRouter)
-    const createContactPath =
-        '/user/settings/emergency_contacts/create_emergency_contact';
 
     return Scaffold(
       appBar: AppBar(
@@ -123,7 +113,11 @@ class EmergencyContactsUserScreen extends ConsumerWidget {
             itemCount: contacts.length,
             itemBuilder: (context, index) {
               final contact = contacts[index];
-              return _ContactListItem(contact: contact, colors: colors);
+              return _ContactListItem(
+                contact: contact,
+                colors: colors,
+                ref: ref,
+              );
             },
           );
         },
@@ -143,16 +137,17 @@ class EmergencyContactsUserScreen extends ConsumerWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.go(createContactPath),
+        onPressed: () =>
+            context.go('/user/settings/emergency_contacts/create_and_edit'),
         label: Text(
           'Nuevo Contacto',
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.w600,
-            color: colors.onSurface,
+            color: colors.onPrimary,
           ),
         ),
-        icon: const Icon(Icons.person_add),
-        backgroundColor: colors.secondary,
+        icon: const Icon(Icons.person_add, color: Colors.white),
+        backgroundColor: colors.primary,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       ),
     );
@@ -163,133 +158,278 @@ class EmergencyContactsUserScreen extends ConsumerWidget {
 // 4. WIDGET DE ITEM DE LA LISTA
 // ----------------------------------------------------------------------
 
-class _ContactListItem extends StatelessWidget {
+class _ContactListItem extends ConsumerWidget {
   final EmergencyContact contact;
   final ColorScheme colors;
+  final WidgetRef ref;
 
-  const _ContactListItem({required this.contact, required this.colors});
+  const _ContactListItem({
+    required this.contact,
+    required this.colors,
+    required this.ref,
+  });
+
+  // Función para mostrar el diálogo de confirmación de eliminación
+  void _confirmDelete(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        // Observa el estado del provider de eliminación
+        final deleteState = ref.watch(deleteEmergencyContactProvider);
+
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          title: Row(
+            children: [
+              Icon(Icons.warning_amber_rounded, color: colors.error),
+              const SizedBox(width: 10),
+              Text(
+                'Confirmar Eliminación',
+                style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          content: Text(
+            '¿Estás seguro de que quieres eliminar a ${contact.nombre} de tus contactos de emergencia?',
+            style: GoogleFonts.poppins(),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(), // Cerrar
+              child: Text(
+                'Cancelar',
+                style: GoogleFonts.poppins(color: colors.primary),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colors.error,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              // Deshabilita el botón mientras se está cargando
+              onPressed: deleteState.isLoading
+                  ? null
+                  : () async {
+                      // Intentar eliminar
+                      await ref
+                          .read(deleteEmergencyContactProvider.notifier)
+                          .deleteContact(contact.id);
+
+                      // Cierra el diálogo solo si no hay error
+                      if (!ref.read(deleteEmergencyContactProvider).hasError) {
+                        Navigator.of(context).pop();
+                      }
+                      // En caso de error, el estado se actualiza automáticamente.
+                    },
+              child: deleteState.isLoading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : Text(
+                      'Eliminar',
+                      style: GoogleFonts.poppins(color: colors.onError),
+                    ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    contact.nombre,
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: colors.primary,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                if (contact.esPrincipal)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colors.tertiary.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: colors.tertiary, width: 1.5),
-                    ),
-                    child: Text(
-                      'PRINCIPAL',
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: colors.tertiary,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Relación: ${contact.relacion}',
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                color: colors.onSurface.withOpacity(0.7),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(15),
+        onTap: () {
+          // Aquí podríamos navegar a una pantalla de detalle/edición
+          // context.go('/user/settings/emergency_contacts/${contact.id}/edit');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Navegando a edición de ${contact.nombre} (ID: ${contact.id})',
               ),
             ),
-            const Divider(height: 16),
-
-            // Teléfono Principal
-            Row(
-              children: [
-                Icon(Icons.phone_android, size: 18, color: colors.secondary),
-                const SizedBox(width: 8),
-                Text(
-                  'Móvil: ${contact.telefono}',
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Nombre y Relación
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          contact.nombre,
+                          style: GoogleFonts.poppins(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: colors.primary,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Relación: ${contact.relacion}',
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            color: colors.onSurface.withOpacity(0.7),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
 
-            // Teléfono Alternativo (Si existe)
-            if (contact.telefonoAlternativo != null &&
-                contact.telefonoAlternativo!.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.phone_in_talk,
-                      size: 18,
-                      color: colors.secondary.withOpacity(0.7),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Alternativo: ${contact.telefonoAlternativo}',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        color: colors.onSurface.withOpacity(0.8),
+                  // Botones de Acción (Editar y Eliminar)
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Badge Principal
+                      if (contact.esPrincipal)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: colors.tertiary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: colors.tertiary,
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Text(
+                              'PRINCIPAL',
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: colors.tertiary,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                      // Botón Editar
+                      IconButton(
+                        icon: Icon(Icons.edit_note, color: colors.secondary),
+                        onPressed: () {
+                          context.go(
+                            '/user/settings/emergency_contacts/create_and_edit/${contact.id}',
+                          );
+                        },
+                        tooltip: 'Editar contacto',
                       ),
-                    ),
-                  ],
-                ),
+
+                      // Botón Eliminar
+                      IconButton(
+                        icon: Icon(Icons.delete_outline, color: colors.error),
+                        onPressed: () => _confirmDelete(context),
+                        tooltip: 'Eliminar contacto',
+                      ),
+                    ],
+                  ),
+                ],
               ),
 
-            // Email (Si existe)
-            if (contact.email != null && contact.email!.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.email,
-                      size: 18,
-                      color: colors.secondary.withOpacity(0.7),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Email: ${contact.email}',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        color: colors.onSurface.withOpacity(0.8),
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
+              const Divider(height: 16),
+
+              // Información de contacto
+              _ContactInfoRow(
+                icon: Icons.phone_android,
+                label: 'Móvil',
+                value: contact.telefono,
+                colors: colors,
+                isPrimary: true,
               ),
-          ],
+
+              // Teléfono Alternativo (Si existe)
+              if (contact.telefonoAlternativo != null &&
+                  contact.telefonoAlternativo!.isNotEmpty)
+                _ContactInfoRow(
+                  icon: Icons.phone_in_talk,
+                  label: 'Alternativo',
+                  value: contact.telefonoAlternativo!,
+                  colors: colors,
+                ),
+
+              // Email (Si existe)
+              if (contact.email != null && contact.email!.isNotEmpty)
+                _ContactInfoRow(
+                  icon: Icons.email,
+                  label: 'Email',
+                  value: contact.email!,
+                  colors: colors,
+                ),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+}
+
+// Widget auxiliar para las filas de información de contacto
+class _ContactInfoRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final ColorScheme colors;
+  final bool isPrimary;
+
+  const _ContactInfoRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.colors,
+    this.isPrimary = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            size: 18,
+            color: isPrimary
+                ? colors.secondary
+                : colors.secondary.withOpacity(0.7),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            '$label: $value',
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              fontWeight: isPrimary ? FontWeight.w500 : FontWeight.w400,
+              color: colors.onSurface.withOpacity(isPrimary ? 1.0 : 0.8),
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }

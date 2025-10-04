@@ -57,9 +57,15 @@ final router = GoRouter(
               builder: (context, state) => const EmergencyContactsUserScreen(),
               routes: [
                 GoRoute(
-                  path: 'create_emergency_contact',
+                  path: 'create_and_edit',
                   builder: (context, state) =>
                       const FormEmergencyContactsUserScreen(),
+                ),
+                GoRoute(
+                  path: 'create_and_edit/:contactId',
+                  builder: (context, state) => FormEmergencyContactsUserScreen(
+                    contactId: state.pathParameters['contactId'],
+                  ),
                 ),
               ],
             ),

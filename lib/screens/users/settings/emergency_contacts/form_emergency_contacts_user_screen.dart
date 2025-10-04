@@ -1,42 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart'; // Importar flutter_riverpod
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/providers/settings_provider.dart';
+import 'package:reportes_unimayor/screens/users/settings/emergency_contacts/emergency_contacts_user_screen.dart';
 
-// Modelo de datos para el contacto de emergencia
-class EmergencyContact {
-  String nombre;
-  String relacion;
-  String telefono;
-  String? telefonoAlternativo;
-  String? email;
-  bool esPrincipal;
-
-  EmergencyContact({
-    required this.nombre,
-    required this.relacion,
-    required this.telefono,
-    this.telefonoAlternativo,
-    this.email,
-    this.esPrincipal = false,
-  });
-
-  // Método de utilidad (aunque ya no es estrictamente necesario aquí)
-  Map<String, dynamic> toProviderArgs() {
-    return {
-      'nombre': nombre,
-      'relacion': relacion,
-      'telefono': telefono,
-      'telefonoAlternativo': telefonoAlternativo,
-      'email': email,
-      'esPrincipal': esPrincipal,
-    };
-  }
-}
-
-// Clase principal con el nuevo nombre y convertida a ConsumerStatefulWidget
 class FormEmergencyContactsUserScreen extends ConsumerStatefulWidget {
-  const FormEmergencyContactsUserScreen({super.key});
+  final String? contactId;
+
+  const FormEmergencyContactsUserScreen({super.key, this.contactId});
 
   @override
   ConsumerState<FormEmergencyContactsUserScreen> createState() =>
@@ -47,12 +18,101 @@ class _FormEmergencyContactsUserScreenState
     extends ConsumerState<FormEmergencyContactsUserScreen> {
   final _formKey = GlobalKey<FormState>();
   EmergencyContact newContact = EmergencyContact(
+    id: '',
     nombre: '',
     relacion: '',
     telefono: '',
   );
 
   bool isLoading = false;
+  bool _isEditing = false;
+
+  late TextEditingController _nombreController;
+  late TextEditingController _relacionController;
+  late TextEditingController _telefonoController;
+  late TextEditingController _telefonoAlternativoController;
+  late TextEditingController _emailController;
+
+  @override
+  void initState() {
+    super.initState();
+    _isEditing = widget.contactId != null && widget.contactId!.isNotEmpty;
+
+    _nombreController = TextEditingController();
+    _relacionController = TextEditingController();
+    _telefonoController = TextEditingController();
+    _telefonoAlternativoController = TextEditingController();
+    _emailController = TextEditingController();
+
+    if (_isEditing) {
+      _loadContactData();
+    }
+  }
+
+  void _loadContactData() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final contact = await ref.read(
+        emergencyContactByIdProvider(widget.contactId!).future,
+      );
+
+      if (mounted && contact != null) {
+        newContact = contact;
+
+        _nombreController.text = contact.nombre;
+        _relacionController.text = contact.relacion;
+        _telefonoController.text = contact.telefono;
+        _telefonoAlternativoController.text = contact.telefonoAlternativo ?? '';
+        _emailController.text = contact.email ?? '';
+
+        setState(() {
+          isLoading = false;
+        });
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '⚠️ Error: Contacto ID ${widget.contactId} no encontrado.',
+              style: GoogleFonts.poppins(),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        print('Error al cargar contacto para edición: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '❌ Error al cargar datos: ${e.toString()}',
+              style: GoogleFonts.poppins(),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _nombreController.dispose();
+    _relacionController.dispose();
+    _telefonoController.dispose();
+    _telefonoAlternativoController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
 
   // Widget de encabezado de sección reutilizable
   Widget _sectionHeader({required String title, required Color color}) {
@@ -69,21 +129,37 @@ class _FormEmergencyContactsUserScreenState
     );
   }
 
-  // Método para el envío del formulario, ahora usando Riverpod
+  // 3. MÉTODO DE ENVÍO UNIFICADO (CREACIÓN Y EDICIÓN)
   void _submitForm() async {
-    // Desenfocar el teclado
     FocusScope.of(context).unfocus();
 
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
+    if (!_formKey.currentState!.validate()) return;
 
-      setState(() {
-        isLoading = true;
-      });
+    _formKey.currentState!.save();
 
-      try {
-        // 1. Llamada real al provider de Riverpod
-        final success = await ref.read(
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      bool success;
+
+      if (_isEditing) {
+        // Lógica de EDICIÓN
+        success = await ref
+            .read(updateEmergencyContactProvider.notifier)
+            .updateContact(
+              id: newContact.id,
+              nombre: newContact.nombre,
+              relacion: newContact.relacion,
+              telefono: newContact.telefono,
+              telefonoAlternativo: newContact.telefonoAlternativo,
+              email: newContact.email,
+              esPrincipal: newContact.esPrincipal,
+            );
+      } else {
+        // Lógica de CREACIÓN
+        success = await ref.read(
           createEmergencyContactProvider(
             newContact.nombre,
             newContact.relacion,
@@ -92,63 +168,78 @@ class _FormEmergencyContactsUserScreenState
             newContact.email,
             newContact.esPrincipal,
           ).future,
-        ); // Usamos .future para esperar el resultado AsyncValue<bool>
+        );
+      }
 
-        // 2. Manejo de respuesta
-        if (mounted) {
-          if (success) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  '✅ Contacto guardado con éxito: ${newContact.nombre}',
-                  style: GoogleFonts.poppins(color: Colors.white),
-                ),
-                backgroundColor: Theme.of(context).colorScheme.tertiary,
-              ),
-            );
-            // Si el contacto se guarda con éxito, se puede resetear el formulario
-            _formKey.currentState?.reset();
-            setState(() {
-              newContact = EmergencyContact(
-                nombre: '',
-                relacion: '',
-                telefono: '',
-              );
-            });
-          } else {
-            // Esto maneja el caso donde la APIService devuelve 'false'
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  '⚠️ Error al guardar el contacto (Respuesta no exitosa).',
-                  style: GoogleFonts.poppins(),
-                ),
-                backgroundColor: Colors.orange,
-              ),
-            );
-          }
-        }
-      } catch (e) {
-        // 3. Manejo de excepción (errores de Dio, red, etc.)
-        if (mounted) {
-          print('Excepción al crear contacto: $e');
+      if (mounted) {
+        if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                '❌ Error de conexión o API: ${e.toString()}',
+                '✅ Contacto ${_isEditing ? 'actualizado' : 'guardado'} con éxito: ${newContact.nombre}',
+                style: GoogleFonts.poppins(color: Colors.white),
+              ),
+              backgroundColor: Theme.of(context).colorScheme.tertiary,
+            ),
+          );
+
+          if (!_isEditing) {
+            _formKey.currentState?.reset();
+            setState(() {
+              newContact = EmergencyContact(
+                id: '',
+                nombre: '',
+                relacion: '',
+                telefono: '',
+                telefonoAlternativo: '',
+                email: '',
+                esPrincipal: false,
+              );
+            });
+
+            _nombreController.clear();
+            _relacionController.clear();
+            _telefonoController.clear();
+            _telefonoAlternativoController.clear();
+            _emailController.clear();
+          }
+
+          // Opcionalmente, navegar hacia atrás después de editar/crear
+          // Navigator.of(context).pop();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                '⚠️ Error al ${_isEditing ? 'actualizar' : 'guardar'} el contacto.',
                 style: GoogleFonts.poppins(),
               ),
-              backgroundColor: Theme.of(context).colorScheme.error,
+              backgroundColor: Colors.orange,
             ),
           );
         }
-      } finally {
-        // 4. Finalizar carga
-        if (mounted) {
-          setState(() {
-            isLoading = false;
-          });
-        }
+      }
+    } catch (e) {
+      if (mounted) {
+        print(
+          'Excepción al ${_isEditing ? 'actualizar' : 'crear'} contacto: $e',
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '❌ Error de conexión o API: ${e.toString()}',
+              style: GoogleFonts.poppins(),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+        // Invalidar el provider de la lista para refrescar la lista principal
+        ref.invalidate(emergencyContactsListProvider);
       }
     }
   }
@@ -156,11 +247,28 @@ class _FormEmergencyContactsUserScreenState
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final title = _isEditing ? 'Editar Contacto' : 'Nuevo Contacto';
+
+    if (_isEditing && isLoading) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            title,
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w600,
+              fontSize: 24,
+              color: colors.onSurface,
+            ),
+          ),
+        ),
+        body: Center(child: CircularProgressIndicator(color: colors.primary)),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Nuevo Contacto de Emergencia',
+          title,
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.w600,
             fontSize: 24,
@@ -182,6 +290,7 @@ class _FormEmergencyContactsUserScreenState
 
               // 1. NOMBRE (OBLIGATORIO)
               _buildTextFormField(
+                controller: _nombreController,
                 label: 'Nombre Completo',
                 icon: Icons.person,
                 keyboardType: TextInputType.name,
@@ -193,6 +302,7 @@ class _FormEmergencyContactsUserScreenState
 
               // 2. RELACIÓN (OBLIGATORIO)
               _buildTextFormField(
+                controller: _relacionController,
                 label: 'Relación (Ej: Padre, Amigo, etc.)',
                 icon: Icons.family_restroom,
                 keyboardType: TextInputType.text,
@@ -209,6 +319,7 @@ class _FormEmergencyContactsUserScreenState
 
               // 3. TELÉFONO PRINCIPAL (OBLIGATORIO)
               _buildTextFormField(
+                controller: _telefonoController,
                 label: 'Teléfono Principal',
                 icon: Icons.phone_android,
                 keyboardType: TextInputType.phone,
@@ -221,6 +332,7 @@ class _FormEmergencyContactsUserScreenState
 
               // 4. TELÉFONO ALTERNATIVO (OPCIONAL)
               _buildTextFormField(
+                controller: _telefonoAlternativoController,
                 label: 'Teléfono Alternativo (Opcional)',
                 icon: Icons.phone_in_talk,
                 keyboardType: TextInputType.phone,
@@ -231,6 +343,7 @@ class _FormEmergencyContactsUserScreenState
 
               // 5. EMAIL (OPCIONAL)
               _buildTextFormField(
+                controller: _emailController,
                 label: 'Correo Electrónico (Opcional)',
                 icon: Icons.email,
                 keyboardType: TextInputType.emailAddress,
@@ -251,6 +364,7 @@ class _FormEmergencyContactsUserScreenState
   }
 
   Widget _buildTextFormField({
+    required TextEditingController controller,
     required String label,
     required IconData icon,
     required TextInputType keyboardType,
@@ -258,6 +372,7 @@ class _FormEmergencyContactsUserScreenState
     required String? Function(String? value) validator,
   }) {
     return TextFormField(
+      controller: controller, // Usar el controlador
       keyboardType: keyboardType,
       style: GoogleFonts.poppins(fontSize: 18),
       decoration: InputDecoration(
@@ -271,25 +386,30 @@ class _FormEmergencyContactsUserScreenState
   }
 
   Widget _buildPrincipalCheckbox(ColorScheme colors) {
-    return CheckboxListTile(
-      title: Text(
-        'Establecer como Contacto Principal',
-        style: GoogleFonts.poppins(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: colors.onSurface,
-        ),
-      ),
-      value: newContact.esPrincipal,
-      onChanged: (bool? value) {
-        setState(() {
-          newContact.esPrincipal = value!;
-        });
+    return StatefulBuilder(
+      builder: (context, setInnerState) {
+        return CheckboxListTile(
+          title: Text(
+            'Establecer como Contacto Principal',
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: colors.onSurface,
+            ),
+          ),
+          value: newContact.esPrincipal,
+          onChanged: (bool? value) {
+            // Usar setInnerState para actualizar solo el checkbox
+            setInnerState(() {
+              newContact.esPrincipal = value!;
+            });
+          },
+          controlAffinity: ListTileControlAffinity.leading,
+          checkColor: colors.onPrimary,
+          activeColor: colors.primary,
+          contentPadding: EdgeInsets.zero,
+        );
       },
-      controlAffinity: ListTileControlAffinity.leading,
-      checkColor: colors.onPrimary,
-      activeColor: colors.primary,
-      contentPadding: EdgeInsets.zero,
     );
   }
 
@@ -307,7 +427,9 @@ class _FormEmergencyContactsUserScreenState
           ),
           onPressed: isLoading ? null : _submitForm,
           label: Text(
-            isLoading ? 'Guardando...' : 'Guardar Contacto',
+            isLoading
+                ? (_isEditing ? 'Actualizando...' : 'Guardando...')
+                : (_isEditing ? 'Actualizar Contacto' : 'Guardar Contacto'),
             style: GoogleFonts.poppins(
               color: colors.onSurface,
               fontSize: 20,
@@ -323,7 +445,11 @@ class _FormEmergencyContactsUserScreenState
                     strokeWidth: 3,
                   ),
                 )
-              : Icon(Icons.save, color: colors.onSurface, size: 24),
+              : Icon(
+                  _isEditing ? Icons.update : Icons.save,
+                  color: colors.onSurface,
+                  size: 24,
+                ),
         ),
       ),
     );
