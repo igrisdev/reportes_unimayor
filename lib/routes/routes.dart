@@ -7,6 +7,10 @@ import 'package:reportes_unimayor/screens/brigadier/search_person_brigadier_scre
 import 'package:reportes_unimayor/screens/brigadier/view_report_brigadier_screen.dart';
 import 'package:reportes_unimayor/screens/brigadier/view_report_process_brigadier_screen.dart';
 import 'package:reportes_unimayor/screens/splash/splash_screen.dart';
+import 'package:reportes_unimayor/screens/users/settings/emergency_contacts/emergency_contacts_user_screen.dart';
+import 'package:reportes_unimayor/screens/users/settings/emergency_contacts/form_emergency_contacts_user_screen.dart';
+import 'package:reportes_unimayor/screens/users/settings/medical_information_user_screen.dart';
+import 'package:reportes_unimayor/screens/users/settings/settings_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/create_report_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/history_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/main_user_screen.dart';
@@ -39,6 +43,27 @@ final router = GoRouter(
         GoRoute(
           path: 'history',
           builder: (context, state) => const HistoryUserScreen(),
+        ),
+        GoRoute(
+          path: 'settings',
+          builder: (context, state) => const SettingsUserScreen(),
+          routes: [
+            GoRoute(
+              path: 'medical_information',
+              builder: (context, state) => const MedicalInformationUserScreen(),
+            ),
+            GoRoute(
+              path: 'emergency_contacts',
+              builder: (context, state) => const EmergencyContactsUserScreen(),
+              routes: [
+                GoRoute(
+                  path: 'create_emergency_contact',
+                  builder: (context, state) =>
+                      const FormEmergencyContactsUserScreen(),
+                ),
+              ],
+            ),
+          ],
         ),
         GoRoute(
           path: 'create-report',

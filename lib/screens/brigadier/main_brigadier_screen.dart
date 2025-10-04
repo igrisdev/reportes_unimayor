@@ -388,17 +388,17 @@ class MainBrigadierScreen extends ConsumerWidget {
           Text(
             'Error al cargar reportes',
             style: GoogleFonts.poppins(
-              fontSize: 18,
+              fontSize: 22,
               fontWeight: FontWeight.w600,
               color: colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            error.toString(),
+            'Ocurrió un error con el servicio de carga de reportes, recargar pagina o intentar más tarde',
             textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
-              fontSize: 14,
+              fontSize: 16,
               color: colorScheme.onSurface,
             ),
           ),

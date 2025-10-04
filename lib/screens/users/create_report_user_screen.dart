@@ -6,7 +6,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:reportes_unimayor/providers/id_location_qr_scanner.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
-import 'package:reportes_unimayor/widgets/users/app_bar_user.dart';
 import 'package:path/path.dart' as p;
 import 'package:reportes_unimayor/utils/show_message.dart';
 import 'package:reportes_unimayor/widgets/general/confirm_dialog.dart';
@@ -87,11 +86,20 @@ class _CreateReportUserScreenState
     });
 
     return Scaffold(
-      appBar: const AppBarUser(),
+      appBar: AppBar(
+        title: Text(
+          'Crear Reporte',
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w600,
+            fontSize: 24,
+            color: colors.onSurface,
+          ),
+        ),
+      ),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -208,11 +216,16 @@ class _CreateReportUserScreenState
   }
 
   Widget sectionHeader({required String title}) {
+    final colors = Theme.of(context).colorScheme;
     return Row(
       children: [
         Text(
           title,
-          style: GoogleFonts.poppins(fontSize: 28, fontWeight: FontWeight.w700),
+          style: GoogleFonts.poppins(
+            fontSize: 28,
+            fontWeight: FontWeight.w700,
+            color: colors.primary,
+          ),
         ),
       ],
     );
