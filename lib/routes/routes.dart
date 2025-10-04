@@ -9,7 +9,7 @@ import 'package:reportes_unimayor/screens/brigadier/view_report_process_brigadie
 import 'package:reportes_unimayor/screens/splash/splash_screen.dart';
 import 'package:reportes_unimayor/screens/users/settings/emergency_contacts/emergency_contacts_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/settings/emergency_contacts/form_emergency_contacts_user_screen.dart';
-import 'package:reportes_unimayor/screens/users/settings/medical_information_user_screen.dart';
+import 'package:reportes_unimayor/screens/users/settings/medical_information/medical_information_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/settings/settings_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/create_report_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/history_user_screen.dart';
