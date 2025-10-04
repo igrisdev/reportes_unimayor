@@ -146,50 +146,6 @@ class ApiReportsService extends BaseDioService {
     }
   }
 
-  // Future<bool> createReportWrite(String id, String description) async {
-  //   final formData = FormData.fromMap({
-  //     'IdUbicacion': id,
-  //     'Descripcion': description,
-  //     // Para 'ArchivoAudio', el backend espera algo aunque sea vacío.
-  //   });
-  //   try {
-  //     final response = await dio.post('/reportes', data: formData);
-
-  //     if (response.statusCode != 200) {
-  //       throw Exception('Error al crear el reporte');
-  //     }
-
-  //     return true;
-  //   } catch (e) {
-  //     print('Error en ApiReportsService: $e');
-  //     rethrow; // Re-lanzar el error para que lo maneje el provider
-  //   }
-  // }
-
-  // Future<bool> createReportAudio(String id, String record) async {
-  //   final formData = FormData.fromMap({
-  //     'IdUbicacion': id,
-  //     'ArchivoAudio': await MultipartFile.fromFile(
-  //       record,
-  //       filename: 'audio.m4a',
-  //       contentType: DioMediaType('audio', 'm4a'),
-  //     ),
-  //   });
-
-  //   try {
-  //     final response = await dio.post('/reportes', data: formData);
-
-  //     if (response.statusCode != 200) {
-  //       throw Exception('Error al crear el reporte con audio');
-  //     }
-
-  //     return true;
-  //   } catch (e) {
-  //     print('Error crear reporte con audio: $e');
-  //     rethrow; // Re-lanzar el error para que lo maneje el provider
-  //   }
-  // }
-
   Future<bool> cancelReport(int id) async {
     try {
       final response = await dio.put('/reportes/cancelar/$id');

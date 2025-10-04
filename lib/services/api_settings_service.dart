@@ -115,8 +115,11 @@ class ApiSettingsService extends BaseDioService {
         options: Options(contentType: Headers.jsonContentType),
       );
 
-      // El endpoint devuelve 200 OK en caso de éxito (o 204 No Content).
-      return response.statusCode == 200 || response.statusCode == 204;
+      if (response.statusCode != 200) {
+        return false;
+      }
+
+      return true;
     } on DioException catch (e) {
       print('Error Dio al actualizar contacto $id: ${e.message}');
       rethrow;
@@ -127,13 +130,15 @@ class ApiSettingsService extends BaseDioService {
   }
 
   // --- 5. DELETE: Eliminar Contacto ---
-  /// Elimina un contacto existente por su ID.
   Future<bool> deleteEmergencyContact(String id) async {
     try {
       final response = await dio.delete('$_endpoint/$id');
 
-      // El endpoint devuelve 200 OK o 204 No Content en caso de éxito.
-      return response.statusCode == 200 || response.statusCode == 204;
+      if (response.statusCode != 200) {
+        return false;
+      }
+
+      return true;
     } on DioException catch (e) {
       print('Error Dio al eliminar contacto $id: ${e.message}');
       rethrow;

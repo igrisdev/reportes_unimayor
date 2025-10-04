@@ -405,7 +405,7 @@ class _CreateEmergencyContactProviderElement
 }
 
 String _$updateEmergencyContactHash() =>
-    r'e9cb31cd672313d96c848ad357630e3359596c94';
+    r'46e8e682663e72529cb3bbe799a712b38db1c71f';
 
 /// See also [UpdateEmergencyContact].
 @ProviderFor(UpdateEmergencyContact)
@@ -422,7 +422,7 @@ final updateEmergencyContactProvider =
 
 typedef _$UpdateEmergencyContact = AutoDisposeAsyncNotifier<void>;
 String _$deleteEmergencyContactHash() =>
-    r'4fd13307e36debfe198c96f90dbb094f708d0765';
+    r'28b54ac202934968badef88d24018b48a44abc8a';
 
 /// See also [DeleteEmergencyContact].
 @ProviderFor(DeleteEmergencyContact)

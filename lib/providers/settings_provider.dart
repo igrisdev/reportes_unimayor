@@ -90,11 +90,8 @@ Future<bool> createEmergencyContact(
 @riverpod
 class UpdateEmergencyContact extends _$UpdateEmergencyContact {
   @override
-  FutureOr<void> build() {
-    // Estado inicial
-  }
+  FutureOr<void> build() {}
 
-  /// Actualiza un contacto y retorna true si fue exitoso.
   Future<bool> updateContact({
     required String id,
     required String nombre,
@@ -104,8 +101,7 @@ class UpdateEmergencyContact extends _$UpdateEmergencyContact {
     required String? email,
     required bool esPrincipal,
   }) async {
-    state = const AsyncValue.loading();
-    try {
+    final result = await AsyncValue.guard(() async {
       final apiService = ref.read(apiSettingsServiceProvider);
 
       final payload = EmergencyContactPayload(
@@ -117,23 +113,22 @@ class UpdateEmergencyContact extends _$UpdateEmergencyContact {
         esPrincipal: esPrincipal,
       );
 
-      final bool success = await apiService.updateEmergencyContact(id, payload);
+      final success = await apiService.updateEmergencyContact(id, payload);
 
       if (!success) {
-        // Si la API devuelve 'false', lanzamos una excepción para que el catch la maneje.
-        throw Exception(
-          'Fallo la actualización en la API. Resultado no exitoso.',
-        );
+        throw Exception('La API devolvió false al actualizar.');
       }
 
       ref.invalidate(emergencyContactsListProvider);
+      return true;
+    });
 
+    if (result.hasError) {
+      state = AsyncValue.error(result.error!, result.stackTrace!);
+      return false;
+    } else {
       state = const AsyncValue.data(null);
-      return true; // Retorna explícitamente true en caso de éxito
-    } catch (e, st) {
-      // Captura cualquier excepción (incluyendo la lanzada arriba)
-      state = AsyncValue.error(e, st);
-      return false; // Retorna false en caso de cualquier error
+      return true;
     }
   }
 }
@@ -142,27 +137,21 @@ class UpdateEmergencyContact extends _$UpdateEmergencyContact {
 // D - DELETE (Manejador de estado)
 // -------------------------------------------------------------------
 
-// Usamos StateNotifierProvider para manejar el estado de la operación de borrado
 @riverpod
 class DeleteEmergencyContact extends _$DeleteEmergencyContact {
   @override
   FutureOr<void> build() {}
 
   Future<void> deleteContact(String id) async {
-    state = const AsyncValue.loading();
-    try {
+    state = await AsyncValue.guard(() async {
       final apiService = ref.read(apiSettingsServiceProvider);
       final success = await apiService.deleteEmergencyContact(id);
 
-      if (success) {
-        // Invalida la lista para forzar la recarga
-        ref.invalidate(emergencyContactsListProvider);
-        state = const AsyncValue.data(null);
-      } else {
+      if (!success) {
         throw Exception('Fallo la eliminación en la API.');
       }
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
-    }
+
+      ref.invalidate(emergencyContactsListProvider);
+    });
   }
 }

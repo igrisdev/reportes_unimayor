@@ -31,9 +31,7 @@ class EmergencyContact {
 
   // Constructor factory para deserializar desde el JSON de la API
   factory EmergencyContact.fromJson(Map<String, dynamic> json) {
-    // La API parece usar "idContactoEmergencia" como ID y puede ser int o string
     final idValue = json['idContactoEmergencia'] ?? json['id'] ?? '';
-    // Nos aseguramos de que el ID sea un String
     final String contactId = idValue is int
         ? idValue.toString()
         : (idValue as String);
@@ -45,7 +43,6 @@ class EmergencyContact {
       telefono: json['telefono'] as String,
       telefonoAlternativo: json['telefonoAlternativo'] as String?,
       email: json['email'] as String?,
-      // Aseguramos que 'esPrincipal' sea un booleano (la API lo envía como bool)
       esPrincipal: json['esPrincipal'] as bool,
     );
   }
@@ -55,15 +52,45 @@ class EmergencyContact {
 // 3. WIDGET PRINCIPAL (Lista de Contactos)
 // ----------------------------------------------------------------------
 
-// Convertimos a ConsumerWidget ya que solo necesitamos observar el provider
 class EmergencyContactsUserScreen extends ConsumerWidget {
   const EmergencyContactsUserScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
-    // Usamos el provider REAL de settings_provider.dart
     final contactsAsyncValue = ref.watch(emergencyContactsListProvider);
+
+    ref.listen<AsyncValue<void>>(deleteEmergencyContactProvider, (
+      previous,
+      next,
+    ) {
+      next.whenOrNull(
+        data: (_) {
+          // Éxito
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Contacto eliminado correctamente'),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+          // Cerrar el diálogo si está abierto
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop();
+          }
+        },
+        error: (error, _) {
+          // Error
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error: ${error.toString()}'),
+              backgroundColor: colors.error,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        },
+      );
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -77,7 +104,6 @@ class EmergencyContactsUserScreen extends ConsumerWidget {
         ),
       ),
       body: contactsAsyncValue.when(
-        // Estado: Data cargada
         data: (contacts) {
           if (contacts.isEmpty) {
             return Center(
@@ -113,18 +139,12 @@ class EmergencyContactsUserScreen extends ConsumerWidget {
             itemCount: contacts.length,
             itemBuilder: (context, index) {
               final contact = contacts[index];
-              return _ContactListItem(
-                contact: contact,
-                colors: colors,
-                ref: ref,
-              );
+              return _ContactListItem(contact: contact, colors: colors);
             },
           );
         },
-        // Estado: Cargando
         loading: () =>
             Center(child: CircularProgressIndicator(color: colors.primary)),
-        // Estado: Error
         error: (err, stack) => Center(
           child: Padding(
             padding: const EdgeInsets.all(24.0),
@@ -161,20 +181,18 @@ class EmergencyContactsUserScreen extends ConsumerWidget {
 class _ContactListItem extends ConsumerWidget {
   final EmergencyContact contact;
   final ColorScheme colors;
-  final WidgetRef ref;
 
   const _ContactListItem({
+    super.key,
     required this.contact,
     required this.colors,
-    required this.ref,
   });
 
-  // Función para mostrar el diálogo de confirmación de eliminación
-  void _confirmDelete(BuildContext context) {
+  // Diálogo de confirmación de eliminación
+  void _confirmDelete(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
       builder: (context) {
-        // Observa el estado del provider de eliminación
         final deleteState = ref.watch(deleteEmergencyContactProvider);
 
         return AlertDialog(
@@ -197,7 +215,7 @@ class _ContactListItem extends ConsumerWidget {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(), // Cerrar
+              onPressed: () => Navigator.of(context).pop(),
               child: Text(
                 'Cancelar',
                 style: GoogleFonts.poppins(color: colors.primary),
@@ -210,20 +228,12 @@ class _ContactListItem extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              // Deshabilita el botón mientras se está cargando
               onPressed: deleteState.isLoading
                   ? null
                   : () async {
-                      // Intentar eliminar
                       await ref
                           .read(deleteEmergencyContactProvider.notifier)
                           .deleteContact(contact.id);
-
-                      // Cierra el diálogo solo si no hay error
-                      if (!ref.read(deleteEmergencyContactProvider).hasError) {
-                        Navigator.of(context).pop();
-                      }
-                      // En caso de error, el estado se actualiza automáticamente.
                     },
               child: deleteState.isLoading
                   ? const SizedBox(
@@ -251,146 +261,127 @@ class _ContactListItem extends ConsumerWidget {
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(15),
-        onTap: () {
-          // Aquí podríamos navegar a una pantalla de detalle/edición
-          // context.go('/user/settings/emergency_contacts/${contact.id}/edit');
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Navegando a edición de ${contact.nombre} (ID: ${contact.id})',
-              ),
-            ),
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Nombre y Relación
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          contact.nombre,
-                          style: GoogleFonts.poppins(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: colors.primary,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Relación: ${contact.relacion}',
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            color: colors.onSurface.withOpacity(0.7),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Botones de Acción (Editar y Eliminar)
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Nombre y Relación
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Badge Principal
-                      if (contact.esPrincipal)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: colors.tertiary.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: colors.tertiary,
-                                width: 1.5,
-                              ),
-                            ),
-                            child: Text(
-                              'PRINCIPAL',
-                              style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: colors.tertiary,
-                              ),
-                            ),
-                          ),
+                      Text(
+                        contact.nombre,
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: colors.primary,
                         ),
-
-                      // Botón Editar
-                      IconButton(
-                        icon: Icon(Icons.edit_note, color: colors.secondary),
-                        onPressed: () {
-                          context.go(
-                            '/user/settings/emergency_contacts/create_and_edit/${contact.id}',
-                          );
-                        },
-                        tooltip: 'Editar contacto',
+                        overflow: TextOverflow.ellipsis,
                       ),
-
-                      // Botón Eliminar
-                      IconButton(
-                        icon: Icon(Icons.delete_outline, color: colors.error),
-                        onPressed: () => _confirmDelete(context),
-                        tooltip: 'Eliminar contacto',
+                      const SizedBox(height: 4),
+                      Text(
+                        'Relación: ${contact.relacion}',
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          color: colors.onSurface.withOpacity(0.7),
+                        ),
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
 
-              const Divider(height: 16),
+                // Botones de Acción
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (contact.esPrincipal)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: colors.tertiary.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: colors.tertiary,
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Text(
+                            'PRINCIPAL',
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: colors.tertiary,
+                            ),
+                          ),
+                        ),
+                      ),
+                    IconButton(
+                      icon: Icon(Icons.edit_note, color: colors.secondary),
+                      onPressed: () {
+                        context.go(
+                          '/user/settings/emergency_contacts/create_and_edit/${contact.id}',
+                        );
+                      },
+                      tooltip: 'Editar contacto',
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.delete_outline, color: colors.error),
+                      onPressed: () => _confirmDelete(context, ref),
+                      tooltip: 'Eliminar contacto',
+                    ),
+                  ],
+                ),
+              ],
+            ),
 
-              // Información de contacto
+            const Divider(height: 16),
+
+            _ContactInfoRow(
+              icon: Icons.phone_android,
+              label: 'Móvil',
+              value: contact.telefono,
+              colors: colors,
+              isPrimary: true,
+            ),
+
+            if (contact.telefonoAlternativo != null &&
+                contact.telefonoAlternativo!.isNotEmpty)
               _ContactInfoRow(
-                icon: Icons.phone_android,
-                label: 'Móvil',
-                value: contact.telefono,
+                icon: Icons.phone_in_talk,
+                label: 'Alternativo',
+                value: contact.telefonoAlternativo!,
                 colors: colors,
-                isPrimary: true,
               ),
 
-              // Teléfono Alternativo (Si existe)
-              if (contact.telefonoAlternativo != null &&
-                  contact.telefonoAlternativo!.isNotEmpty)
-                _ContactInfoRow(
-                  icon: Icons.phone_in_talk,
-                  label: 'Alternativo',
-                  value: contact.telefonoAlternativo!,
-                  colors: colors,
-                ),
-
-              // Email (Si existe)
-              if (contact.email != null && contact.email!.isNotEmpty)
-                _ContactInfoRow(
-                  icon: Icons.email,
-                  label: 'Email',
-                  value: contact.email!,
-                  colors: colors,
-                ),
-            ],
-          ),
+            if (contact.email != null && contact.email!.isNotEmpty)
+              _ContactInfoRow(
+                icon: Icons.email,
+                label: 'Email',
+                value: contact.email!,
+                colors: colors,
+              ),
+          ],
         ),
       ),
     );
   }
 }
 
-// Widget auxiliar para las filas de información de contacto
+// ----------------------------------------------------------------------
+// 5. Widget auxiliar para mostrar información de contacto
+// ----------------------------------------------------------------------
+
 class _ContactInfoRow extends StatelessWidget {
   final IconData icon;
   final String label;
