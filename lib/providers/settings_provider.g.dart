@@ -404,6 +404,316 @@ class _CreateEmergencyContactProviderElement
       (origin as CreateEmergencyContactProvider).esPrincipal;
 }
 
+String _$medicalConditionsListHash() =>
+    r'f0e728648dc1fb8eaeddb3f5e5cc62719bed1b96';
+
+/// See also [medicalConditionsList].
+@ProviderFor(medicalConditionsList)
+final medicalConditionsListProvider =
+    AutoDisposeFutureProvider<List<MedicalCondition>>.internal(
+      medicalConditionsList,
+      name: r'medicalConditionsListProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$medicalConditionsListHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef MedicalConditionsListRef =
+    AutoDisposeFutureProviderRef<List<MedicalCondition>>;
+String _$medicalConditionByIdHash() =>
+    r'c17b05dc7d8978e0cdd81cc666ea434b5635c1f7';
+
+/// See also [medicalConditionById].
+@ProviderFor(medicalConditionById)
+const medicalConditionByIdProvider = MedicalConditionByIdFamily();
+
+/// See also [medicalConditionById].
+class MedicalConditionByIdFamily extends Family<AsyncValue<MedicalCondition>> {
+  /// See also [medicalConditionById].
+  const MedicalConditionByIdFamily();
+
+  /// See also [medicalConditionById].
+  MedicalConditionByIdProvider call(String id) {
+    return MedicalConditionByIdProvider(id);
+  }
+
+  @override
+  MedicalConditionByIdProvider getProviderOverride(
+    covariant MedicalConditionByIdProvider provider,
+  ) {
+    return call(provider.id);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'medicalConditionByIdProvider';
+}
+
+/// See also [medicalConditionById].
+class MedicalConditionByIdProvider
+    extends AutoDisposeFutureProvider<MedicalCondition> {
+  /// See also [medicalConditionById].
+  MedicalConditionByIdProvider(String id)
+    : this._internal(
+        (ref) => medicalConditionById(ref as MedicalConditionByIdRef, id),
+        from: medicalConditionByIdProvider,
+        name: r'medicalConditionByIdProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$medicalConditionByIdHash,
+        dependencies: MedicalConditionByIdFamily._dependencies,
+        allTransitiveDependencies:
+            MedicalConditionByIdFamily._allTransitiveDependencies,
+        id: id,
+      );
+
+  MedicalConditionByIdProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.id,
+  }) : super.internal();
+
+  final String id;
+
+  @override
+  Override overrideWith(
+    FutureOr<MedicalCondition> Function(MedicalConditionByIdRef provider)
+    create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: MedicalConditionByIdProvider._internal(
+        (ref) => create(ref as MedicalConditionByIdRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        id: id,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<MedicalCondition> createElement() {
+    return _MedicalConditionByIdProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is MedicalConditionByIdProvider && other.id == id;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, id.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin MedicalConditionByIdRef
+    on AutoDisposeFutureProviderRef<MedicalCondition> {
+  /// The parameter `id` of this provider.
+  String get id;
+}
+
+class _MedicalConditionByIdProviderElement
+    extends AutoDisposeFutureProviderElement<MedicalCondition>
+    with MedicalConditionByIdRef {
+  _MedicalConditionByIdProviderElement(super.provider);
+
+  @override
+  String get id => (origin as MedicalConditionByIdProvider).id;
+}
+
+String _$createMedicalConditionHash() =>
+    r'5157d147f3404ee55c86261552a7e82f17330dc0';
+
+/// See also [createMedicalCondition].
+@ProviderFor(createMedicalCondition)
+const createMedicalConditionProvider = CreateMedicalConditionFamily();
+
+/// See also [createMedicalCondition].
+class CreateMedicalConditionFamily extends Family<AsyncValue<bool>> {
+  /// See also [createMedicalCondition].
+  const CreateMedicalConditionFamily();
+
+  /// See also [createMedicalCondition].
+  CreateMedicalConditionProvider call(
+    String nombre,
+    String descripcion,
+    DateTime fechaDiagnostico,
+  ) {
+    return CreateMedicalConditionProvider(
+      nombre,
+      descripcion,
+      fechaDiagnostico,
+    );
+  }
+
+  @override
+  CreateMedicalConditionProvider getProviderOverride(
+    covariant CreateMedicalConditionProvider provider,
+  ) {
+    return call(
+      provider.nombre,
+      provider.descripcion,
+      provider.fechaDiagnostico,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'createMedicalConditionProvider';
+}
+
+/// See also [createMedicalCondition].
+class CreateMedicalConditionProvider extends AutoDisposeFutureProvider<bool> {
+  /// See also [createMedicalCondition].
+  CreateMedicalConditionProvider(
+    String nombre,
+    String descripcion,
+    DateTime fechaDiagnostico,
+  ) : this._internal(
+        (ref) => createMedicalCondition(
+          ref as CreateMedicalConditionRef,
+          nombre,
+          descripcion,
+          fechaDiagnostico,
+        ),
+        from: createMedicalConditionProvider,
+        name: r'createMedicalConditionProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$createMedicalConditionHash,
+        dependencies: CreateMedicalConditionFamily._dependencies,
+        allTransitiveDependencies:
+            CreateMedicalConditionFamily._allTransitiveDependencies,
+        nombre: nombre,
+        descripcion: descripcion,
+        fechaDiagnostico: fechaDiagnostico,
+      );
+
+  CreateMedicalConditionProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.nombre,
+    required this.descripcion,
+    required this.fechaDiagnostico,
+  }) : super.internal();
+
+  final String nombre;
+  final String descripcion;
+  final DateTime fechaDiagnostico;
+
+  @override
+  Override overrideWith(
+    FutureOr<bool> Function(CreateMedicalConditionRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: CreateMedicalConditionProvider._internal(
+        (ref) => create(ref as CreateMedicalConditionRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        nombre: nombre,
+        descripcion: descripcion,
+        fechaDiagnostico: fechaDiagnostico,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<bool> createElement() {
+    return _CreateMedicalConditionProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CreateMedicalConditionProvider &&
+        other.nombre == nombre &&
+        other.descripcion == descripcion &&
+        other.fechaDiagnostico == fechaDiagnostico;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, nombre.hashCode);
+    hash = _SystemHash.combine(hash, descripcion.hashCode);
+    hash = _SystemHash.combine(hash, fechaDiagnostico.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin CreateMedicalConditionRef on AutoDisposeFutureProviderRef<bool> {
+  /// The parameter `nombre` of this provider.
+  String get nombre;
+
+  /// The parameter `descripcion` of this provider.
+  String get descripcion;
+
+  /// The parameter `fechaDiagnostico` of this provider.
+  DateTime get fechaDiagnostico;
+}
+
+class _CreateMedicalConditionProviderElement
+    extends AutoDisposeFutureProviderElement<bool>
+    with CreateMedicalConditionRef {
+  _CreateMedicalConditionProviderElement(super.provider);
+
+  @override
+  String get nombre => (origin as CreateMedicalConditionProvider).nombre;
+  @override
+  String get descripcion =>
+      (origin as CreateMedicalConditionProvider).descripcion;
+  @override
+  DateTime get fechaDiagnostico =>
+      (origin as CreateMedicalConditionProvider).fechaDiagnostico;
+}
+
 String _$updateEmergencyContactHash() =>
     r'46e8e682663e72529cb3bbe799a712b38db1c71f';
 
@@ -438,5 +748,39 @@ final deleteEmergencyContactProvider =
     );
 
 typedef _$DeleteEmergencyContact = AutoDisposeAsyncNotifier<void>;
+String _$updateMedicalConditionHash() =>
+    r'a916428612ff2b1048dd62606b6948096742b55a';
+
+/// See also [UpdateMedicalCondition].
+@ProviderFor(UpdateMedicalCondition)
+final updateMedicalConditionProvider =
+    AutoDisposeAsyncNotifierProvider<UpdateMedicalCondition, void>.internal(
+      UpdateMedicalCondition.new,
+      name: r'updateMedicalConditionProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$updateMedicalConditionHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$UpdateMedicalCondition = AutoDisposeAsyncNotifier<void>;
+String _$deleteMedicalConditionHash() =>
+    r'aae2585c50a9a929ad9c6dd85980f8f49f0e841e';
+
+/// See also [DeleteMedicalCondition].
+@ProviderFor(DeleteMedicalCondition)
+final deleteMedicalConditionProvider =
+    AutoDisposeAsyncNotifierProvider<DeleteMedicalCondition, void>.internal(
+      DeleteMedicalCondition.new,
+      name: r'deleteMedicalConditionProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$deleteMedicalConditionHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$DeleteMedicalCondition = AutoDisposeAsyncNotifier<void>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

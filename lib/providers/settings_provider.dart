@@ -155,3 +155,175 @@ class DeleteEmergencyContact extends _$DeleteEmergencyContact {
     });
   }
 }
+
+// -----------------------------
+// MODELO local (ligero) para mapear desde la API
+// -----------------------------
+class MedicalCondition {
+  final String id;
+  final int? idUsuario;
+  final String nombre;
+  final String descripcion;
+  final DateTime fechaDiagnostico;
+  final String? mensaje;
+
+  MedicalCondition({
+    required this.id,
+    this.idUsuario,
+    required this.nombre,
+    required this.descripcion,
+    required this.fechaDiagnostico,
+    this.mensaje,
+  });
+
+  factory MedicalCondition.fromJson(Map<String, dynamic> json) {
+    final idValue = json['idCondicionMedica'] ?? json['id'] ?? '';
+    final String idStr = idValue is int
+        ? idValue.toString()
+        : (idValue as String);
+
+    DateTime parsedDate;
+    final rawDate = json['fechaDiagnostico'];
+    if (rawDate is String) {
+      parsedDate = DateTime.tryParse(rawDate) ?? DateTime.now();
+    } else if (rawDate is DateTime) {
+      parsedDate = rawDate;
+    } else {
+      parsedDate = DateTime.now();
+    }
+
+    return MedicalCondition(
+      id: idStr,
+      idUsuario: json['idUsuario'] is int
+          ? json['idUsuario'] as int
+          : (json['idUsuario'] != null
+                ? int.tryParse(json['idUsuario'].toString())
+                : null),
+      nombre: json['nombre'] as String? ?? '',
+      descripcion: json['descripcion'] as String? ?? '',
+      fechaDiagnostico: parsedDate,
+      mensaje: json['mensaje'] as String?,
+    );
+  }
+}
+
+// -----------------------------
+// READ ALL
+// -----------------------------
+@riverpod
+Future<List<MedicalCondition>> medicalConditionsList(
+  MedicalConditionsListRef ref,
+) async {
+  final api = ref.watch(apiSettingsServiceProvider);
+  final raw = await api.getMedicalConditions();
+
+  return raw.map((m) => MedicalCondition.fromJson(m)).toList();
+}
+
+// -----------------------------
+// READ ONE
+// -----------------------------
+@riverpod
+Future<MedicalCondition> medicalConditionById(
+  MedicalConditionByIdRef ref,
+  String id,
+) async {
+  final api = ref.watch(apiSettingsServiceProvider);
+  final raw = await api.getMedicalConditionById(id);
+  return MedicalCondition.fromJson(raw);
+}
+
+// -----------------------------
+// CREATE
+// -----------------------------
+@riverpod
+Future<bool> createMedicalCondition(
+  CreateMedicalConditionRef ref,
+  String nombre,
+  String descripcion,
+  DateTime fechaDiagnostico,
+) async {
+  try {
+    final api = ref.watch(apiSettingsServiceProvider);
+    final payload = MedicalConditionPayload(
+      nombre: nombre,
+      descripcion: descripcion,
+      fechaDiagnostico: fechaDiagnostico,
+    );
+    final res = await api.createMedicalCondition(payload);
+
+    if (res) {
+      ref.invalidate(medicalConditionsListProvider);
+      return true;
+    }
+
+    return false;
+  } catch (e) {
+    print('Error en createMedicalCondition provider: $e');
+    rethrow;
+  }
+}
+
+// -----------------------------
+// UPDATE
+// -----------------------------
+@riverpod
+class UpdateMedicalCondition extends _$UpdateMedicalCondition {
+  @override
+  FutureOr<void> build() {}
+
+  Future<bool> updateCondition({
+    required String id,
+    required String nombre,
+    required String descripcion,
+    required DateTime fechaDiagnostico,
+  }) async {
+    final result = await AsyncValue.guard(() async {
+      final api = ref.read(apiSettingsServiceProvider);
+
+      final payload = MedicalConditionPayload(
+        nombre: nombre,
+        descripcion: descripcion,
+        fechaDiagnostico: fechaDiagnostico,
+      );
+
+      final success = await api.updateMedicalCondition(id, payload);
+      if (!success) {
+        throw Exception('API returned false on update.');
+      }
+
+      ref.invalidate(medicalConditionsListProvider);
+      return true;
+    });
+
+    if (result.hasError) {
+      state = AsyncValue.error(result.error!, result.stackTrace!);
+      return false;
+    } else {
+      state = const AsyncValue.data(null);
+      return true;
+    }
+  }
+}
+
+// -----------------------------
+// DELETE
+// -----------------------------
+@riverpod
+class DeleteMedicalCondition extends _$DeleteMedicalCondition {
+  @override
+  FutureOr<void> build() {}
+
+  Future<void> deleteCondition(String id) async {
+    state = await AsyncValue.guard(() async {
+      final api = ref.read(apiSettingsServiceProvider);
+      final success = await api.deleteMedicalCondition(id);
+
+      if (!success) {
+        throw Exception('La API devolvió false al eliminar condicion medica.');
+      }
+
+      ref.invalidate(medicalConditionsListProvider);
+    });
+  }
+}

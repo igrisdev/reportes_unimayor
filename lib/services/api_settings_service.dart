@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:reportes_unimayor/services/base_dio_service.dart'; // Asumiendo esta ruta
+import 'package:reportes_unimayor/services/base_dio_service.dart'; // Ajusta si tu ruta es distinta
 
 class EmergencyContactPayload {
   final String nombre;
@@ -23,7 +23,6 @@ class EmergencyContactPayload {
       "nombre": nombre,
       "relacion": relacion,
       "telefono": telefono,
-      // Incluir opcionales. El backend de la imagen parece esperar la clave, incluso si es null.
       "telefonoAlternativo": telefonoAlternativo,
       "email": email,
       "esPrincipal": esPrincipal,
@@ -31,20 +30,44 @@ class EmergencyContactPayload {
   }
 }
 
-class ApiSettingsService extends BaseDioService {
-  final String _endpoint = '/ContactoEmergencias';
+class MedicalConditionPayload {
+  final String nombre;
+  final String descripcion;
+  final DateTime fechaDiagnostico;
 
-  // --- 1. POST: Crear Contacto ---
-  /// Envía un nuevo contacto de emergencia al servidor.
+  MedicalConditionPayload({
+    required this.nombre,
+    required this.descripcion,
+    required this.fechaDiagnostico,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      "nombre": nombre,
+      "descripcion": descripcion,
+      // Enviar en formato ISO8601 que tu API parece usar en el swagger
+      "fechaDiagnostico": fechaDiagnostico.toIso8601String(),
+    };
+  }
+}
+
+class ApiSettingsService extends BaseDioService {
+  // Endpoints existentes
+  final String _contactsEndpoint = '/ContactoEmergencias';
+  // Nuevo endpoint para condiciones médicas
+  final String _medicalEndpoint = '/CondicionMedica';
+
+  // -----------------------------
+  // Contactos de emergencia (ya definidos)
+  // -----------------------------
   Future<bool> createEmergencyContact(EmergencyContactPayload contact) async {
     try {
       final response = await dio.post(
-        _endpoint,
+        _contactsEndpoint,
         data: contact.toJson(),
         options: Options(contentType: Headers.jsonContentType),
       );
 
-      // El endpoint devuelve 200 OK en caso de éxito.
       return response.statusCode == 200;
     } on DioException catch (e) {
       print('Error Dio al crear contacto de emergencia: ${e.message}');
@@ -55,15 +78,11 @@ class ApiSettingsService extends BaseDioService {
     }
   }
 
-  // --- 2. GET: Obtener todos los Contactos ---
-  /// Obtiene la lista completa de contactos de emergencia del usuario.
-  /// Retorna una lista de mapas (que luego se convertirán en objetos).
   Future<List<Map<String, dynamic>>> getEmergencyContacts() async {
     try {
-      final response = await dio.get(_endpoint);
+      final response = await dio.get(_contactsEndpoint);
 
       if (response.statusCode == 200 && response.data is List) {
-        // Asumiendo que response.data es List<Map<String, dynamic>>
         return List<Map<String, dynamic>>.from(response.data);
       }
 
@@ -79,14 +98,11 @@ class ApiSettingsService extends BaseDioService {
     }
   }
 
-  // --- 3. GET: Obtener un solo Contacto por ID ---
-  /// Obtiene un contacto específico por su ID.
   Future<Map<String, dynamic>> getEmergencyContactById(String id) async {
     try {
-      final response = await dio.get('$_endpoint/$id');
+      final response = await dio.get('$_contactsEndpoint/$id');
 
       if (response.statusCode == 200 && response.data is Map) {
-        // Asumiendo que response.data es Map<String, dynamic>
         return Map<String, dynamic>.from(response.data);
       }
 
@@ -102,24 +118,18 @@ class ApiSettingsService extends BaseDioService {
     }
   }
 
-  // --- 4. PUT: Actualizar Contacto ---
-  /// Actualiza un contacto existente por su ID.
   Future<bool> updateEmergencyContact(
     String id,
     EmergencyContactPayload contact,
   ) async {
     try {
       final response = await dio.put(
-        '$_endpoint/$id',
+        '$_contactsEndpoint/$id',
         data: contact.toJson(),
         options: Options(contentType: Headers.jsonContentType),
       );
 
-      if (response.statusCode != 200) {
-        return false;
-      }
-
-      return true;
+      return response.statusCode == 200;
     } on DioException catch (e) {
       print('Error Dio al actualizar contacto $id: ${e.message}');
       rethrow;
@@ -129,21 +139,118 @@ class ApiSettingsService extends BaseDioService {
     }
   }
 
-  // --- 5. DELETE: Eliminar Contacto ---
   Future<bool> deleteEmergencyContact(String id) async {
     try {
-      final response = await dio.delete('$_endpoint/$id');
+      final response = await dio.delete('$_contactsEndpoint/$id');
 
-      if (response.statusCode != 200) {
-        return false;
-      }
-
-      return true;
+      return response.statusCode == 200;
     } on DioException catch (e) {
       print('Error Dio al eliminar contacto $id: ${e.message}');
       rethrow;
     } catch (e) {
       print('Error general al eliminar contacto $id: $e');
+      rethrow;
+    }
+  }
+
+  // -----------------------------
+  // NUEVO: Condiciones Médicas
+  // -----------------------------
+
+  /// GET /api/CondicionMedica  -> lista de condiciones
+  Future<List<Map<String, dynamic>>> getMedicalConditions() async {
+    try {
+      final response = await dio.get(_medicalEndpoint);
+
+      if (response.statusCode == 200 && response.data is List) {
+        return List<Map<String, dynamic>>.from(response.data);
+      }
+
+      throw Exception(
+        'Formato de respuesta incorrecto o código: ${response.statusCode}',
+      );
+    } on DioException catch (e) {
+      print('Error Dio al obtener lista de condiciones médicas: ${e.message}');
+      rethrow;
+    } catch (e) {
+      print('Error general al obtener lista de condiciones médicas: $e');
+      rethrow;
+    }
+  }
+
+  /// GET /api/CondicionMedica/{id}
+  Future<Map<String, dynamic>> getMedicalConditionById(String id) async {
+    try {
+      final response = await dio.get('$_medicalEndpoint/$id');
+
+      if (response.statusCode == 200 && response.data is Map) {
+        return Map<String, dynamic>.from(response.data);
+      }
+
+      throw Exception(
+        'Error al obtener condicion medica $id. Código: ${response.statusCode}',
+      );
+    } on DioException catch (e) {
+      print('Error Dio al obtener condicion medica por ID: ${e.message}');
+      rethrow;
+    } catch (e) {
+      print('Error general al obtener condicion medica por ID: $e');
+      rethrow;
+    }
+  }
+
+  /// POST /api/CondicionMedica
+  Future<bool> createMedicalCondition(MedicalConditionPayload payload) async {
+    try {
+      final response = await dio.post(
+        _medicalEndpoint,
+        data: payload.toJson(),
+        options: Options(contentType: Headers.jsonContentType),
+      );
+
+      return response.statusCode == 200;
+    } on DioException catch (e) {
+      print('Error Dio al crear condicion medica: ${e.message}');
+      rethrow;
+    } catch (e) {
+      print('Error general al crear condicion medica: $e');
+      rethrow;
+    }
+  }
+
+  /// PUT /api/CondicionMedica/{id}
+  Future<bool> updateMedicalCondition(
+    String id,
+    MedicalConditionPayload payload,
+  ) async {
+    try {
+      final response = await dio.put(
+        '$_medicalEndpoint/$id',
+        data: payload.toJson(),
+        options: Options(contentType: Headers.jsonContentType),
+      );
+
+      return response.statusCode == 200;
+    } on DioException catch (e) {
+      print('Error Dio al actualizar condicion medica $id: ${e.message}');
+      rethrow;
+    } catch (e) {
+      print('Error general al actualizar condicion medica $id: $e');
+      rethrow;
+    }
+  }
+
+  /// DELETE /api/CondicionMedica/{id}
+  Future<bool> deleteMedicalCondition(String id) async {
+    try {
+      final response = await dio.delete('$_medicalEndpoint/$id');
+
+      return response.statusCode == 200;
+    } on DioException catch (e) {
+      print('Error Dio al eliminar condicion medica $id: ${e.message}');
+      rethrow;
+    } catch (e) {
+      print('Error general al eliminar condicion medica $id: $e');
       rethrow;
     }
   }

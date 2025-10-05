@@ -23,27 +23,27 @@ class SettingsUserScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          SizedBox(
-            height: 80,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                children: [
-                  Image.asset('assets/icons/logo_unimayor.png', width: 30),
-                  const SizedBox(width: 10),
-                  Text(
-                    'Johan Manuel Alvarez Pinta',
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 20,
-                      color: colors.onSurface,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const Divider(),
+          // SizedBox(
+          //   height: 80,
+          //   child: Padding(
+          //     padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          //     child: Row(
+          //       children: [
+          //         Image.asset('assets/icons/logo_unimayor.png', width: 30),
+          //         const SizedBox(width: 10),
+          //         Text(
+          //           'Johan Manuel Alvarez Pinta',
+          //           style: GoogleFonts.poppins(
+          //             fontWeight: FontWeight.w600,
+          //             fontSize: 20,
+          //             color: colors.onSurface,
+          //           ),
+          //         ),
+          //       ],
+          //     ),
+          //   ),
+          // ),
+          // const Divider(),
           ListTile(
             leading: Icon(Icons.medical_information, color: colors.primary),
             title: Text(
