@@ -327,7 +327,7 @@ class _GetReportByIdBrigadierProviderElement
   String get id => (origin as GetReportByIdBrigadierProvider).id;
 }
 
-String _$createReportHash() => r'c4a1e9868fe07de8dd5d0c824b5137931ec1c9bb';
+String _$createReportHash() => r'f4a073ea0073f6004b9ddb3ba18ab8531e144ee0';
 
 /// See also [createReport].
 @ProviderFor(createReport)

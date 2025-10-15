@@ -193,7 +193,7 @@ class MainBrigadierScreen extends ConsumerWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     if (reports.isEmpty) {
-      return const TextNoReports();
+      return const TextNoReports(isBrigadier: true);
     }
 
     if (reports.first.estado == 'En proceso') {

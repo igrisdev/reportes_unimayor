@@ -19,4 +19,28 @@ class ApiLocationsService extends BaseDioService {
       rethrow;
     }
   }
+
+  Future<Map<String, dynamic>> getUbicacionById(int id) async {
+    try {
+      final response = await dio.get('/admin/ubicaciones/$id');
+
+      if (response.statusCode == 404 || response.data == null) {
+        throw Exception('Ubicación no encontrada');
+      }
+
+      final Map<String, dynamic> json = response.data as Map<String, dynamic>;
+
+      final int idUbicacion = json['idUbicacion'] is int
+          ? json['idUbicacion'] as int
+          : int.tryParse(json['idUbicacion']?.toString() ?? '') ?? -1;
+
+      final String sede = (json['sede'] as String?)?.trim() ?? '';
+      final String lugar = (json['lugar'] as String?)?.trim() ?? '';
+
+      return {'idUbicacion': idUbicacion, 'sede': sede, 'lugar': lugar};
+    } catch (e) {
+      print('Error en getUbicacionById: $e');
+      rethrow;
+    }
+  }
 }

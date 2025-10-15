@@ -187,6 +187,13 @@ class _CreateReportUserScreenState
   Widget qrFormField(String idLocationQrScanner) {
     final colors = Theme.of(context).colorScheme;
 
+    final AsyncValue<Map<String, dynamic>>? locationByIdAsync =
+        (idLocationQrScanner.isNotEmpty)
+        ? ref.watch(
+            locationByIdProvider(int.tryParse(idLocationQrScanner) ?? -1),
+          )
+        : null;
+
     return FormField<String>(
       initialValue: idLocationQrScanner,
       autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -204,6 +211,34 @@ class _CreateReportUserScreenState
         });
 
         final bool isScanned = (idLocationQrScanner.isNotEmpty);
+
+        String titleText;
+        if (!isScanned) {
+          titleText = 'QR Más Cercano';
+        } else {
+          final idInt = int.tryParse(idLocationQrScanner);
+          if (idInt == null || locationByIdAsync == null) {
+            titleText = 'Ubicación Escaneada';
+          } else {
+            titleText = locationByIdAsync.when(
+              data: (map) {
+                final sede = (map['sede'] as String?) ?? '';
+                final lugar = (map['lugar'] as String?) ?? '';
+                if (sede.isNotEmpty && lugar.isNotEmpty) {
+                  return '$sede, $lugar';
+                } else if (sede.isNotEmpty) {
+                  return sede;
+                } else if (lugar.isNotEmpty) {
+                  return lugar;
+                } else {
+                  return 'Ubicación Escaneada';
+                }
+              },
+              loading: () => 'Cargando ubicación...',
+              error: (err, st) => 'Ubicación (error al cargar)',
+            );
+          }
+        }
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,11 +267,9 @@ class _CreateReportUserScreenState
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            isScanned
-                                ? 'Ubicación Escaneada'
-                                : 'QR MAS CERCANO',
+                            titleText,
                             style: GoogleFonts.poppins(
-                              fontSize: 26,
+                              fontSize: 24,
                               fontWeight: FontWeight.w700,
                               color: isScanned
                                   ? colors.tertiary
@@ -269,7 +302,7 @@ class _CreateReportUserScreenState
                 padding: const EdgeInsets.only(top: 8.0, left: 8.0),
                 child: Text(
                   state.errorText!,
-                  style: TextStyle(color: colors.error, fontSize: 13),
+                  style: GoogleFonts.poppins(color: colors.error, fontSize: 18, fontWeight: FontWeight.w500),
                 ),
               ),
           ],

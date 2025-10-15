@@ -13,3 +13,14 @@ Future<List<Headquarters>> locationsTree(LocationsTreeRef ref) async {
 
   return tree;
 }
+
+@riverpod
+Future<Map<String, dynamic>> locationById(LocationByIdRef ref, int id) async {
+  try {
+    final api = ApiLocationsService();
+    final map = await api.getUbicacionById(id);
+    return map;
+  } catch (e) {
+    rethrow;
+  }
+}

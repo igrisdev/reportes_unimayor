@@ -80,7 +80,7 @@ class HistoryBrigadierScreen extends ConsumerWidget {
     final textTheme = Theme.of(context).textTheme;
 
     if (reports.isEmpty) {
-      return const TextNoReports();
+      return const TextNoReports(isHistoryBrigadier: true);
     }
 
     return ListView.separated(

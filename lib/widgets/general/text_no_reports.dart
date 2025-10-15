@@ -5,8 +5,13 @@ import 'package:reportes_unimayor/providers/report_providers.dart';
 
 class TextNoReports extends ConsumerWidget {
   final bool isBrigadier;
+  final bool isHistoryBrigadier;
 
-  const TextNoReports({super.key, this.isBrigadier = false});
+  const TextNoReports({
+    super.key,
+    this.isBrigadier = false,
+    this.isHistoryBrigadier = false,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -14,7 +19,11 @@ class TextNoReports extends ConsumerWidget {
 
     String text = isBrigadier
         ? "No hay reportes en proceso"
-        : "No tienes reportes creados aún";
+        : "No haz realizado un reporte";
+
+    if (isHistoryBrigadier) {
+      text = "No haz finalizado ningún reporte";
+    }
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -31,23 +40,23 @@ class TextNoReports extends ConsumerWidget {
                 Icon(
                   Icons.assignment_outlined,
                   size: 64,
-                  color: colorScheme.outlineVariant, // 🎨 gris del tema
+                  color: colorScheme.outlineVariant,
                 ),
                 const SizedBox(height: 16),
                 Text(
                   "Sin Reportes",
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                    color: colorScheme.onSurface, // 🎨 texto principal
+                    fontSize: 28,
+                    color: colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   text,
                   style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    color: colorScheme.onSurfaceVariant, // 🎨 texto secundario
+                    fontSize: 20,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
