@@ -260,7 +260,6 @@ class MainBrigadierScreen extends ConsumerWidget {
                                   );
 
                                   if (result) {
-                                    Navigator.of(context).pop();
                                   } else {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
