@@ -327,7 +327,7 @@ class _GetReportByIdBrigadierProviderElement
   String get id => (origin as GetReportByIdBrigadierProvider).id;
 }
 
-String _$createReportHash() => r'c4a1e9868fe07de8dd5d0c824b5137931ec1c9bb';
+String _$createReportHash() => r'857e5f79d33113dba1ac31a81303db1ce1e55b6b';
 
 /// See also [createReport].
 @ProviderFor(createReport)
@@ -479,7 +479,7 @@ class _CreateReportProviderElement
   String? get record => (origin as CreateReportProvider).record;
 }
 
-String _$acceptReportHash() => r'61206a23f73c28fd6d474e87182ac327688e53a1';
+String _$acceptReportHash() => r'df259e9e183827e011faa96270f364b33ee2429a';
 
 /// See also [acceptReport].
 @ProviderFor(acceptReport)

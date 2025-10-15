@@ -55,7 +55,13 @@ class _ConfirmDialogState extends State<ConfirmDialog> {
                 ? null
                 : () async {
                     setState(() => isLoading = true);
-                    await widget.onConfirm();
+                    try {
+                      await widget.onConfirm();
+                    } finally {
+                      if (mounted) {
+                        Navigator.of(context).pop();
+                      }
+                    }
                   },
             child: isLoading
                 ? SizedBox(

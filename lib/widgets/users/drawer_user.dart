@@ -33,6 +33,7 @@ class _DrawerUserState extends ConsumerState<DrawerUser> {
         );
 
         await deleteStorage('token');
+        await deleteStorage('refresh_token');
 
         if (res && mounted) {
           GoRouter.of(context).go('/auth');
@@ -94,17 +95,42 @@ class _DrawerUserState extends ConsumerState<DrawerUser> {
                 onTap: () => router.push('/user/history'),
               ),
 
+              // ListTile(
+              //   leading: Icon(Icons.settings, color: colorScheme.primary),
+              //   title: Text(
+              //     'Configuración',
+              //     style: GoogleFonts.poppins(
+              //       fontWeight: FontWeight.w500,
+              //       fontSize: 18,
+              //       color: textTheme.bodyLarge?.color ?? colorScheme.onSurface,
+              //     ),
+              //   ),
+              //   onTap: () => router.push('/user/settings'),
+              // ),
               ListTile(
-                leading: Icon(Icons.settings, color: colorScheme.primary),
+                leading: Icon(
+                  Icons.medical_information,
+                  color: colorScheme.primary,
+                ),
                 title: Text(
-                  'Configuración',
+                  'Información Medica',
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w500,
                     fontSize: 18,
-                    color: textTheme.bodyLarge?.color ?? colorScheme.onSurface,
                   ),
                 ),
-                onTap: () => router.push('/user/settings'),
+                onTap: () => router.push('/user/settings/medical_information'),
+              ),
+              ListTile(
+                leading: Icon(Icons.phone, color: colorScheme.primary),
+                title: Text(
+                  'Contactos de emergencia',
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 18,
+                  ),
+                ),
+                onTap: () => router.push('/user/settings/emergency_contacts'),
               ),
 
               const Spacer(),

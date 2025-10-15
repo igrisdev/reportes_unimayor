@@ -217,7 +217,7 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
 
               showDialog(
                 context: context,
-                barrierDismissible: false, // no se cierra tocando afuera
+                barrierDismissible: false,
                 builder: (context) {
                   return ConfirmDialog(
                     title: "Confirmar cancelación",

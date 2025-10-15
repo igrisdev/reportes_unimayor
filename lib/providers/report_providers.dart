@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/audio_player_notifier.dart';
 import 'package:reportes_unimayor/providers/is_brigadier_provider.dart';
@@ -62,7 +63,7 @@ Future<List<ReportsModel>> reportListHistoryBrigadier(
     return reports;
   } catch (e) {
     print('Error en report provider: $e');
-    rethrow; // Riverpod manejará el error
+    rethrow;
   }
 }
 
@@ -185,6 +186,12 @@ Future<bool> createReport(
     }
 
     return false;
+  } on DioException catch (e) {
+    if (e.response?.statusCode == 500) {
+      throw Exception('No Existe esa ubicación');
+    }
+    print('DioException en report provider: $e');
+    rethrow;
   } catch (e) {
     print('Error en report provider: $e');
     rethrow;
@@ -199,7 +206,7 @@ Future<bool> acceptReport(AcceptReportRef ref, int id) async {
 
     if (response) {
       invalidateAllProvidersBrigadier(ref);
-      ref.invalidate(reportListBrigadierProvider);
+      ref.refresh(reportListBrigadierProvider);
       return true;
     }
 
@@ -253,14 +260,14 @@ Future<String> getRecord(
 }
 
 void invalidateAllProvidersUser(ref) {
-  ref.invalidate(reportListPendingProvider);
-  ref.invalidate(reportListProvider);
-  ref.invalidate(isBrigadierProvider);
+  ref.refresh(reportListPendingProvider);
+  ref.refresh(reportListProvider);
+  ref.refresh(isBrigadierProvider);
 }
 
 void invalidateAllProvidersBrigadier(ref) {
   invalidateAllProvidersUser(ref);
-  ref.invalidate(reportListBrigadierProvider);
-  ref.invalidate(getReportByIdBrigadierProvider);
-  ref.invalidate(reportListHistoryBrigadierProvider);
+  ref.refresh(reportListBrigadierProvider);
+  ref.refresh(getReportByIdBrigadierProvider);
+  ref.refresh(reportListHistoryBrigadierProvider);
 }
