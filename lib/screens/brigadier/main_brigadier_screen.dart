@@ -145,7 +145,6 @@ class MainBrigadierScreen extends ConsumerWidget {
                     );
 
                     if (result) {
-                      Navigator.of(context).pop();
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text("Reporte finalizado correctamente"),

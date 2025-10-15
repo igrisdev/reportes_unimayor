@@ -86,7 +86,13 @@ class _FinalizeReportDialogState extends State<FinalizeReportDialog> {
                 ? null
                 : () async {
                     setState(() => isLoading = true);
-                    await widget.onConfirm(_controller.text.trim());
+                    try {
+                      await widget.onConfirm(_controller.text.trim());
+                    } finally {
+                      if (mounted) {
+                        Navigator.of(context).pop();
+                      }
+                    }
                   },
             child: isLoading
                 ? SizedBox(

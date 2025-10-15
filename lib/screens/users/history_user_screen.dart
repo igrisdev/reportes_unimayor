@@ -93,10 +93,7 @@ class HistoryUserScreen extends ConsumerWidget {
 
         final isFinalized = report.estado == 'Finalizado';
 
-        // ✅ Usa colores del theme para estados
-        Color colorBackground = isFinalized
-            ? colors.primary
-            : colors.error; // éxito o error
+        Color colorBackground = isFinalized ? colors.primary : colors.error;
 
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),

@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/audio_player_notifier.dart';
 import 'package:reportes_unimayor/providers/is_brigadier_provider.dart';
@@ -13,7 +12,30 @@ Future<List<ReportsModel>> reportList(ReportListRef ref) async {
     final apiService = ApiReportsService();
     final reports = await apiService.getReports();
 
-    return reports;
+    final history = reports
+        .where((r) => r.estado != 'Pendiente' && r.estado != 'En proceso')
+        .toList();
+
+    DateTime _combineDateAndHour(ReportsModel r) {
+      final datePart = r.fechaCreacion.toIso8601String().split(
+        'T',
+      )[0]; // "2025-10-14"
+      final dateTimeString = '$datePart ${r.horaCreacion}';
+      try {
+        return DateTime.parse(dateTimeString);
+      } catch (_) {
+        return r.fechaCreacion;
+      }
+    }
+
+    // Orden descendente: el más reciente primero
+    history.sort((a, b) {
+      final da = _combineDateAndHour(a);
+      final db = _combineDateAndHour(b);
+      return db.compareTo(da); // db - da para descendente
+    });
+
+    return history;
   } catch (e) {
     print('Error en report provider: $e');
     rethrow; // Riverpod manejará el error
@@ -44,6 +66,29 @@ Future<List<ReportsModel>> reportListBrigadier(
   }
 }
 
+// @riverpod
+// Future<List<ReportsModel>> reportListHistoryBrigadier(
+//   ReportListHistoryBrigadierRef ref,
+// ) async {
+//   try {
+//     final apiService = ApiReportsService();
+
+//     final reportFinalized = await apiService.getReportsBrigadierAssigned();
+
+//     final reports = reportFinalized
+//         .where(
+//           (element) =>
+//               element.estado != 'En proceso' || element.estado != 'Pendiente',
+//         )
+//         .toList();
+
+//     return reports;
+//   } catch (e) {
+//     print('Error en report provider: $e');
+//     rethrow;
+//   }
+// }
+
 @riverpod
 Future<List<ReportsModel>> reportListHistoryBrigadier(
   ReportListHistoryBrigadierRef ref,
@@ -51,18 +96,31 @@ Future<List<ReportsModel>> reportListHistoryBrigadier(
   try {
     final apiService = ApiReportsService();
 
-    final reportFinalized = await apiService.getReportsBrigadierAssigned();
+    final allReports = await apiService.getReportsBrigadierAssigned();
 
-    final reports = reportFinalized
-        .where(
-          (element) =>
-              element.estado != 'En proceso' || element.estado != 'Pendiente',
-        )
+    final reports = allReports
+        .where((r) => r.estado != 'En proceso' && r.estado != 'Pendiente')
         .toList();
+
+    DateTime _combineDateAndHour(ReportsModel r) {
+      final datePart = r.fechaCreacion.toIso8601String().split('T').first;
+      final dateTimeString = '$datePart ${r.horaCreacion}';
+      try {
+        return DateTime.parse(dateTimeString);
+      } catch (_) {
+        return r.fechaCreacion;
+      }
+    }
+
+    reports.sort((a, b) {
+      final da = _combineDateAndHour(a);
+      final db = _combineDateAndHour(b);
+      return db.compareTo(da);
+    });
 
     return reports;
   } catch (e) {
-    print('Error en report provider: $e');
+    print('Error en reportListHistoryBrigadier provider: $e');
     rethrow;
   }
 }
@@ -186,12 +244,6 @@ Future<bool> createReport(
     }
 
     return false;
-  } on DioException catch (e) {
-    if (e.response?.statusCode == 500) {
-      throw Exception('No Existe esa ubicación');
-    }
-    print('DioException en report provider: $e');
-    rethrow;
   } catch (e) {
     print('Error en report provider: $e');
     rethrow;
@@ -206,7 +258,7 @@ Future<bool> acceptReport(AcceptReportRef ref, int id) async {
 
     if (response) {
       invalidateAllProvidersBrigadier(ref);
-      ref.refresh(reportListBrigadierProvider);
+      ref.invalidate(reportListBrigadierProvider);
       return true;
     }
 
@@ -260,14 +312,14 @@ Future<String> getRecord(
 }
 
 void invalidateAllProvidersUser(ref) {
-  ref.refresh(reportListPendingProvider);
-  ref.refresh(reportListProvider);
-  ref.refresh(isBrigadierProvider);
+  ref.invalidate(reportListPendingProvider);
+  ref.invalidate(reportListProvider);
+  ref.invalidate(isBrigadierProvider);
 }
 
 void invalidateAllProvidersBrigadier(ref) {
   invalidateAllProvidersUser(ref);
-  ref.refresh(reportListBrigadierProvider);
-  ref.refresh(getReportByIdBrigadierProvider);
-  ref.refresh(reportListHistoryBrigadierProvider);
+  ref.invalidate(reportListBrigadierProvider);
+  ref.invalidate(getReportByIdBrigadierProvider);
+  ref.invalidate(reportListHistoryBrigadierProvider);
 }

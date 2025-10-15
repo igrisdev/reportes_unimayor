@@ -6,8 +6,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:reportes_unimayor/providers/id_location_qr_scanner.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
-import 'package:reportes_unimayor/providers/location_providers.dart'; // provider que devuelve List<Headquarters>
-import 'package:reportes_unimayor/models/location_tree.dart'; // Headquarters, Building, LocationEntry
+import 'package:reportes_unimayor/providers/location_providers.dart';
+import 'package:reportes_unimayor/models/location_tree.dart';
 import 'package:path/path.dart' as p;
 import 'package:reportes_unimayor/utils/show_message.dart';
 import 'package:reportes_unimayor/widgets/general/confirm_dialog.dart';
@@ -23,7 +23,6 @@ class _CreateReportUserScreenState
     extends ConsumerState<CreateReportUserScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  // Antes estaban estáticas; ahora se llenan desde el provider
   List<Headquarters> _locationTree = [];
   List<String> _headquarters = [];
   List<String> _buildings = [];
@@ -80,7 +79,6 @@ class _CreateReportUserScreenState
     });
   }
 
-  // Helpers para actualizar listas dependientes
   void _updateBuildingsForHeadquarter(String? headquarter) {
     if (headquarter == null) {
       _buildings = [];
@@ -116,7 +114,6 @@ class _CreateReportUserScreenState
     final idLocationQrScanner = ref.watch(idLocationQrScannerProvider);
     final colors = Theme.of(context).colorScheme;
 
-    // Obtenemos el árbol de ubicaciones del provider
     final locationsAsync = ref.watch(locationsTreeProvider);
 
     locationsAsync.when(
