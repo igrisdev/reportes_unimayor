@@ -24,7 +24,7 @@ class LocationEntry {
 }
 
 class Building {
-  final String nombre; // por ejemplo: '1' o 'Torre Central' o 'Edificio 1'
+  final String nombre;
   final List<LocationEntry> ubicaciones;
 
   Building({required this.nombre, required this.ubicaciones});

@@ -78,8 +78,7 @@ class DescriptionReportContainer extends ConsumerWidget {
             ),
           ),
 
-        // 🔹 Bloque de audio
-        if (audio.isNotEmpty)
+        if (audio.isNotEmpty && audio != "")
           Consumer(
             builder: (context, ref, _) {
               final audioState = ref.watch(audioPlayerNotifierProvider);
@@ -121,7 +120,6 @@ class DescriptionReportContainer extends ConsumerWidget {
 
                         Row(
                           children: [
-                            // 🔹 Slider a la izquierda
                             Expanded(
                               child: Column(
                                 children: [
@@ -141,7 +139,6 @@ class DescriptionReportContainer extends ConsumerWidget {
                                       );
                                     },
                                   ),
-                                  // tiempos debajo del slider
                                   Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -168,7 +165,6 @@ class DescriptionReportContainer extends ConsumerWidget {
 
                             const SizedBox(width: 12),
 
-                            // 🔹 Botón de play/pause
                             GestureDetector(
                               onTap: () async {
                                 if (isPlaying) {
@@ -207,7 +203,6 @@ class DescriptionReportContainer extends ConsumerWidget {
     );
   }
 
-  /// 🔹 Formato mm:ss
   String _formatDuration(Duration d) {
     final minutes = d.inMinutes.remainder(60).toString().padLeft(2, '0');
     final seconds = d.inSeconds.remainder(60).toString().padLeft(2, '0');

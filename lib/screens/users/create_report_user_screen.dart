@@ -132,7 +132,6 @@ class _CreateReportUserScreenState
         // opcional: podrías indicar carga en la UI si deseas
       },
       error: (err, stack) {
-        // Mostrar mensaje simple una vez si ocurre un error
         WidgetsBinding.instance.addPostFrameCallback((_) {
           showMessage(
             context,
@@ -246,9 +245,7 @@ class _CreateReportUserScreenState
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            isScanned
-                                ? 'ID: $idLocationQrScanner'
-                                : 'Presionar para escanear la ubicación',
+                            'Presionar para escanear la ubicación',
                             style: GoogleFonts.poppins(
                               color: colors.onSurface,
                               fontSize: 18,
@@ -632,8 +629,6 @@ class _CreateReportUserScreenState
   }
 
   Future<void> _submitReport() async {
-    FocusScope.of(context).unfocus();
-
     if (!_formKey.currentState!.validate()) return;
 
     try {

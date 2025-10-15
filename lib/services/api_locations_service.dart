@@ -4,9 +4,7 @@ import 'package:reportes_unimayor/models/ubicacion_model.dart';
 class ApiLocationsService extends BaseDioService {
   Future<List<Ubicacion>> getUbicaciones() async {
     try {
-      final response = await dio.get(
-        '/admin/ubicaciones',
-      ); // endpoint mostrado en la imagen
+      final response = await dio.get('/admin/ubicaciones');
 
       if (response.data == null) return [];
 

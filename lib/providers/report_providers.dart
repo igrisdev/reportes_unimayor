@@ -17,9 +17,7 @@ Future<List<ReportsModel>> reportList(ReportListRef ref) async {
         .toList();
 
     DateTime _combineDateAndHour(ReportsModel r) {
-      final datePart = r.fechaCreacion.toIso8601String().split(
-        'T',
-      )[0]; // "2025-10-14"
+      final datePart = r.fechaCreacion.toIso8601String().split('T')[0];
       final dateTimeString = '$datePart ${r.horaCreacion}';
       try {
         return DateTime.parse(dateTimeString);
@@ -28,17 +26,16 @@ Future<List<ReportsModel>> reportList(ReportListRef ref) async {
       }
     }
 
-    // Orden descendente: el más reciente primero
     history.sort((a, b) {
       final da = _combineDateAndHour(a);
       final db = _combineDateAndHour(b);
-      return db.compareTo(da); // db - da para descendente
+      return db.compareTo(da);
     });
 
     return history;
   } catch (e) {
     print('Error en report provider: $e');
-    rethrow; // Riverpod manejará el error
+    rethrow;
   }
 }
 
@@ -62,32 +59,9 @@ Future<List<ReportsModel>> reportListBrigadier(
     return reports;
   } catch (e) {
     print('Error en report provider: $e');
-    rethrow; // Riverpod manejará el error
+    rethrow;
   }
 }
-
-// @riverpod
-// Future<List<ReportsModel>> reportListHistoryBrigadier(
-//   ReportListHistoryBrigadierRef ref,
-// ) async {
-//   try {
-//     final apiService = ApiReportsService();
-
-//     final reportFinalized = await apiService.getReportsBrigadierAssigned();
-
-//     final reports = reportFinalized
-//         .where(
-//           (element) =>
-//               element.estado != 'En proceso' || element.estado != 'Pendiente',
-//         )
-//         .toList();
-
-//     return reports;
-//   } catch (e) {
-//     print('Error en report provider: $e');
-//     rethrow;
-//   }
-// }
 
 @riverpod
 Future<List<ReportsModel>> reportListHistoryBrigadier(
@@ -164,7 +138,7 @@ Future<ReportsModel> getReportById(GetReportByIdRef ref, String id) async {
     return report;
   } catch (e) {
     print('Error en report provider: $e');
-    rethrow; // Riverpod manejará el error
+    rethrow;
   }
 }
 
@@ -187,7 +161,7 @@ Future<ReportsModel> getReportByIdBrigadier(
     return report.first;
   } catch (e) {
     print('Error en report provider: $e');
-    rethrow; // Riverpod manejará el error
+    rethrow;
   }
 }
 
@@ -218,15 +192,15 @@ Future<bool> createReport(
         usuario: Usuario(correo: "", nombre: "", rutaFoto: null, mensaje: null),
         ubicacion: Ubicacion(
           idUbicacion: int.tryParse(idUbicacion) ?? -1,
-          descripcion: "Ubicación seleccionada",
-          sede: "cargando ...",
-          edificio: "cargando ...",
-          lugar: "cargando ...",
-          piso: "cargando ...",
+          descripcion: "",
+          sede: "Cargando ...",
+          edificio: "",
+          lugar: "",
+          piso: "",
           rutaQr: "",
           reportes: null,
         ),
-        descripcion: descripcion ?? 'cargando ...',
+        descripcion: descripcion ?? '',
         detallesFinalizacion: '',
         rutaAudio: record ?? '',
         estado: 'Pendiente',
@@ -265,7 +239,7 @@ Future<bool> acceptReport(AcceptReportRef ref, int id) async {
     return false;
   } catch (e) {
     print('Error en report provider: $e');
-    rethrow; // Riverpod manejará el error
+    rethrow;
   }
 }
 
