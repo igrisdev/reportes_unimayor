@@ -302,7 +302,11 @@ class _CreateReportUserScreenState
                 padding: const EdgeInsets.only(top: 8.0, left: 8.0),
                 child: Text(
                   state.errorText!,
-                  style: GoogleFonts.poppins(color: colors.error, fontSize: 18, fontWeight: FontWeight.w500),
+                  style: GoogleFonts.poppins(
+                    color: colors.error,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
           ],
@@ -679,8 +683,6 @@ class _CreateReportUserScreenState
       );
 
       if (response == true && mounted) {
-        await Future.delayed(const Duration(milliseconds: 100));
-
         ref
             .read(idLocationQrScannerProvider.notifier)
             .removeIdLocationQrScanner();

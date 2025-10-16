@@ -75,8 +75,8 @@ class _MainAppState extends ConsumerState<MainApp> {
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       _showNotification(message);
-      invalidateAllProvidersBrigadier(ref);
-      invalidateAllProvidersUser(ref);
+      ref.invalidate(reportListBrigadierProvider);
+      ref.invalidate(reportListPendingProvider);
     });
   }
 

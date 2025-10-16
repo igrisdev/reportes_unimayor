@@ -85,6 +85,8 @@ class _FinalizeReportDialogState extends State<FinalizeReportDialog> {
             onPressed: _controller.text.trim().isEmpty || isLoading
                 ? null
                 : () async {
+                    FocusScope.of(context).unfocus();
+
                     setState(() => isLoading = true);
                     try {
                       await widget.onConfirm(_controller.text.trim());

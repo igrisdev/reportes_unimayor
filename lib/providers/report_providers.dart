@@ -181,39 +181,9 @@ Future<bool> createReport(
     );
 
     if (response) {
-      final previous = ref.read(reportListPendingProvider).asData?.value ?? [];
 
-      final now = DateTime.now();
-      String hora =
-          "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
+      await ref.refresh(reportListPendingProvider.future);
 
-      final newReport = ReportsModel(
-        idReporte: -1,
-        usuario: Usuario(correo: "", nombre: "", rutaFoto: null, mensaje: null),
-        ubicacion: Ubicacion(
-          idUbicacion: int.tryParse(idUbicacion) ?? -1,
-          descripcion: "",
-          sede: "Cargando ...",
-          edificio: "",
-          lugar: "",
-          piso: "",
-          rutaQr: "",
-          reportes: null,
-        ),
-        descripcion: descripcion ?? '',
-        detallesFinalizacion: '',
-        rutaAudio: record ?? '',
-        estado: 'Pendiente',
-        fechaCreacion: now,
-        horaCreacion: hora,
-      );
-
-      ref.read(reportListPendingProvider.notifier).state = AsyncData([
-        ...previous,
-        newReport,
-      ]);
-
-      invalidateAllProvidersUser(ref);
       return true;
     }
 
@@ -231,8 +201,7 @@ Future<bool> acceptReport(AcceptReportRef ref, int id) async {
     final response = await apiService.acceptReport(id);
 
     if (response) {
-      invalidateAllProvidersBrigadier(ref);
-      ref.invalidate(reportListBrigadierProvider);
+      await ref.refresh(reportListBrigadierProvider.future);
       return true;
     }
 
@@ -250,14 +219,15 @@ Future<bool> endReport(EndReportRef ref, int id, String description) async {
     final response = await apiService.endReport(id, description);
 
     if (response) {
-      invalidateAllProvidersBrigadier(ref);
+      ref.invalidate(reportListHistoryBrigadierProvider);
+      await ref.refresh(reportListBrigadierProvider.future);
       return true;
     }
 
     return false;
   } catch (e) {
     print('Error en report provider: $e');
-    rethrow; // Riverpod manejará el error
+    rethrow;
   }
 }
 
@@ -285,15 +255,14 @@ Future<String> getRecord(
   }
 }
 
-void invalidateAllProvidersUser(ref) {
-  ref.invalidate(reportListPendingProvider);
-  ref.invalidate(reportListProvider);
-  ref.invalidate(isBrigadierProvider);
-}
+// void invalidateAllProvidersUser(ref) {
+//   ref.invalidate(reportListPendingProvider);
+//   ref.invalidate(reportListProvider);
+//   ref.invalidate(isBrigadierProvider);
+// }
 
-void invalidateAllProvidersBrigadier(ref) {
-  invalidateAllProvidersUser(ref);
-  ref.invalidate(reportListBrigadierProvider);
-  ref.invalidate(getReportByIdBrigadierProvider);
-  ref.invalidate(reportListHistoryBrigadierProvider);
-}
+// void invalidateAllProvidersBrigadier(ref) {
+//   ref.invalidate(reportListBrigadierProvider);
+//   ref.invalidate(getReportByIdBrigadierProvider);
+//   ref.invalidate(reportListHistoryBrigadierProvider);
+// }
