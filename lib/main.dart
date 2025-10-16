@@ -77,6 +77,7 @@ class _MainAppState extends ConsumerState<MainApp> {
       _showNotification(message);
       ref.invalidate(reportListBrigadierProvider);
       ref.invalidate(reportListPendingProvider);
+      ref.invalidate(reportListProvider);
     });
   }
 

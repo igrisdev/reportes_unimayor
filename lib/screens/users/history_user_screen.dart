@@ -41,7 +41,7 @@ class HistoryUserScreen extends ConsumerWidget {
                           style: GoogleFonts.poppins(
                             fontWeight: FontWeight.w600,
                             fontSize: 20,
-                            color: colors.onSurface, // ← texto principal
+                            color: colors.onSurface,
                           ),
                         ),
                       ],
@@ -99,9 +99,9 @@ class HistoryUserScreen extends ConsumerWidget {
           padding: const EdgeInsets.only(bottom: 12),
           child: Container(
             decoration: BoxDecoration(
-              border: Border.all(color: colors.outline), // borde del tema
+              border: Border.all(color: colors.outline),
               borderRadius: BorderRadius.circular(5),
-              color: colors.surface, // fondo del card
+              color: colors.surface,
             ),
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -141,7 +141,7 @@ class HistoryUserScreen extends ConsumerWidget {
                             style: GoogleFonts.poppins(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: colors.onPrimary, // texto sobre botón
+                              color: colors.onPrimary,
                             ),
                           ),
                         ),

@@ -49,61 +49,12 @@ class ViewReportBrigadierScreen extends ConsumerWidget {
             report.idReporte,
             colors,
           ),
-          // 'En proceso' => bottomAppBarMainInProgress(
-          //   context,
-          //   ref,
-          //   report.idReporte,
-          //   colors,
-          // ),
           _ => null,
         },
         orElse: () => null,
       ),
     );
   }
-
-  // BottomAppBar bottomAppBarMainInProgress(
-  //   BuildContext context,
-  //   WidgetRef ref,
-  //   int id,
-  //   ColorScheme colors,
-  // ) {
-  //   final router = GoRouter.of(context);
-  //   return BottomAppBar(
-  //     color: Colors.transparent,
-  //     elevation: 0,
-  //     height: 90,
-  //     child: Material(
-  //       color: colors.primary,
-  //       borderRadius: BorderRadius.circular(100),
-  //       child: InkWell(
-  //         onTap: () async {
-  //           final response = await ref.read(EndReportProvider(id).future);
-  //           if (response == true) {
-  //             router.push('/brigadier');
-  //           }
-  //         },
-  //         child: Center(
-  //           child: Row(
-  //             mainAxisSize: MainAxisSize.min,
-  //             children: [
-  //               Text(
-  //                 "Finalizar Reporte",
-  //                 style: GoogleFonts.poppins(
-  //                   fontWeight: FontWeight.bold,
-  //                   fontSize: 16,
-  //                   color: colors.onPrimary, // texto legible sobre primary
-  //                 ),
-  //               ),
-  //               const SizedBox(width: 10),
-  //               Icon(Icons.check, color: colors.onPrimary),
-  //             ],
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 
   BottomAppBar bottomAppBarMainPending(
     BuildContext context,

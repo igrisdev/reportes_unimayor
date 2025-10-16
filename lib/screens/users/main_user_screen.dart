@@ -226,9 +226,21 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
                     confirmText: "Aceptar",
                     cancelText: "Cancelar",
                     onConfirm: () async {
-                      await ref
-                          .read(reportListPendingProvider.notifier)
-                          .cancelReport(idReport.value!);
+                      final result = await ref.read(
+                        cancelReportProvider(idReport.value!).future,
+                      );
+
+                      if (result) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Reporte cancelado")),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("No se pudo cancelar el reporte"),
+                          ),
+                        );
+                      }
                     },
                   );
                 },

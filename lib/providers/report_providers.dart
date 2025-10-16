@@ -100,32 +100,41 @@ Future<List<ReportsModel>> reportListHistoryBrigadier(
 }
 
 @riverpod
-class ReportListPending extends _$ReportListPending {
-  @override
-  Future<List<ReportsModel>> build() async {
+Future<List<ReportsModel>> reportListPending(ReportListPendingRef ref) async {
+  try {
     final apiService = ApiReportsService();
     final reports = await apiService.getReports();
-    return reports
-        .where((r) => r.estado != 'Finalizado' && r.estado != 'Cancelado')
+
+    final pendingReports = reports
+        .where(
+          (report) =>
+              report.estado != 'Finalizado' && report.estado != 'Cancelado',
+        )
         .toList();
+    return pendingReports;
+  } catch (e) {
+    print('Error Report List Pending ***: $e');
+    rethrow;
   }
+}
 
-  Future<void> cancelReport(int id) async {
+@riverpod
+Future<bool> cancelReport(CancelReportRef ref, int id) async {
+  try {
     final apiService = ApiReportsService();
+    final response = await apiService.cancelReport(id);
 
-    final previous = state.asData?.value ?? [];
-    final updated = previous.where((r) => r.idReporte != id).toList();
-    state = AsyncData(updated);
+    if (response) {
+      await ref.refresh(reportListPendingProvider.future);
+      ref.invalidate(reportListProvider);
 
-    try {
-      final response = await apiService.cancelReport(id);
-      if (!response) {
-        state = AsyncData(previous);
-      }
-    } catch (_) {
-      state = AsyncData(previous);
-      rethrow;
+      return true;
     }
+
+    return false;
+  } catch (e) {
+    print('Error en report provider: $e');
+    rethrow; 
   }
 }
 
@@ -181,7 +190,6 @@ Future<bool> createReport(
     );
 
     if (response) {
-
       await ref.refresh(reportListPendingProvider.future);
 
       return true;
@@ -219,8 +227,9 @@ Future<bool> endReport(EndReportRef ref, int id, String description) async {
     final response = await apiService.endReport(id, description);
 
     if (response) {
-      ref.invalidate(reportListHistoryBrigadierProvider);
       await ref.refresh(reportListBrigadierProvider.future);
+      ref.invalidate(reportListHistoryBrigadierProvider);
+
       return true;
     }
 
