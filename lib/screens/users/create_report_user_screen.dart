@@ -189,10 +189,10 @@ class _CreateReportUserScreenState
 
     final AsyncValue<Map<String, dynamic>>? locationByIdAsync =
         (idLocationQrScanner.isNotEmpty)
-        ? ref.watch(
-            locationByIdProvider(int.tryParse(idLocationQrScanner) ?? -1),
-          )
-        : null;
+            ? ref.watch(
+                locationByIdProvider(int.tryParse(idLocationQrScanner) ?? -1),
+              )
+            : null;
 
     return FormField<String>(
       initialValue: idLocationQrScanner,
@@ -346,9 +346,10 @@ class _CreateReportUserScreenState
               color: _isRecording
                   ? colors.error
                   : _recordingPath == null
-                  ? colors.onSurface
-                  : colors.tertiary,
-              icon: Icon(_isRecording ? Icons.stop_circle_outlined : Icons.mic),
+                      ? colors.onSurface
+                      : colors.tertiary,
+              icon:
+                  Icon(_isRecording ? Icons.stop_circle_outlined : Icons.mic),
               onPressed: _toggleRecording,
             ),
           ),
@@ -378,7 +379,22 @@ class _CreateReportUserScreenState
   TextButton buttonManualMode(ColorScheme colors) {
     return TextButton(
       onPressed: () {
-        setState(() => _isManualMode = !_isManualMode);
+        // Si vamos a activar el modo manual y aún no cargamos ubicaciones,
+        // forzamos la recarga del provider para que el selector muestre loading.
+        final nextMode = !_isManualMode;
+        setState(() {
+          _isManualMode = nextMode;
+        });
+
+        if (nextMode && !_locationsLoaded) {
+          // Forzamos recarga inmediata del árbol de ubicaciones.
+          ref.refresh(locationsTreeProvider);
+          // Dejamos _locationsLoaded en false para que el widget muestre loader
+          setState(() {
+            _locationsLoaded = false;
+          });
+        }
+
         _checkIfReadyToSend();
       },
       style: TextButton.styleFrom(
@@ -432,8 +448,11 @@ class _CreateReportUserScreenState
     );
   }
 
+  // ---------- REEMPLAZADO: manualLocationSelector -----------
   Widget manualLocationSelector() {
     final colors = Theme.of(context).colorScheme;
+
+    final locationsAsync = ref.watch(locationsTreeProvider);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
@@ -441,142 +460,227 @@ class _CreateReportUserScreenState
         color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(4),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // SEDE
-          DropdownButtonFormField<String>(
-            value: formSelectedHeadquarter,
-            decoration: InputDecoration(
-              labelText: 'Seleccionar Sede',
-              labelStyle: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: colors.primary,
-              ),
-            ),
-            items: _headquarters
-                .map(
-                  (headquarter) => DropdownMenuItem(
-                    value: headquarter,
-                    child: Text(
-                      headquarter,
-                      style: GoogleFonts.poppins(
-                        fontSize: 20,
-                        color: Colors.black,
-                        fontWeight: FontWeight.w500,
-                      ),
+      child: locationsAsync.when(
+        loading: () {
+          // Mientras carga, mostramos un indicador centrado con un texto amable
+          return SizedBox(
+            height: 180,
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Cargando ubicaciones...',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      color: colors.onSurface,
                     ),
                   ),
-                )
-                .toList(),
-            onChanged: (value) {
+                ],
+              ),
+            ),
+          );
+        },
+        error: (err, stack) {
+          // En caso de error, mostrar mensaje y un botón para reintentar
+          return SizedBox(
+            height: 180,
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Error cargando ubicaciones',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      color: colors.error,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Intenta de nuevo.',
+                    style:
+                        GoogleFonts.poppins(fontSize: 14, color: colors.onSurface),
+                  ),
+                  const SizedBox(height: 12),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Forzar recarga
+                      ref.refresh(locationsTreeProvider);
+                      setState(() {
+                        _locationsLoaded = false;
+                      });
+                    },
+                    child: Text('Reintentar', style: GoogleFonts.poppins()),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+        data: (tree) {
+          // Cuando hay datos, rellenamos las listas si aún no lo habíamos hecho
+          if (!_locationsLoaded) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
               setState(() {
-                formSelectedHeadquarter = value;
-                formSelectedBuilding = null;
-                formSelectedLocation = null;
-                _updateBuildingsForHeadquarter(value);
+                _locationTree = tree;
+                _headquarters = tree.map((t) => t.sede).toList();
+                _locationsLoaded = true;
               });
-              _checkIfReadyToSend();
-            },
-            validator: (value) {
-              if (_isManualMode && (value == null || value.isEmpty)) {
-                return 'Selecciona una sede';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 20),
-          // EDIFICIO
-          DropdownButtonFormField<String>(
-            value: formSelectedBuilding,
-            decoration: InputDecoration(
-              labelText: 'Seleccionar Edificio',
-              labelStyle: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: colors.primary,
-              ),
-            ),
-            items: _buildings
-                .map(
-                  (build) => DropdownMenuItem(
-                    value: build,
-                    child: Text(
-                      // Mostrar con prefijo "Edificio " si es numérico o dejar como está
-                      build.startsWith(RegExp(r'\d'))
-                          ? 'Edificio $build'
-                          : build,
-                      style: GoogleFonts.poppins(
-                        fontSize: 20,
-                        color: Colors.black,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+            });
+          }
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // SEDE
+              DropdownButtonFormField<String>(
+                value: formSelectedHeadquarter,
+                decoration: InputDecoration(
+                  labelText: 'Seleccionar Sede',
+                  labelStyle: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: colors.primary,
                   ),
-                )
-                .toList(),
-            onChanged: (value) {
-              setState(() {
-                formSelectedBuilding = value;
-                formSelectedLocation = null;
-                if (formSelectedHeadquarter != null) {
-                  _updateLocationsForBuilding(formSelectedHeadquarter!, value);
-                } else {
-                  _locationsList = [];
-                }
-              });
-              _checkIfReadyToSend();
-            },
-            validator: (value) {
-              if (_isManualMode && (value == null || value.isEmpty)) {
-                return 'Selecciona un edificio';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 20),
-          // SALÓN (ubicación)
-          DropdownButtonFormField<String>(
-            value: formSelectedLocation,
-            decoration: InputDecoration(
-              labelText: 'Seleccionar Salón',
-              labelStyle: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: colors.primary,
-              ),
-            ),
-            items: _locationsList
-                .map(
-                  (location) => DropdownMenuItem(
-                    value: location.idUbicacion.toString(),
-                    child: Text(
-                      '${location.lugar.isNotEmpty ? location.lugar : location.descripcion}${location.piso.isNotEmpty ? ' · Piso ${location.piso}' : ''}',
-                      style: GoogleFonts.poppins(
-                        fontSize: 20,
-                        color: Colors.black,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                  errorStyle: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
                   ),
-                )
-                .toList(),
-            onChanged: (value) {
-              setState(() => formSelectedLocation = value);
-              _checkIfReadyToSend();
-            },
-            validator: (value) {
-              if (_isManualMode && (value == null || value.isEmpty)) {
-                return 'Selecciona un salón';
-              }
-              return null;
-            },
-          ),
-        ],
+                ),
+                items: _headquarters
+                    .map(
+                      (headquarter) => DropdownMenuItem(
+                        value: headquarter,
+                        child: Text(
+                          headquarter,
+                          style: GoogleFonts.poppins(
+                            fontSize: 20,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    formSelectedHeadquarter = value;
+                    formSelectedBuilding = null;
+                    formSelectedLocation = null;
+                    _updateBuildingsForHeadquarter(value);
+                  });
+                  _checkIfReadyToSend();
+                },
+                validator: (value) {
+                  if (_isManualMode && (value == null || value.isEmpty)) {
+                    return 'Selecciona una sede';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+              // EDIFICIO
+              DropdownButtonFormField<String>(
+                value: formSelectedBuilding,
+                decoration: InputDecoration(
+                  labelText: 'Seleccionar Edificio',
+                  labelStyle: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: colors.primary,
+                  ),
+                  errorStyle: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                items: _buildings
+                    .map(
+                      (build) => DropdownMenuItem(
+                        value: build,
+                        child: Text(
+                          build.startsWith(RegExp(r'\d')) ? 'Edificio $build' : build,
+                          style: GoogleFonts.poppins(
+                            fontSize: 20,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    formSelectedBuilding = value;
+                    formSelectedLocation = null;
+                    if (formSelectedHeadquarter != null) {
+                      _updateLocationsForBuilding(formSelectedHeadquarter!, value);
+                    } else {
+                      _locationsList = [];
+                    }
+                  });
+                  _checkIfReadyToSend();
+                },
+                validator: (value) {
+                  if (_isManualMode && (value == null || value.isEmpty)) {
+                    return 'Selecciona un edificio';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+              // SALÓN (ubicación)
+              DropdownButtonFormField<String>(
+                value: formSelectedLocation,
+                decoration: InputDecoration(
+                  labelText: 'Seleccionar Salón',
+                  labelStyle: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: colors.primary,
+                  ),
+                  errorStyle: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                items: _locationsList
+                    .map(
+                      (location) => DropdownMenuItem(
+                        value: location.idUbicacion.toString(),
+                        child: Text(
+                          '${location.lugar.isNotEmpty ? location.lugar : location.descripcion}${location.piso.isNotEmpty ? ' · Piso ${location.piso}' : ''}',
+                          style: GoogleFonts.poppins(
+                            fontSize: 20,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  setState(() => formSelectedLocation = value);
+                  _checkIfReadyToSend();
+                },
+                validator: (value) {
+                  if (_isManualMode && (value == null || value.isEmpty)) {
+                    return 'Selecciona un salón';
+                  }
+                  return null;
+                },
+              ),
+            ],
+          );
+        },
       ),
     );
   }
+  // ---------- FIN manualLocationSelector ---------------
 
   Future<void> _toggleRecording() async {
     if (_isRecording) {
@@ -683,9 +787,7 @@ class _CreateReportUserScreenState
       );
 
       if (response == true && mounted) {
-        ref
-            .read(idLocationQrScannerProvider.notifier)
-            .removeIdLocationQrScanner();
+        ref.read(idLocationQrScannerProvider.notifier).removeIdLocationQrScanner();
 
         if (mounted) {
           context.pushReplacement('/user');
