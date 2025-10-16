@@ -29,9 +29,34 @@ class _FinalizeReportDialogState extends State<FinalizeReportDialog> {
     super.dispose();
   }
 
+  ButtonStyle _buttonStyle({
+    required Color enabledBg,
+    required Color disabledBg,
+    required Color enabledFg,
+    required Color disabledFg,
+  }) {
+    return ButtonStyle(
+      backgroundColor: MaterialStateProperty.resolveWith<Color?>((states) {
+        if (states.contains(MaterialState.disabled)) return disabledBg;
+        return enabledBg;
+      }),
+      foregroundColor: MaterialStateProperty.resolveWith<Color?>((states) {
+        if (states.contains(MaterialState.disabled)) return disabledFg;
+        return enabledFg;
+      }),
+      padding: MaterialStateProperty.all(
+        const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      ),
+      shape: MaterialStateProperty.all(
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final isConfirmDisabled = _controller.text.trim().isEmpty || isLoading;
 
     return PopScope(
       canPop: !isLoading,
@@ -73,20 +98,26 @@ class _FinalizeReportDialogState extends State<FinalizeReportDialog> {
         actions: <Widget>[
           TextButton(
             onPressed: isLoading ? null : () => Navigator.of(context).pop(),
+            style: _buttonStyle(
+              enabledBg: colorScheme.error,
+              disabledBg: Colors.grey.shade400,
+              enabledFg: colorScheme.onError,
+              disabledFg: Colors.grey.shade800,
+            ),
             child: Text(
               'Cancelar',
               style: GoogleFonts.poppins(
                 fontSize: 16,
-                color: colorScheme.error,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
+
           TextButton(
-            onPressed: _controller.text.trim().isEmpty || isLoading
+            onPressed: isConfirmDisabled
                 ? null
                 : () async {
                     FocusScope.of(context).unfocus();
-
                     setState(() => isLoading = true);
                     try {
                       await widget.onConfirm(_controller.text.trim());
@@ -96,20 +127,26 @@ class _FinalizeReportDialogState extends State<FinalizeReportDialog> {
                       }
                     }
                   },
+            style: _buttonStyle(
+              enabledBg: colorScheme.primary,
+              disabledBg: Colors.grey.shade400,
+              enabledFg: colorScheme.onError,
+              disabledFg: Colors.grey.shade800,
+            ),
             child: isLoading
                 ? SizedBox(
                     width: 20,
                     height: 20,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      color: colorScheme.onSurface,
+                      color: colorScheme.primary,
                     ),
                   )
                 : Text(
                     'Finalizar',
                     style: GoogleFonts.poppins(
                       fontSize: 16,
-                      color: colorScheme.primary,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
           ),

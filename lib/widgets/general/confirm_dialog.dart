@@ -28,14 +28,39 @@ class _ConfirmDialogState extends State<ConfirmDialog> {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
 
+    ButtonStyle _buttonStyle({
+      required Color enabledBg,
+      required Color disabledBg,
+      required Color enabledFg,
+      required Color disabledFg,
+    }) {
+      return ButtonStyle(
+        backgroundColor: MaterialStateProperty.resolveWith<Color?>((states) {
+          if (states.contains(MaterialState.disabled)) return disabledBg;
+          return enabledBg;
+        }),
+        foregroundColor: MaterialStateProperty.resolveWith<Color?>((states) {
+          if (states.contains(MaterialState.disabled)) return disabledFg;
+          return enabledFg;
+        }),
+        padding: MaterialStateProperty.all(
+          const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        ),
+        shape: MaterialStateProperty.all(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+      );
+    }
+
     return PopScope(
       canPop: !isLoading,
       child: AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           widget.title,
           style: GoogleFonts.poppins(
             color: colors.onSurface,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w600,
           ),
         ),
         content: Text(
@@ -45,22 +70,22 @@ class _ConfirmDialogState extends State<ConfirmDialog> {
         actions: <Widget>[
           TextButton(
             onPressed: isLoading ? null : () => Navigator.of(context).pop(),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: colors.error,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
+            style: _buttonStyle(
+              enabledBg: colors.error,
+              disabledBg: Colors.grey.shade400,
+              enabledFg: colors.onError,
+              disabledFg: Colors.grey.shade800,
             ),
             child: Text(
               widget.cancelText,
               style: GoogleFonts.poppins(
                 fontSize: 16,
-                color: colors.onError,
                 fontWeight: FontWeight.w600,
               ),
             ),
           ),
-          SizedBox(width: 0),
+
+          // Confirmar: muestra loader cuando isLoading, y queda deshabilitado mientras
           TextButton(
             onPressed: isLoading
                 ? null
@@ -69,16 +94,14 @@ class _ConfirmDialogState extends State<ConfirmDialog> {
                     try {
                       await widget.onConfirm();
                     } finally {
-                      if (mounted) {
-                        Navigator.of(context).pop();
-                      }
+                      if (mounted) Navigator.of(context).pop();
                     }
                   },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: colors.primary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
+            style: _buttonStyle(
+              enabledBg: colors.primary,
+              disabledBg: colors.primary.withOpacity(0.6),
+              enabledFg: colors.onPrimary,
+              disabledFg: colors.onPrimary.withOpacity(0.8),
             ),
             child: isLoading
                 ? SizedBox(
@@ -86,14 +109,13 @@ class _ConfirmDialogState extends State<ConfirmDialog> {
                     height: 20,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      color: colors.onSurface,
+                      color: colors.onPrimary,
                     ),
                   )
                 : Text(
                     widget.confirmText,
                     style: GoogleFonts.poppins(
                       fontSize: 16,
-                      color: colors.onError,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
