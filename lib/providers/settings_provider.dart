@@ -1,49 +1,34 @@
-import 'package:reportes_unimayor/screens/users/settings/emergency_contacts/emergency_contacts_user_screen.dart';
+import 'package:reportes_unimayor/models/emergency_contact.dart';
+import 'package:reportes_unimayor/models/medical_condition.dart';
 import 'package:reportes_unimayor/services/api_settings_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'settings_provider.g.dart';
 
-@riverpod
-ApiSettingsService apiSettingsService(ApiSettingsServiceRef ref) {
-  return ApiSettingsService();
-}
+// ---------------------------------------------------------------------------------------------------------------------------------------------------
+// Emergency Contacts
+// ---------------------------------------------------------------------------------------------------------------------------------------------------
 
-// -------------------------------------------------------------------
-// R - READ (LISTAR y BUSCAR por ID)
-// -------------------------------------------------------------------
-
-// [READ ALL] Provider que lista todos los contactos de emergencia
 @riverpod
 Future<List<EmergencyContact>> emergencyContactsList(
   EmergencyContactsListRef ref,
 ) async {
-  final apiService = ref.watch(apiSettingsServiceProvider);
-  final List<Map<String, dynamic>> rawData = await apiService
-      .getEmergencyContacts();
+  final api = ApiSettingsService();
+  final List<Map<String, dynamic>> rawData = await api.getEmergencyContacts();
 
-  // Mapear los datos brutos (Map) a objetos EmergencyContact
   return rawData.map((data) => EmergencyContact.fromJson(data)).toList();
 }
 
-// [READ ONE] Provider que obtiene un contacto de emergencia por ID
 @riverpod
 Future<EmergencyContact> emergencyContactById(
   EmergencyContactByIdRef ref,
   String id,
 ) async {
-  final apiService = ref.watch(apiSettingsServiceProvider);
-  final Map<String, dynamic> rawData = await apiService.getEmergencyContactById(
-    id,
-  );
+  final api = ApiSettingsService();
+  final Map<String, dynamic> rawData = await api.getEmergencyContactById(id);
 
-  // Mapear el dato bruto (Map) a objeto EmergencyContact
   return EmergencyContact.fromJson(rawData);
 }
-
-// -------------------------------------------------------------------
-// C - CREATE
-// -------------------------------------------------------------------
 
 @riverpod
 Future<bool> createEmergencyContact(
@@ -56,9 +41,8 @@ Future<bool> createEmergencyContact(
   bool esPrincipal,
 ) async {
   try {
-    final apiService = ref.watch(apiSettingsServiceProvider);
+    final api = ApiSettingsService();
 
-    // Crear el payload con los datos recibidos
     final payload = EmergencyContactPayload(
       nombre: nombre,
       relacion: relacion,
@@ -68,174 +52,103 @@ Future<bool> createEmergencyContact(
       esPrincipal: esPrincipal,
     );
 
-    final response = await apiService.createEmergencyContact(payload);
+    final response = await api.createEmergencyContact(payload);
 
     if (response) {
-      // Invalida la lista para forzar la recarga en la pantalla principal
-      ref.invalidate(emergencyContactsListProvider);
-      return true; // Éxito
+      await ref.refresh(emergencyContactsListProvider.future);
+
+      return true;
     }
 
-    return false; // Error en la API (aunque la API no lance una excepción)
+    return false;
   } catch (e) {
     print('Error en createEmergencyContact provider: $e');
     rethrow;
   }
 }
 
-// -------------------------------------------------------------------
-// U - UPDATE (Manejador de estado)
-// -------------------------------------------------------------------
-
 @riverpod
-class UpdateEmergencyContact extends _$UpdateEmergencyContact {
-  @override
-  FutureOr<void> build() {}
-
-  Future<bool> updateContact({
-    required String id,
-    required String nombre,
-    required String relacion,
-    required String telefono,
-    required String? telefonoAlternativo,
-    required String? email,
-    required bool esPrincipal,
-  }) async {
-    final result = await AsyncValue.guard(() async {
-      final apiService = ref.read(apiSettingsServiceProvider);
-
-      final payload = EmergencyContactPayload(
-        nombre: nombre,
-        relacion: relacion,
-        telefono: telefono,
-        telefonoAlternativo: telefonoAlternativo,
-        email: email,
-        esPrincipal: esPrincipal,
-      );
-
-      final success = await apiService.updateEmergencyContact(id, payload);
-
-      if (!success) {
-        throw Exception('La API devolvió false al actualizar.');
-      }
-
-      ref.invalidate(emergencyContactsListProvider);
-      return true;
-    });
-
-    if (result.hasError) {
-      state = AsyncValue.error(result.error!, result.stackTrace!);
-      return false;
-    } else {
-      state = const AsyncValue.data(null);
-      return true;
-    }
-  }
-}
-
-// -------------------------------------------------------------------
-// D - DELETE (Manejador de estado)
-// -------------------------------------------------------------------
-
-@riverpod
-class DeleteEmergencyContact extends _$DeleteEmergencyContact {
-  @override
-  FutureOr<void> build() {}
-
-  Future<void> deleteContact(String id) async {
-    state = await AsyncValue.guard(() async {
-      final apiService = ref.read(apiSettingsServiceProvider);
-      final success = await apiService.deleteEmergencyContact(id);
-
-      if (!success) {
-        throw Exception('Fallo la eliminación en la API.');
-      }
-
-      ref.invalidate(emergencyContactsListProvider);
-    });
-  }
-}
-
-// -----------------------------
-// MODELO local (ligero) para mapear desde la API
-// -----------------------------
-class MedicalCondition {
-  final String id;
-  final int? idUsuario;
-  final String nombre;
-  final String descripcion;
-  final DateTime fechaDiagnostico;
-  final String? mensaje;
-
-  MedicalCondition({
-    required this.id,
-    this.idUsuario,
-    required this.nombre,
-    required this.descripcion,
-    required this.fechaDiagnostico,
-    this.mensaje,
-  });
-
-  factory MedicalCondition.fromJson(Map<String, dynamic> json) {
-    final idValue = json['idCondicionMedica'] ?? json['id'] ?? '';
-    final String idStr = idValue is int
-        ? idValue.toString()
-        : (idValue as String);
-
-    DateTime parsedDate;
-    final rawDate = json['fechaDiagnostico'];
-    if (rawDate is String) {
-      parsedDate = DateTime.tryParse(rawDate) ?? DateTime.now();
-    } else if (rawDate is DateTime) {
-      parsedDate = rawDate;
-    } else {
-      parsedDate = DateTime.now();
-    }
-
-    return MedicalCondition(
-      id: idStr,
-      idUsuario: json['idUsuario'] is int
-          ? json['idUsuario'] as int
-          : (json['idUsuario'] != null
-                ? int.tryParse(json['idUsuario'].toString())
-                : null),
-      nombre: json['nombre'] as String? ?? '',
-      descripcion: json['descripcion'] as String? ?? '',
-      fechaDiagnostico: parsedDate,
-      mensaje: json['mensaje'] as String?,
+Future<bool> updateEmergencyContact(
+  UpdateEmergencyContactRef ref,
+  String id,
+  String nombre,
+  String relacion,
+  String telefono,
+  String? telefonoAlternativo,
+  String? email,
+  bool esPrincipal,
+) async {
+  try {
+    final api = ApiSettingsService();
+    final payload = EmergencyContactPayload(
+      nombre: nombre,
+      relacion: relacion,
+      telefono: telefono,
+      telefonoAlternativo: telefonoAlternativo,
+      email: email,
+      esPrincipal: esPrincipal,
     );
+
+    final res = await api.updateEmergencyContact(id, payload);
+
+    if (res) {
+      await ref.refresh(emergencyContactsListProvider.future);
+
+      return true;
+    }
+
+    return false;
+  } catch (e) {
+    print('Error en eliminar contacto de emergencia: $e');
+    rethrow;
   }
 }
 
-// -----------------------------
-// READ ALL
-// -----------------------------
+@riverpod
+Future<bool> deleteEmergencyContact(
+  DeleteEmergencyContactRef ref,
+  String id,
+) async {
+  try {
+    final apiService = ApiSettingsService();
+    final response = await apiService.deleteEmergencyContact(id);
+
+    if (response) {
+      await ref.refresh(emergencyContactsListProvider.future);
+
+      return true;
+    }
+
+    return false;
+  } catch (e) {
+    print('Error en report provider: $e');
+    rethrow;
+  }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------
+// Medical Conditions
+// ---------------------------------------------------------------------------------------------------------------------------------------------------
 @riverpod
 Future<List<MedicalCondition>> medicalConditionsList(
   MedicalConditionsListRef ref,
 ) async {
-  final api = ref.watch(apiSettingsServiceProvider);
+  final api = ApiSettingsService();
   final raw = await api.getMedicalConditions();
 
   return raw.map((m) => MedicalCondition.fromJson(m)).toList();
 }
 
-// -----------------------------
-// READ ONE
-// -----------------------------
 @riverpod
 Future<MedicalCondition> medicalConditionById(
   MedicalConditionByIdRef ref,
   String id,
 ) async {
-  final api = ref.watch(apiSettingsServiceProvider);
+  final api = ApiSettingsService();
   final raw = await api.getMedicalConditionById(id);
   return MedicalCondition.fromJson(raw);
 }
 
-// -----------------------------
-// CREATE
-// -----------------------------
 @riverpod
 Future<bool> createMedicalCondition(
   CreateMedicalConditionRef ref,
@@ -244,16 +157,18 @@ Future<bool> createMedicalCondition(
   DateTime fechaDiagnostico,
 ) async {
   try {
-    final api = ref.watch(apiSettingsServiceProvider);
+    final api = ApiSettingsService();
     final payload = MedicalConditionPayload(
       nombre: nombre,
       descripcion: descripcion,
       fechaDiagnostico: fechaDiagnostico,
     );
+
     final res = await api.createMedicalCondition(payload);
 
     if (res) {
-      ref.invalidate(medicalConditionsListProvider);
+      await ref.refresh(medicalConditionsListProvider.future);
+
       return true;
     }
 
@@ -264,66 +179,55 @@ Future<bool> createMedicalCondition(
   }
 }
 
-// -----------------------------
-// UPDATE
-// -----------------------------
 @riverpod
-class UpdateMedicalCondition extends _$UpdateMedicalCondition {
-  @override
-  FutureOr<void> build() {}
+Future<bool> updateMedicalCondition(
+  UpdateMedicalConditionRef ref,
+  String id,
+  String nombre,
+  String descripcion,
+  DateTime fechaDiagnostico,
+) async {
+  try {
+    final api = ApiSettingsService();
+    final payload = MedicalConditionPayload(
+      nombre: nombre,
+      descripcion: descripcion,
+      fechaDiagnostico: fechaDiagnostico,
+    );
 
-  Future<bool> updateCondition({
-    required String id,
-    required String nombre,
-    required String descripcion,
-    required DateTime fechaDiagnostico,
-  }) async {
-    final result = await AsyncValue.guard(() async {
-      final api = ref.read(apiSettingsServiceProvider);
+    final res = await api.updateMedicalCondition(id, payload);
 
-      final payload = MedicalConditionPayload(
-        nombre: nombre,
-        descripcion: descripcion,
-        fechaDiagnostico: fechaDiagnostico,
-      );
+    if (res) {
+      await ref.refresh(medicalConditionsListProvider.future);
 
-      final success = await api.updateMedicalCondition(id, payload);
-      if (!success) {
-        throw Exception('API returned false on update.');
-      }
-
-      ref.invalidate(medicalConditionsListProvider);
-      return true;
-    });
-
-    if (result.hasError) {
-      state = AsyncValue.error(result.error!, result.stackTrace!);
-      return false;
-    } else {
-      state = const AsyncValue.data(null);
       return true;
     }
+
+    return false;
+  } catch (e) {
+    print('Error en createMedicalCondition provider: $e');
+    rethrow;
   }
 }
 
-// -----------------------------
-// DELETE
-// -----------------------------
 @riverpod
-class DeleteMedicalCondition extends _$DeleteMedicalCondition {
-  @override
-  FutureOr<void> build() {}
+Future<bool> deleteMedicalCondition(
+  DeleteMedicalConditionRef ref,
+  String id,
+) async {
+  try {
+    final apiService = ApiSettingsService();
+    final response = await apiService.deleteMedicalCondition(id);
 
-  Future<void> deleteCondition(String id) async {
-    state = await AsyncValue.guard(() async {
-      final api = ref.read(apiSettingsServiceProvider);
-      final success = await api.deleteMedicalCondition(id);
+    if (response) {
+      await ref.refresh(medicalConditionsListProvider.future);
 
-      if (!success) {
-        throw Exception('La API devolvió false al eliminar condicion medica.');
-      }
+      return true;
+    }
 
-      ref.invalidate(medicalConditionsListProvider);
-    });
+    return false;
+  } catch (e) {
+    print('Error en report provider: $e');
+    rethrow;
   }
 }

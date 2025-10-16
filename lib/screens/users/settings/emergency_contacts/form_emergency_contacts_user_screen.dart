@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:reportes_unimayor/models/emergency_contact.dart';
 import 'package:reportes_unimayor/providers/settings_provider.dart';
-import 'package:reportes_unimayor/screens/users/settings/emergency_contacts/emergency_contacts_user_screen.dart';
+import 'package:reportes_unimayor/widgets/general/confirm_dialog.dart';
 
 class FormEmergencyContactsUserScreen extends ConsumerStatefulWidget {
   final String? contactId;
@@ -24,7 +25,8 @@ class _FormEmergencyContactsUserScreenState
     telefono: '',
   );
 
-  bool isLoading = false;
+  // Solo para el fetching inicial (carga del contacto para edición)
+  bool _isFetching = false;
   bool _isEditing = false;
 
   late TextEditingController _nombreController;
@@ -51,7 +53,7 @@ class _FormEmergencyContactsUserScreenState
 
   void _loadContactData() async {
     setState(() {
-      isLoading = true;
+      _isFetching = true;
     });
 
     try {
@@ -67,10 +69,6 @@ class _FormEmergencyContactsUserScreenState
         _telefonoController.text = contact.telefono;
         _telefonoAlternativoController.text = contact.telefonoAlternativo ?? '';
         _emailController.text = contact.email ?? '';
-
-        setState(() {
-          isLoading = false;
-        });
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -81,9 +79,6 @@ class _FormEmergencyContactsUserScreenState
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
-        setState(() {
-          isLoading = false;
-        });
       }
     } catch (e) {
       if (mounted) {
@@ -97,8 +92,11 @@ class _FormEmergencyContactsUserScreenState
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
+      }
+    } finally {
+      if (mounted) {
         setState(() {
-          isLoading = false;
+          _isFetching = false;
         });
       }
     }
@@ -129,36 +127,25 @@ class _FormEmergencyContactsUserScreenState
     );
   }
 
-  // 3. MÉTODO DE ENVÍO UNIFICADO (CREACIÓN Y EDICIÓN)
-  void _submitForm() async {
-    FocusScope.of(context).unfocus();
-
-    if (!_formKey.currentState!.validate()) return;
-
-    _formKey.currentState!.save();
-
-    setState(() {
-      isLoading = true;
-    });
-
+  /// Lógica real de creación/actualización (no toca UI loaders — lo maneja ConfirmDialog).
+  Future<void> _performSubmit() async {
+    // Aplicar save previo ya ejecutado antes de llamar a este método
     try {
       bool success;
 
       if (_isEditing) {
-        // Lógica de EDICIÓN
-        success = await ref
-            .read(updateEmergencyContactProvider.notifier)
-            .updateContact(
-              id: newContact.id,
-              nombre: newContact.nombre,
-              relacion: newContact.relacion,
-              telefono: newContact.telefono,
-              telefonoAlternativo: newContact.telefonoAlternativo,
-              email: newContact.email,
-              esPrincipal: newContact.esPrincipal,
-            );
+        success = await ref.read(
+          updateEmergencyContactProvider(
+            newContact.id,
+            newContact.nombre,
+            newContact.relacion,
+            newContact.telefono,
+            newContact.telefonoAlternativo,
+            newContact.email,
+            newContact.esPrincipal,
+          ).future,
+        );
       } else {
-        // Lógica de CREACIÓN
         success = await ref.read(
           createEmergencyContactProvider(
             newContact.nombre,
@@ -204,7 +191,7 @@ class _FormEmergencyContactsUserScreenState
             _emailController.clear();
           }
 
-          // Opcionalmente, navegar hacia atrás después de editar/crear
+          // Si quieres volver al listado automáticamente, descomenta:
           // Navigator.of(context).pop();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -234,14 +221,42 @@ class _FormEmergencyContactsUserScreenState
         );
       }
     } finally {
+      // Invalidar lista para refrescar la lista principal (no afecta loaders aquí)
       if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-        // Invalidar el provider de la lista para refrescar la lista principal
         ref.invalidate(emergencyContactsListProvider);
       }
     }
+  }
+
+  /// Valida el formulario y muestra el ConfirmDialog; si confirma, ejecuta _performSubmit.
+  void _onSubmitPressed() {
+    FocusScope.of(context).unfocus();
+
+    if (!_formKey.currentState!.validate()) return;
+
+    _formKey.currentState!.save();
+
+    final action = _isEditing ? 'actualizar' : 'guardar';
+    final title = _isEditing ? 'Confirmar actualización' : 'Confirmar guardado';
+    final confirmText = _isEditing ? 'Actualizar' : 'Guardar';
+
+    final message =
+        '¿Deseas $action el contacto "${newContact.nombre}" con teléfono ${newContact.telefono}?';
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return ConfirmDialog(
+          title: title,
+          message: message,
+          confirmText: confirmText,
+          cancelText: 'Cancelar',
+          onConfirm: () async {
+            await _performSubmit();
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -249,7 +264,7 @@ class _FormEmergencyContactsUserScreenState
     final colors = Theme.of(context).colorScheme;
     final title = _isEditing ? 'Editar Contacto' : 'Nuevo Contacto';
 
-    if (_isEditing && isLoading) {
+    if (_isEditing && _isFetching) {
       return Scaffold(
         appBar: AppBar(
           title: Text(
@@ -417,7 +432,7 @@ class _FormEmergencyContactsUserScreenState
     return Padding(
       padding: const EdgeInsets.all(20),
       child: SizedBox(
-        height: 60,
+        height: 70,
         child: ElevatedButton.icon(
           style: ElevatedButton.styleFrom(
             backgroundColor: colors.secondary,
@@ -425,31 +440,20 @@ class _FormEmergencyContactsUserScreenState
               borderRadius: BorderRadius.circular(100),
             ),
           ),
-          onPressed: isLoading ? null : _submitForm,
+          onPressed: _isFetching ? null : _onSubmitPressed,
           label: Text(
-            isLoading
-                ? (_isEditing ? 'Actualizando...' : 'Guardando...')
-                : (_isEditing ? 'Actualizar Contacto' : 'Guardar Contacto'),
+            _isEditing ? 'Actualizar Contacto' : 'Guardar Contacto',
             style: GoogleFonts.poppins(
               color: colors.onSurface,
-              fontSize: 20,
+              fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
           ),
-          icon: isLoading
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                    strokeWidth: 3,
-                  ),
-                )
-              : Icon(
-                  _isEditing ? Icons.update : Icons.save,
-                  color: colors.onSurface,
-                  size: 24,
-                ),
+          icon: Icon(
+            _isEditing ? Icons.update : Icons.save,
+            color: colors.onSurface,
+            size: 24,
+          ),
         ),
       ),
     );

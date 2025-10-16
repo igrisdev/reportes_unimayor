@@ -134,7 +134,7 @@ Future<bool> cancelReport(CancelReportRef ref, int id) async {
     return false;
   } catch (e) {
     print('Error en report provider: $e');
-    rethrow; 
+    rethrow;
   }
 }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/providers/settings_provider.dart';
+import 'package:reportes_unimayor/widgets/general/confirm_dialog.dart';
 
 class FormMedicalInformationUserScreen extends ConsumerStatefulWidget {
   final String? conditionId;
@@ -18,7 +19,7 @@ class _FormMedicalInformationUserScreenState
   final _formKey = GlobalKey<FormState>();
 
   bool _isEditing = false;
-  bool isLoading = false;
+  bool _isFetching = false;
 
   late TextEditingController _nombreController;
   late TextEditingController _descripcionController;
@@ -38,7 +39,7 @@ class _FormMedicalInformationUserScreenState
   }
 
   Future<void> _loadCondition() async {
-    setState(() => isLoading = true);
+    setState(() => _isFetching = true);
 
     try {
       final condition = await ref.read(
@@ -62,7 +63,7 @@ class _FormMedicalInformationUserScreenState
         );
       }
     } finally {
-      if (mounted) setState(() => isLoading = false);
+      if (mounted) setState(() => _isFetching = false);
     }
   }
 
@@ -89,36 +90,21 @@ class _FormMedicalInformationUserScreenState
     }
   }
 
-  Future<void> _submit() async {
+  Future<void> _performSave() async {
     FocusScope.of(context).unfocus();
-
-    if (!_formKey.currentState!.validate()) return;
-    if (_fechaDiagnostico == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Selecciona la fecha de diagnóstico',
-            style: GoogleFonts.poppins(),
-          ),
-          backgroundColor: Colors.orange,
-        ),
-      );
-      return;
-    }
-
-    setState(() => isLoading = true);
+    if (_fechaDiagnostico == null) return;
 
     try {
       bool success;
       if (_isEditing) {
-        success = await ref
-            .read(updateMedicalConditionProvider.notifier)
-            .updateCondition(
-              id: widget.conditionId!,
-              nombre: _nombreController.text.trim(),
-              descripcion: _descripcionController.text.trim(),
-              fechaDiagnostico: _fechaDiagnostico!,
-            );
+        success = await ref.read(
+          updateMedicalConditionProvider(
+            widget.conditionId!,
+            _nombreController.text.trim(),
+            _descripcionController.text.trim(),
+            _fechaDiagnostico!,
+          ).future,
+        );
       } else {
         success = await ref.read(
           createMedicalConditionProvider(
@@ -147,8 +133,6 @@ class _FormMedicalInformationUserScreenState
             _descripcionController.clear();
             setState(() => _fechaDiagnostico = null);
           }
-
-          // No hacemos pop automático (igual que tu otro formulario), opcional
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -174,9 +158,49 @@ class _FormMedicalInformationUserScreenState
         );
       }
     } finally {
-      if (mounted) setState(() => isLoading = false);
       ref.invalidate(medicalConditionsListProvider);
     }
+  }
+
+  /// Valida y muestra el ConfirmDialog; si el usuario confirma, ejecuta _performSave.
+  void _onSavePressed() {
+    // validar formulario
+    if (!_formKey.currentState!.validate()) return;
+
+    // validar fecha
+    if (_fechaDiagnostico == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Selecciona la fecha de diagnóstico',
+            style: GoogleFonts.poppins(),
+          ),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    final action = _isEditing ? 'actualizar' : 'guardar';
+    final title = _isEditing ? 'Confirmar actualización' : 'Confirmar guardado';
+    final confirmText = _isEditing ? 'Actualizar' : 'Guardar';
+    final message =
+        '¿Deseas $action la condición "${_nombreController.text.trim()}"?';
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return ConfirmDialog(
+          title: title,
+          message: message,
+          onConfirm: () async {
+            await _performSave();
+          },
+          confirmText: confirmText,
+          cancelText: 'Cancelar',
+        );
+      },
+    );
   }
 
   @override
@@ -184,7 +208,8 @@ class _FormMedicalInformationUserScreenState
     final colors = Theme.of(context).colorScheme;
     final title = _isEditing ? 'Editar Condición' : 'Nueva Condición';
 
-    if (_isEditing && isLoading) {
+    // Usamos _isFetching solo para el fetch inicial
+    if (_isEditing && _isFetching) {
       return Scaffold(
         appBar: AppBar(
           title: Text(
@@ -230,8 +255,8 @@ class _FormMedicalInformationUserScreenState
               const SizedBox(height: 12),
               TextFormField(
                 controller: _nombreController,
-                keyboardType: TextInputType.text,
                 style: GoogleFonts.poppins(fontSize: 18),
+                textCapitalization: TextCapitalization.sentences,
                 decoration: InputDecoration(
                   labelText: 'Nombre de la Condición',
                   prefixIcon: const Icon(Icons.medical_services),
@@ -247,6 +272,7 @@ class _FormMedicalInformationUserScreenState
               TextFormField(
                 controller: _descripcionController,
                 maxLines: 4,
+                textCapitalization: TextCapitalization.sentences,
                 keyboardType: TextInputType.multiline,
                 style: GoogleFonts.poppins(fontSize: 16),
                 decoration: InputDecoration(
@@ -319,7 +345,7 @@ class _FormMedicalInformationUserScreenState
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(20),
         child: SizedBox(
-          height: 60,
+          height: 70,
           child: ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
               backgroundColor: colors.secondary,
@@ -327,27 +353,17 @@ class _FormMedicalInformationUserScreenState
                 borderRadius: BorderRadius.circular(100),
               ),
             ),
-            onPressed: isLoading ? null : _submit,
-            icon: isLoading
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 3,
-                    ),
-                  )
-                : Icon(
-                    _isEditing ? Icons.update : Icons.save,
-                    color: colors.onSurface,
-                  ),
+            onPressed: _isFetching ? null : _onSavePressed,
+            icon: Icon(
+              _isEditing ? Icons.update : Icons.save,
+              color: colors.onSurface,
+              size: 24,
+            ),
             label: Text(
-              isLoading
-                  ? (_isEditing ? 'Actualizando...' : 'Guardando...')
-                  : (_isEditing ? 'Actualizar Condición' : 'Guardar Condición'),
+              _isEditing ? 'Actualizar Condición' : 'Guardar Condición',
               style: GoogleFonts.poppins(
                 color: colors.onSurface,
-                fontSize: 18,
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
               ),
             ),

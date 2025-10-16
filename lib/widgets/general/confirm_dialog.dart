@@ -45,11 +45,22 @@ class _ConfirmDialogState extends State<ConfirmDialog> {
         actions: <Widget>[
           TextButton(
             onPressed: isLoading ? null : () => Navigator.of(context).pop(),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: colors.error,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
             child: Text(
               widget.cancelText,
-              style: GoogleFonts.poppins(fontSize: 16, color: colors.error),
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                color: colors.onError,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
+          SizedBox(width: 0),
           TextButton(
             onPressed: isLoading
                 ? null
@@ -63,6 +74,12 @@ class _ConfirmDialogState extends State<ConfirmDialog> {
                       }
                     }
                   },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: colors.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
             child: isLoading
                 ? SizedBox(
                     width: 20,
@@ -76,7 +93,8 @@ class _ConfirmDialogState extends State<ConfirmDialog> {
                     widget.confirmText,
                     style: GoogleFonts.poppins(
                       fontSize: 16,
-                      color: Colors.green,
+                      color: colors.onError,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
           ),

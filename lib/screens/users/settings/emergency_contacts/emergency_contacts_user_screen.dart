@@ -2,55 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
-
-// Importamos el provider real
+import 'package:reportes_unimayor/models/emergency_contact.dart';
 import 'package:reportes_unimayor/providers/settings_provider.dart';
-
-// ----------------------------------------------------------------------
-// 1. MODELO DE DATOS (Incluye fromJson para la API)
-// ----------------------------------------------------------------------
-
-class EmergencyContact {
-  final String id;
-  String nombre;
-  String relacion;
-  String telefono;
-  String? telefonoAlternativo;
-  String? email;
-  bool esPrincipal;
-
-  EmergencyContact({
-    required this.id,
-    required this.nombre,
-    required this.relacion,
-    required this.telefono,
-    this.telefonoAlternativo,
-    this.email,
-    this.esPrincipal = false,
-  });
-
-  // Constructor factory para deserializar desde el JSON de la API
-  factory EmergencyContact.fromJson(Map<String, dynamic> json) {
-    final idValue = json['idContactoEmergencia'] ?? json['id'] ?? '';
-    final String contactId = idValue is int
-        ? idValue.toString()
-        : (idValue as String);
-
-    return EmergencyContact(
-      id: contactId,
-      nombre: json['nombre'] as String,
-      relacion: json['relacion'] as String,
-      telefono: json['telefono'] as String,
-      telefonoAlternativo: json['telefonoAlternativo'] as String?,
-      email: json['email'] as String?,
-      esPrincipal: json['esPrincipal'] as bool,
-    );
-  }
-}
-
-// ----------------------------------------------------------------------
-// 3. WIDGET PRINCIPAL (Lista de Contactos)
-// ----------------------------------------------------------------------
+import 'package:reportes_unimayor/widgets/general/confirm_dialog.dart';
 
 class EmergencyContactsUserScreen extends ConsumerWidget {
   const EmergencyContactsUserScreen({super.key});
@@ -59,38 +13,6 @@ class EmergencyContactsUserScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
     final contactsAsyncValue = ref.watch(emergencyContactsListProvider);
-
-    ref.listen<AsyncValue<void>>(deleteEmergencyContactProvider, (
-      previous,
-      next,
-    ) {
-      next.whenOrNull(
-        data: (_) {
-          // Éxito
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Contacto eliminado correctamente'),
-              backgroundColor: Colors.green,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-          // Cerrar el diálogo si está abierto
-          if (Navigator.of(context).canPop()) {
-            Navigator.of(context).pop();
-          }
-        },
-        error: (error, _) {
-          // Error
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error: ${error.toString()}'),
-              backgroundColor: colors.error,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-        },
-      );
-    });
 
     return Scaffold(
       appBar: AppBar(
@@ -188,68 +110,32 @@ class _ContactListItem extends ConsumerWidget {
     required this.colors,
   });
 
-  // Diálogo de confirmación de eliminación
   void _confirmDelete(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
       builder: (context) {
-        final deleteState = ref.watch(deleteEmergencyContactProvider);
+        return ConfirmDialog(
+          title: 'Confirmar Eliminación',
+          message: '¿Eliminar numero de contacto "${contact.nombre.trim()}"?',
+          confirmText: 'Eliminar',
+          cancelText: 'Cancelar',
+          onConfirm: () async {
+            final result = await ref.read(
+              deleteEmergencyContactProvider(contact.id).future,
+            );
 
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.0),
-          ),
-          title: Row(
-            children: [
-              Icon(Icons.warning_amber_rounded, color: colors.error),
-              const SizedBox(width: 10),
-              Text(
-                'Confirmar Eliminación',
-                style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          content: Text(
-            '¿Estás seguro de que quieres eliminar a ${contact.nombre} de tus contactos de emergencia?',
-            style: GoogleFonts.poppins(),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(
-                'Cancelar',
-                style: GoogleFonts.poppins(color: colors.primary),
-              ),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colors.error,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+            if (result) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Condición eliminada")),
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("No se pudo eliminar la condición"),
                 ),
-              ),
-              onPressed: deleteState.isLoading
-                  ? null
-                  : () async {
-                      await ref
-                          .read(deleteEmergencyContactProvider.notifier)
-                          .deleteContact(contact.id);
-                    },
-              child: deleteState.isLoading
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
-                      ),
-                    )
-                  : Text(
-                      'Eliminar',
-                      style: GoogleFonts.poppins(color: colors.onError),
-                    ),
-            ),
-          ],
+              );
+            }
+          },
         );
       },
     );
@@ -259,8 +145,9 @@ class _ContactListItem extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      color: Colors.white,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -327,7 +214,7 @@ class _ContactListItem extends ConsumerWidget {
                         ),
                       ),
                     IconButton(
-                      icon: Icon(Icons.edit_note, color: colors.secondary),
+                      icon: Icon(Icons.edit_note, color: colors.primary),
                       onPressed: () {
                         context.go(
                           '/user/settings/emergency_contacts/create_and_edit/${contact.id}',
@@ -345,7 +232,7 @@ class _ContactListItem extends ConsumerWidget {
               ],
             ),
 
-            const Divider(height: 16),
+            const Divider(height: 12),
 
             _ContactInfoRow(
               icon: Icons.phone_android,
@@ -406,9 +293,7 @@ class _ContactInfoRow extends StatelessWidget {
           Icon(
             icon,
             size: 18,
-            color: isPrimary
-                ? colors.secondary
-                : colors.secondary.withOpacity(0.7),
+            color: colors.onSurface.withOpacity(isPrimary ? 1.0 : 0.4),
           ),
           const SizedBox(width: 8),
           Text(

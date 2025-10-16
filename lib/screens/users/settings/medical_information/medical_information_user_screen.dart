@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:reportes_unimayor/models/medical_condition.dart';
 import 'package:reportes_unimayor/providers/settings_provider.dart';
+import 'package:reportes_unimayor/widgets/general/confirm_dialog.dart';
 
 class MedicalInformationUserScreen extends ConsumerWidget {
   const MedicalInformationUserScreen({super.key});
@@ -11,33 +13,6 @@ class MedicalInformationUserScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
     final listAsync = ref.watch(medicalConditionsListProvider);
-
-    ref.listen<AsyncValue<void>>(deleteMedicalConditionProvider, (
-      previous,
-      next,
-    ) {
-      next.whenOrNull(
-        data: (_) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Condición médica eliminada correctamente'),
-              backgroundColor: Colors.green,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-          if (Navigator.of(context).canPop()) Navigator.of(context).pop();
-        },
-        error: (err, _) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error: ${err.toString()}'),
-              backgroundColor: colors.error,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-        },
-      );
-    });
 
     return Scaffold(
       appBar: AppBar(
@@ -136,63 +111,28 @@ class _ConditionListItem extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) {
-        final deleteState = ref.watch(deleteMedicalConditionProvider);
+        return ConfirmDialog(
+          title: 'Confirmar Eliminación',
+          message: '¿Eliminar condición "${condition.nombre}"?',
+          onConfirm: () async {
+            final result = await ref.read(
+              deleteMedicalConditionProvider(condition.id).future,
+            );
 
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Row(
-            children: [
-              Icon(Icons.warning_amber_rounded, color: colors.error),
-              const SizedBox(width: 10),
-              Text(
-                'Confirmar Eliminación',
-                style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          content: Text(
-            '¿Eliminar condición "${condition.nombre}"?',
-            style: GoogleFonts.poppins(),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(
-                'Cancelar',
-                style: GoogleFonts.poppins(color: colors.primary),
-              ),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colors.error,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+            if (result) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Condición eliminada")),
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("No se pudo eliminar la condición"),
                 ),
-              ),
-              onPressed: deleteState.isLoading
-                  ? null
-                  : () async {
-                      await ref
-                          .read(deleteMedicalConditionProvider.notifier)
-                          .deleteCondition(condition.id);
-                    },
-              child: deleteState.isLoading
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
-                      ),
-                    )
-                  : Text(
-                      'Eliminar',
-                      style: GoogleFonts.poppins(color: colors.onError),
-                    ),
-            ),
-          ],
+              );
+            }
+          },
+          confirmText: 'Eliminar',
+          cancelText: 'Cancelar',
         );
       },
     );
@@ -202,8 +142,9 @@ class _ConditionListItem extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      elevation: 0,
+      color: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -241,7 +182,7 @@ class _ConditionListItem extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.edit_note, color: colors.secondary),
+                      icon: Icon(Icons.edit_note, color: colors.primary),
                       onPressed: () {
                         context.go(
                           '/user/settings/medical_information/create_and_edit/${condition.id}',
@@ -258,7 +199,7 @@ class _ConditionListItem extends ConsumerWidget {
                 ),
               ],
             ),
-            const Divider(height: 16),
+            const Divider(height: 12),
             Text(
               condition.descripcion,
               style: GoogleFonts.poppins(
