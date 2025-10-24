@@ -57,7 +57,7 @@ class _DrawerUserState extends ConsumerState<DrawerUser> {
     return Stack(
       children: [
         Drawer(
-          backgroundColor: colorScheme.surface, // Fondo del drawer
+          backgroundColor: colorScheme.surface,
           child: Column(
             children: [
               DrawerHeader(

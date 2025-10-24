@@ -5,18 +5,18 @@ import 'package:reportes_unimayor/models/emergency_contact.dart';
 import 'package:reportes_unimayor/providers/settings_provider.dart';
 import 'package:reportes_unimayor/widgets/general/confirm_dialog.dart';
 
-class FormEmergencyContactsUserScreen extends ConsumerStatefulWidget {
+class FormGeneralInformationUserScreen extends ConsumerStatefulWidget {
   final String? contactId;
 
-  const FormEmergencyContactsUserScreen({super.key, this.contactId});
+  const FormGeneralInformationUserScreen({super.key, this.contactId});
 
   @override
-  ConsumerState<FormEmergencyContactsUserScreen> createState() =>
+  ConsumerState<FormGeneralInformationUserScreen> createState() =>
       _FormEmergencyContactsUserScreenState();
 }
 
 class _FormEmergencyContactsUserScreenState
-    extends ConsumerState<FormEmergencyContactsUserScreen> {
+    extends ConsumerState<FormGeneralInformationUserScreen> {
   final _formKey = GlobalKey<FormState>();
   EmergencyContact newContact = EmergencyContact(
     id: '',

@@ -23,7 +23,7 @@ class ApiReportsService extends BaseDioService {
       return reports;
     } catch (e) {
       print('Error detallado en ApiReportsService: $e');
-      rethrow; // Re-lanzar el error para que lo maneje el provider
+      rethrow;
     }
   }
 

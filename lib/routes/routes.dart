@@ -9,6 +9,8 @@ import 'package:reportes_unimayor/screens/brigadier/view_report_process_brigadie
 import 'package:reportes_unimayor/screens/splash/splash_screen.dart';
 import 'package:reportes_unimayor/screens/users/settings/emergency_contacts/emergency_contacts_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/settings/emergency_contacts/form_emergency_contacts_user_screen.dart';
+import 'package:reportes_unimayor/screens/users/settings/general_information/form_general_information_user_screen.dart';
+import 'package:reportes_unimayor/screens/users/settings/general_information/general_information_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/settings/medical_information/form_medical_information_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/settings/medical_information/medical_information_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/settings/settings_user_screen.dart';
@@ -49,6 +51,23 @@ final router = GoRouter(
           path: 'settings',
           builder: (context, state) => const SettingsUserScreen(),
           routes: [
+            GoRoute(
+              path: 'general_information',
+              builder: (context, state) => const GeneralInformationUserScreen(),
+              routes: [
+                GoRoute(
+                  path: 'create_and_edit',
+                  builder: (context, state) =>
+                      const FormGeneralInformationUserScreen(),
+                ),
+                GoRoute(
+                  path: 'create_and_edit/:conditionId',
+                  builder: (context, state) => FormGeneralInformationUserScreen(
+                    contactId: state.pathParameters['conditionId'],
+                  ),
+                ),
+              ],
+            ),
             GoRoute(
               path: 'medical_information',
               builder: (context, state) => const MedicalInformationUserScreen(),

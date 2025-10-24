@@ -20,6 +20,9 @@ class _FormMedicalInformationUserScreenState
 
   bool _isEditing = false;
   bool _isFetching = false;
+  bool _aceptaTerminos = false;
+  bool _showErrorTerminos = false;
+  bool _showErrorFecha = false;
 
   late TextEditingController _nombreController;
   late TextEditingController _descripcionController;
@@ -55,10 +58,11 @@ class _FormMedicalInformationUserScreenState
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Error al cargar: ${e.toString()}',
+              '❌ Error al cargar: ${e.toString()}',
               style: GoogleFonts.poppins(),
             ),
             backgroundColor: Theme.of(context).colorScheme.error,
+            behavior: SnackBarBehavior.floating,
           ),
         );
       }
@@ -86,6 +90,7 @@ class _FormMedicalInformationUserScreenState
     if (picked != null) {
       setState(() {
         _fechaDiagnostico = picked;
+        _showErrorFecha = false;
       });
     }
   }
@@ -120,10 +125,11 @@ class _FormMedicalInformationUserScreenState
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                '✅ ${_isEditing ? 'Actualizado' : 'Guardado'} correctamente',
+                '✅ Condición ${_isEditing ? 'actualizada' : 'guardada'} con éxito',
                 style: GoogleFonts.poppins(color: Colors.white),
               ),
               backgroundColor: Theme.of(context).colorScheme.tertiary,
+              behavior: SnackBarBehavior.floating,
             ),
           );
 
@@ -131,16 +137,22 @@ class _FormMedicalInformationUserScreenState
             _formKey.currentState?.reset();
             _nombreController.clear();
             _descripcionController.clear();
-            setState(() => _fechaDiagnostico = null);
+            setState(() {
+              _fechaDiagnostico = null;
+              _aceptaTerminos = false;
+              _showErrorTerminos = false;
+              _showErrorFecha = false;
+            });
           }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'Error al guardar/actualizar',
+                '⚠️ Error al ${_isEditing ? 'actualizar' : 'guardar'} la condición',
                 style: GoogleFonts.poppins(),
               ),
               backgroundColor: Colors.orange,
+              behavior: SnackBarBehavior.floating,
             ),
           );
         }
@@ -154,6 +166,7 @@ class _FormMedicalInformationUserScreenState
               style: GoogleFonts.poppins(),
             ),
             backgroundColor: Theme.of(context).colorScheme.error,
+            behavior: SnackBarBehavior.floating,
           ),
         );
       }
@@ -162,23 +175,23 @@ class _FormMedicalInformationUserScreenState
     }
   }
 
-  /// Valida y muestra el ConfirmDialog; si el usuario confirma, ejecuta _performSave.
   void _onSavePressed() {
-    // validar formulario
     if (!_formKey.currentState!.validate()) return;
 
-    // validar fecha
+    // Validar fecha de diagnóstico
     if (_fechaDiagnostico == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Selecciona la fecha de diagnóstico',
-            style: GoogleFonts.poppins(),
-          ),
-          backgroundColor: Colors.orange,
-        ),
-      );
+      setState(() => _showErrorFecha = true);
       return;
+    } else {
+      setState(() => _showErrorFecha = false);
+    }
+
+    // Validar términos
+    if (!_aceptaTerminos) {
+      setState(() => _showErrorTerminos = true);
+      return;
+    } else {
+      setState(() => _showErrorTerminos = false);
     }
 
     final action = _isEditing ? 'actualizar' : 'guardar';
@@ -203,12 +216,137 @@ class _FormMedicalInformationUserScreenState
     );
   }
 
+  Widget _buildTerminosCheckbox(ColorScheme colors) {
+    return StatefulBuilder(
+      builder: (context, setInnerState) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CheckboxListTile(
+              title: Text.rich(
+                TextSpan(
+                  text: 'He leído y acepto los ',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    color: colors.onSurface,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: 'Términos y Condiciones ',
+                      style: GoogleFonts.poppins(
+                        color: colors.primary,
+                        decoration: TextDecoration.underline,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const TextSpan(
+                      text: 'sobre el tratamiento de mis datos personales.',
+                    ),
+                  ],
+                ),
+              ),
+              value: _aceptaTerminos,
+              onChanged: (bool? value) {
+                setInnerState(() {
+                  _aceptaTerminos = value ?? false;
+                  _showErrorTerminos = false;
+                });
+              },
+              controlAffinity: ListTileControlAffinity.leading,
+              checkColor: colors.onPrimary,
+              activeColor: colors.primary,
+              contentPadding: EdgeInsets.zero,
+            ),
+            if (_showErrorTerminos)
+              Padding(
+                padding: const EdgeInsets.only(left: 16, top: 4),
+                child: Text(
+                  'Debes aceptar los Términos y Condiciones',
+                  style: GoogleFonts.poppins(
+                    color: Colors.red,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildFechaDiagnostico(ColorScheme colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Fecha de Diagnóstico *',
+          style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: _pickDate,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 14,
+                    horizontal: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: colors.onSurface.withOpacity(0.2),
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    _fechaDiagnostico == null
+                        ? 'Seleccionar fecha'
+                        : _fechaDiagnostico!
+                              .toLocal()
+                              .toString()
+                              .split(' ')
+                              .first,
+                    style: GoogleFonts.poppins(fontSize: 16),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            ElevatedButton.icon(
+              onPressed: _pickDate,
+              icon: const Icon(Icons.calendar_month),
+              label: Text('Seleccionar', style: GoogleFonts.poppins()),
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+          ],
+        ),
+        if (_showErrorFecha)
+          Padding(
+            padding: const EdgeInsets.only(left: 8, top: 4),
+            child: Text(
+              'Selecciona la fecha de diagnóstico',
+              style: GoogleFonts.poppins(
+                color: Colors.red,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final title = _isEditing ? 'Editar Condición' : 'Nueva Condición';
 
-    // Usamos _isFetching solo para el fetch inicial
     if (_isEditing && _isFetching) {
       return Scaffold(
         appBar: AppBar(
@@ -287,56 +425,9 @@ class _FormMedicalInformationUserScreenState
                     : null,
               ),
               const SizedBox(height: 16),
-              Text(
-                'Fecha de Diagnóstico *',
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: _pickDate,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 14,
-                          horizontal: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: colors.onSurface.withOpacity(0.2),
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          _fechaDiagnostico == null
-                              ? 'Seleccionar fecha'
-                              : _fechaDiagnostico!
-                                    .toLocal()
-                                    .toString()
-                                    .split(' ')
-                                    .first,
-                          style: GoogleFonts.poppins(fontSize: 16),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  ElevatedButton.icon(
-                    onPressed: _pickDate,
-                    icon: const Icon(Icons.calendar_month),
-                    label: Text('Seleccionar', style: GoogleFonts.poppins()),
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              _buildFechaDiagnostico(colors),
+              const SizedBox(height: 16),
+              _buildTerminosCheckbox(colors),
               const SizedBox(height: 32),
             ],
           ),

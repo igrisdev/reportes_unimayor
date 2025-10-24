@@ -21,12 +21,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   Future<void> _checkLogin() async {
     final token = await readStorage('token');
+    final refreshToken = await readStorage('refresh_token');
 
     if (!mounted) return;
 
-    if (token != null) {
-      await writeStorage('token', token);
-
+    if (token != null && refreshToken != null) {
       final isBrigadier = await ref.read(isBrigadierProvider.future);
 
       if (isBrigadier) {
