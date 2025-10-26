@@ -13,7 +13,6 @@ import 'package:reportes_unimayor/screens/users/settings/general_information/for
 import 'package:reportes_unimayor/screens/users/settings/general_information/general_information_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/settings/medical_information/form_medical_information_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/settings/medical_information/medical_information_user_screen.dart';
-import 'package:reportes_unimayor/screens/users/settings/settings_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/create_report_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/history_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/main_user_screen.dart';
@@ -48,59 +47,47 @@ final router = GoRouter(
           builder: (context, state) => const HistoryUserScreen(),
         ),
         GoRoute(
-          path: 'settings',
-          builder: (context, state) => const SettingsUserScreen(),
+          path: 'settings/general_information',
+          builder: (context, state) => const GeneralInformationUserScreen(),
           routes: [
             GoRoute(
-              path: 'general_information',
-              builder: (context, state) => const GeneralInformationUserScreen(),
-              routes: [
-                GoRoute(
-                  path: 'create_and_edit',
-                  builder: (context, state) =>
-                      const FormGeneralInformationUserScreen(),
-                ),
-                GoRoute(
-                  path: 'create_and_edit/:conditionId',
-                  builder: (context, state) => FormGeneralInformationUserScreen(
-                    contactId: state.pathParameters['conditionId'],
-                  ),
-                ),
-              ],
+              path: 'edit',
+              builder: (context, state) =>
+                  const FormGeneralInformationUserScreen(),
+            ),
+          ],
+        ),
+        GoRoute(
+          path: 'settings/medical_information',
+          builder: (context, state) => const MedicalInformationUserScreen(),
+          routes: [
+            GoRoute(
+              path: 'create_and_edit',
+              builder: (context, state) =>
+                  const FormMedicalInformationUserScreen(),
             ),
             GoRoute(
-              path: 'medical_information',
-              builder: (context, state) => const MedicalInformationUserScreen(),
-              routes: [
-                GoRoute(
-                  path: 'create_and_edit',
-                  builder: (context, state) =>
-                      const FormMedicalInformationUserScreen(),
-                ),
-                GoRoute(
-                  path: 'create_and_edit/:conditionId',
-                  builder: (context, state) => FormMedicalInformationUserScreen(
-                    conditionId: state.pathParameters['conditionId'],
-                  ),
-                ),
-              ],
+              path: 'create_and_edit/:conditionId',
+              builder: (context, state) => FormMedicalInformationUserScreen(
+                conditionId: state.pathParameters['conditionId'],
+              ),
+            ),
+          ],
+        ),
+        GoRoute(
+          path: 'settings/emergency_contacts',
+          builder: (context, state) => const EmergencyContactsUserScreen(),
+          routes: [
+            GoRoute(
+              path: 'create_and_edit',
+              builder: (context, state) =>
+                  const FormEmergencyContactsUserScreen(),
             ),
             GoRoute(
-              path: 'emergency_contacts',
-              builder: (context, state) => const EmergencyContactsUserScreen(),
-              routes: [
-                GoRoute(
-                  path: 'create_and_edit',
-                  builder: (context, state) =>
-                      const FormEmergencyContactsUserScreen(),
-                ),
-                GoRoute(
-                  path: 'create_and_edit/:contactId',
-                  builder: (context, state) => FormEmergencyContactsUserScreen(
-                    contactId: state.pathParameters['contactId'],
-                  ),
-                ),
-              ],
+              path: 'create_and_edit/:contactId',
+              builder: (context, state) => FormEmergencyContactsUserScreen(
+                contactId: state.pathParameters['contactId'],
+              ),
             ),
           ],
         ),

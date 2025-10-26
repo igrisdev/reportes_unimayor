@@ -103,33 +103,35 @@ class ApiReportsService extends BaseDioService {
       return report;
     } catch (e) {
       print('Error en ApiReportsService: $e');
-      rethrow; // Re-lanzar el error para que lo maneje el provider
+      rethrow;
     }
   }
 
   Future<bool> createReport(
-    String id,
+    String? idUbicacion,
     String? description,
     String? record,
+    bool paraMi,
+    String? ubicacionTextOpcional,
   ) async {
     FormData formData;
 
+    final Map<String, dynamic> dataMap = {
+      'IdUbicacion': idUbicacion,
+      'Descripcion': description,
+      'ParaMi': paraMi,
+      'UbicacionTextOpcional': ubicacionTextOpcional,
+    };
+
     if (record != null && record.isNotEmpty) {
-      formData = FormData.fromMap({
-        'IdUbicacion': id,
-        'Descripcion': description,
-        'ArchivoAudio': await MultipartFile.fromFile(
-          record,
-          filename: 'audio.m4a',
-          contentType: DioMediaType('audio', 'm4a'),
-        ),
-      });
-    } else {
-      formData = FormData.fromMap({
-        'IdUbicacion': id,
-        'Descripcion': description,
-      });
+      dataMap['ArchivoAudio'] = await MultipartFile.fromFile(
+        record,
+        filename: 'audio.m4a',
+        contentType: DioMediaType('audio', 'm4a'),
+      );
     }
+
+    formData = FormData.fromMap(dataMap);
 
     try {
       final response = await dio.post('/reportes', data: formData);
@@ -140,10 +142,47 @@ class ApiReportsService extends BaseDioService {
 
       return true;
     } catch (e) {
-      print('Error crear reporte con audio: $e');
+      print('Error crear reporte con audio:  $e');
       rethrow; // Re-lanzar el error para que lo maneje el provider
     }
   }
+  // Future<bool> createReport(
+  //   String id,
+  //   String? description,
+  //   String? record,
+  // ) async {
+  //   FormData formData;
+
+  //   if (record != null && record.isNotEmpty) {
+  //     formData = FormData.fromMap({
+  //       'IdUbicacion': id,
+  //       'Descripcion': description,
+  //       'ArchivoAudio': await MultipartFile.fromFile(
+  //         record,
+  //         filename: 'audio.m4a',
+  //         contentType: DioMediaType('audio', 'm4a'),
+  //       ),
+  //     });
+  //   } else {
+  //     formData = FormData.fromMap({
+  //       'IdUbicacion': id,
+  //       'Descripcion': description,
+  //     });
+  //   }
+
+  //   try {
+  //     final response = await dio.post('/reportes', data: formData);
+
+  //     if (response.statusCode != 200) {
+  //       throw Exception('Error al crear el reporte con audio');
+  //     }
+
+  //     return true;
+  //   } catch (e) {
+  //     print('Error crear reporte con audio: $e');
+  //     rethrow; // Re-lanzar el error para que lo maneje el provider
+  //   }
+  // }
 
   Future<bool> cancelReport(int id) async {
     try {

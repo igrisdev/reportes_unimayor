@@ -95,18 +95,18 @@ class _DrawerUserState extends ConsumerState<DrawerUser> {
                 onTap: () => router.push('/user/history'),
               ),
 
-              // ListTile(
-              //   leading: Icon(Icons.settings, color: colorScheme.primary),
-              //   title: Text(
-              //     'Configuración',
-              //     style: GoogleFonts.poppins(
-              //       fontWeight: FontWeight.w500,
-              //       fontSize: 18,
-              //       color: textTheme.bodyLarge?.color ?? colorScheme.onSurface,
-              //     ),
-              //   ),
-              //   onTap: () => router.push('/user/settings'),
-              // ),
+              ListTile(
+                leading: Icon(Icons.person, color: colorScheme.primary),
+                title: Text(
+                  'Datos Generales',
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 18,
+                    color: textTheme.bodyLarge?.color ?? colorScheme.onSurface,
+                  ),
+                ),
+                onTap: () => router.push('/user/settings/general_information'),
+              ),
               ListTile(
                 leading: Icon(
                   Icons.medical_information,

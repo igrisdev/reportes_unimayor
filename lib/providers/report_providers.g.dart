@@ -465,7 +465,7 @@ class _GetReportByIdBrigadierProviderElement
   String get id => (origin as GetReportByIdBrigadierProvider).id;
 }
 
-String _$createReportHash() => r'577c22c31d1effd56b39c6267b4b0c207618daeb';
+String _$createReportHash() => r'd9287fbd9238a31af3f5a2d2d3ba9e131c60ef7f';
 
 /// See also [createReport].
 @ProviderFor(createReport)
@@ -478,18 +478,32 @@ class CreateReportFamily extends Family<AsyncValue<bool>> {
 
   /// See also [createReport].
   CreateReportProvider call(
-    String idUbicacion,
+    String? idUbicacion,
     String? descripcion,
     String? record,
+    bool paraMi,
+    String? ubicacionTextOpcional,
   ) {
-    return CreateReportProvider(idUbicacion, descripcion, record);
+    return CreateReportProvider(
+      idUbicacion,
+      descripcion,
+      record,
+      paraMi,
+      ubicacionTextOpcional,
+    );
   }
 
   @override
   CreateReportProvider getProviderOverride(
     covariant CreateReportProvider provider,
   ) {
-    return call(provider.idUbicacion, provider.descripcion, provider.record);
+    return call(
+      provider.idUbicacion,
+      provider.descripcion,
+      provider.record,
+      provider.paraMi,
+      provider.ubicacionTextOpcional,
+    );
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -510,13 +524,20 @@ class CreateReportFamily extends Family<AsyncValue<bool>> {
 /// See also [createReport].
 class CreateReportProvider extends AutoDisposeFutureProvider<bool> {
   /// See also [createReport].
-  CreateReportProvider(String idUbicacion, String? descripcion, String? record)
-    : this._internal(
+  CreateReportProvider(
+    String? idUbicacion,
+    String? descripcion,
+    String? record,
+    bool paraMi,
+    String? ubicacionTextOpcional,
+  ) : this._internal(
         (ref) => createReport(
           ref as CreateReportRef,
           idUbicacion,
           descripcion,
           record,
+          paraMi,
+          ubicacionTextOpcional,
         ),
         from: createReportProvider,
         name: r'createReportProvider',
@@ -529,6 +550,8 @@ class CreateReportProvider extends AutoDisposeFutureProvider<bool> {
         idUbicacion: idUbicacion,
         descripcion: descripcion,
         record: record,
+        paraMi: paraMi,
+        ubicacionTextOpcional: ubicacionTextOpcional,
       );
 
   CreateReportProvider._internal(
@@ -541,11 +564,15 @@ class CreateReportProvider extends AutoDisposeFutureProvider<bool> {
     required this.idUbicacion,
     required this.descripcion,
     required this.record,
+    required this.paraMi,
+    required this.ubicacionTextOpcional,
   }) : super.internal();
 
-  final String idUbicacion;
+  final String? idUbicacion;
   final String? descripcion;
   final String? record;
+  final bool paraMi;
+  final String? ubicacionTextOpcional;
 
   @override
   Override overrideWith(
@@ -563,6 +590,8 @@ class CreateReportProvider extends AutoDisposeFutureProvider<bool> {
         idUbicacion: idUbicacion,
         descripcion: descripcion,
         record: record,
+        paraMi: paraMi,
+        ubicacionTextOpcional: ubicacionTextOpcional,
       ),
     );
   }
@@ -577,7 +606,9 @@ class CreateReportProvider extends AutoDisposeFutureProvider<bool> {
     return other is CreateReportProvider &&
         other.idUbicacion == idUbicacion &&
         other.descripcion == descripcion &&
-        other.record == record;
+        other.record == record &&
+        other.paraMi == paraMi &&
+        other.ubicacionTextOpcional == ubicacionTextOpcional;
   }
 
   @override
@@ -586,6 +617,8 @@ class CreateReportProvider extends AutoDisposeFutureProvider<bool> {
     hash = _SystemHash.combine(hash, idUbicacion.hashCode);
     hash = _SystemHash.combine(hash, descripcion.hashCode);
     hash = _SystemHash.combine(hash, record.hashCode);
+    hash = _SystemHash.combine(hash, paraMi.hashCode);
+    hash = _SystemHash.combine(hash, ubicacionTextOpcional.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -595,13 +628,19 @@ class CreateReportProvider extends AutoDisposeFutureProvider<bool> {
 // ignore: unused_element
 mixin CreateReportRef on AutoDisposeFutureProviderRef<bool> {
   /// The parameter `idUbicacion` of this provider.
-  String get idUbicacion;
+  String? get idUbicacion;
 
   /// The parameter `descripcion` of this provider.
   String? get descripcion;
 
   /// The parameter `record` of this provider.
   String? get record;
+
+  /// The parameter `paraMi` of this provider.
+  bool get paraMi;
+
+  /// The parameter `ubicacionTextOpcional` of this provider.
+  String? get ubicacionTextOpcional;
 }
 
 class _CreateReportProviderElement
@@ -610,11 +649,16 @@ class _CreateReportProviderElement
   _CreateReportProviderElement(super.provider);
 
   @override
-  String get idUbicacion => (origin as CreateReportProvider).idUbicacion;
+  String? get idUbicacion => (origin as CreateReportProvider).idUbicacion;
   @override
   String? get descripcion => (origin as CreateReportProvider).descripcion;
   @override
   String? get record => (origin as CreateReportProvider).record;
+  @override
+  bool get paraMi => (origin as CreateReportProvider).paraMi;
+  @override
+  String? get ubicacionTextOpcional =>
+      (origin as CreateReportProvider).ubicacionTextOpcional;
 }
 
 String _$acceptReportHash() => r'e3c853efbf7f080fa884365290d821313ee520e2';

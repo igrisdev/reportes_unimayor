@@ -17,8 +17,10 @@ class ReportsModel {
   Ubicacion ubicacion;
   String descripcion;
   String detallesFinalizacion;
+  String ubicacionTextOpcional;
   String rutaAudio;
   String estado;
+  bool paraMi;
   DateTime fechaCreacion;
   String horaCreacion;
 
@@ -28,8 +30,10 @@ class ReportsModel {
     required this.ubicacion,
     required this.descripcion,
     required this.detallesFinalizacion,
+    required this.ubicacionTextOpcional,
     required this.rutaAudio,
     required this.estado,
+    required this.paraMi,
     required this.fechaCreacion,
     required this.horaCreacion,
   });
@@ -40,8 +44,10 @@ class ReportsModel {
     Ubicacion? ubicacion,
     String? descripcion,
     String? detallesFinalizacion,
+    String? ubicacionTextOpcional,
     String? rutaAudio,
     String? estado,
+    bool? paraMi,
     DateTime? fechaCreacion,
     String? horaCreacion,
   }) => ReportsModel(
@@ -50,8 +56,10 @@ class ReportsModel {
     ubicacion: ubicacion ?? this.ubicacion,
     descripcion: descripcion ?? this.descripcion,
     detallesFinalizacion: detallesFinalizacion ?? this.detallesFinalizacion,
+    ubicacionTextOpcional: ubicacionTextOpcional ?? this.ubicacionTextOpcional,
     rutaAudio: rutaAudio ?? this.rutaAudio,
     estado: estado ?? this.estado,
+    paraMi: paraMi ?? this.paraMi,
     fechaCreacion: fechaCreacion ?? this.fechaCreacion,
     horaCreacion: horaCreacion ?? this.horaCreacion,
   );
@@ -59,11 +67,23 @@ class ReportsModel {
   factory ReportsModel.fromJson(Map<String, dynamic> json) => ReportsModel(
     idReporte: json["idReporte"],
     usuario: Usuario.fromJson(json["usuario"]),
-    ubicacion: Ubicacion.fromJson(json["ubicacion"]),
+    ubicacion: json["ubicacion"] != null
+        ? Ubicacion.fromJson(json["ubicacion"])
+        : Ubicacion(
+            idUbicacion: 0,
+            descripcion: '',
+            sede: '',
+            edificio: '',
+            lugar: '',
+            piso: '',
+            rutaQr: '',
+          ),
     descripcion: json["descripcion"] ?? "",
     detallesFinalizacion: json["detallesFinalizacion"] ?? "",
+    ubicacionTextOpcional: json["ubicacionTextOpcional"] ?? "",
     rutaAudio: json["rutaAudio"] ?? "",
     estado: json["estado"],
+    paraMi: json["paraMi"],
     fechaCreacion: DateTime.parse(json["fechaCreacion"]),
     horaCreacion: json["horaCreacion"],
   );
@@ -74,8 +94,10 @@ class ReportsModel {
     "ubicacion": ubicacion.toJson(),
     "descripcion": descripcion,
     "detallesFinalizacion": detallesFinalizacion,
+    "ubicacionTextOpcional": ubicacionTextOpcional,
     "rutaAudio": rutaAudio,
     "estado": estado,
+    "paraMi": paraMi,
     "fechaCreacion":
         "${fechaCreacion.year.toString().padLeft(4, '0')}-${fechaCreacion.month.toString().padLeft(2, '0')}-${fechaCreacion.day.toString().padLeft(2, '0')}",
     "horaCreacion": horaCreacion,
@@ -90,7 +112,6 @@ class Ubicacion {
   String lugar;
   String piso;
   String rutaQr;
-  dynamic reportes;
 
   Ubicacion({
     required this.idUbicacion,
@@ -100,7 +121,6 @@ class Ubicacion {
     required this.lugar,
     required this.piso,
     required this.rutaQr,
-    required this.reportes,
   });
 
   Ubicacion copyWith({
@@ -120,18 +140,16 @@ class Ubicacion {
     lugar: lugar ?? this.lugar,
     piso: piso ?? this.piso,
     rutaQr: rutaQr ?? this.rutaQr,
-    reportes: reportes ?? this.reportes,
   );
 
   factory Ubicacion.fromJson(Map<String, dynamic> json) => Ubicacion(
-    idUbicacion: json["idUbicacion"],
-    descripcion: json["descripcion"],
-    sede: json["sede"],
-    edificio: json["edificio"],
-    lugar: json["lugar"],
-    piso: json["piso"],
-    rutaQr: json["rutaQr"],
-    reportes: json["reportes"],
+    idUbicacion: json["idUbicacion"] ?? 0,
+    descripcion: json["descripcion"] ?? '',
+    sede: json["sede"] ?? '',
+    edificio: json["edificio"] ?? '',
+    lugar: json["lugar"] ?? '',
+    piso: json["piso"] ?? '',
+    rutaQr: json["rutaQr"] ?? '',
   );
 
   Map<String, dynamic> toJson() => {
@@ -142,7 +160,6 @@ class Ubicacion {
     "lugar": lugar,
     "piso": piso,
     "rutaQr": rutaQr,
-    "reportes": reportes,
   };
 }
 

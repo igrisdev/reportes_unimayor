@@ -1,6 +1,5 @@
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/audio_player_notifier.dart';
-import 'package:reportes_unimayor/providers/is_brigadier_provider.dart';
 import 'package:reportes_unimayor/services/api_reports_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -177,30 +176,63 @@ Future<ReportsModel> getReportByIdBrigadier(
 @riverpod
 Future<bool> createReport(
   CreateReportRef ref,
-  String idUbicacion,
+  String? idUbicacion,
   String? descripcion,
   String? record,
+  bool paraMi,
+  String? ubicacionTextOpcional,
 ) async {
   try {
-    final apiService = ApiReportsService();
-    final response = await apiService.createReport(
+    final api = ApiReportsService();
+
+    final response = await api.createReport(
       idUbicacion,
       descripcion,
       record,
+      paraMi,
+      ubicacionTextOpcional,
     );
 
     if (response) {
       await ref.refresh(reportListPendingProvider.future);
-
       return true;
     }
 
     return false;
-  } catch (e) {
-    print('Error en report provider: $e');
+  } catch (e, stack) {
+    print('Error en createReportUserProvider: $e');
+    print(stack);
     rethrow;
   }
 }
+
+// @riverpod
+// Future<bool> createReport(
+//   CreateReportRef ref,
+//   String idUbicacion,
+//   String? descripcion,
+//   String? record,
+// ) async {
+//   try {
+//     final apiService = ApiReportsService();
+//     final response = await apiService.createReport(
+//       idUbicacion,
+//       descripcion,
+//       record,
+//     );
+
+//     if (response) {
+//       await ref.refresh(reportListPendingProvider.future);
+
+//       return true;
+//     }
+
+//     return false;
+//   } catch (e) {
+//     print('Error en report provider: $e');
+//     rethrow;
+//   }
+// }
 
 @riverpod
 Future<bool> acceptReport(AcceptReportRef ref, int id) async {
@@ -263,15 +295,3 @@ Future<String> getRecord(
     rethrow;
   }
 }
-
-// void invalidateAllProvidersUser(ref) {
-//   ref.invalidate(reportListPendingProvider);
-//   ref.invalidate(reportListProvider);
-//   ref.invalidate(isBrigadierProvider);
-// }
-
-// void invalidateAllProvidersBrigadier(ref) {
-//   ref.invalidate(reportListBrigadierProvider);
-//   ref.invalidate(getReportByIdBrigadierProvider);
-//   ref.invalidate(reportListHistoryBrigadierProvider);
-// }

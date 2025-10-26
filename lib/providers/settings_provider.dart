@@ -231,3 +231,51 @@ Future<bool> deleteMedicalCondition(
     rethrow;
   }
 }
+
+// ----------------------------
+// 🧱 NUEVO: DATOS PERSONALES (INFORMACIÓN GENERAL)
+// ----------------------------
+
+/// GET /api/DatosPersonales/usuarios/datos-personales
+@riverpod
+Future<Map<String, dynamic>> personalData(PersonalDataRef ref) async {
+  final api = ApiSettingsService();
+  try {
+    final result = await api.getPersonalData();
+    return result;
+  } catch (e) {
+    print('Error al obtener datos personales: $e');
+    rethrow;
+  }
+}
+
+/// PUT /api/DatosPersonales/usuarios/datos-personales
+@riverpod
+Future<bool> updatePersonalData(
+  UpdatePersonalDataRef ref,
+  String numeroTelefonico,
+  String cedula,
+  String codigoInstitucional,
+) async {
+  try {
+    final api = ApiSettingsService();
+    final payload = PersonalDataPayload(
+      numeroTelefonico: numeroTelefonico,
+      cedula: cedula,
+      codigoInstitucional: codigoInstitucional,
+    );
+
+    final res = await api.updatePersonalData(payload);
+
+    if (res) {
+      // Refresca el provider principal para que la pantalla se actualice automáticamente
+      await ref.refresh(personalDataProvider.future);
+      return true;
+    }
+
+    return false;
+  } catch (e) {
+    print('Error al actualizar datos personales: $e');
+    rethrow;
+  }
+}

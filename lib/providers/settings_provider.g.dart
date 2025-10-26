@@ -1349,5 +1349,203 @@ class _DeleteMedicalConditionProviderElement
   String get id => (origin as DeleteMedicalConditionProvider).id;
 }
 
+String _$personalDataHash() => r'7dfa5c6eca94c609f751538c4bbf1b5af4f263d6';
+
+/// GET /api/DatosPersonales/usuarios/datos-personales
+///
+/// Copied from [personalData].
+@ProviderFor(personalData)
+final personalDataProvider =
+    AutoDisposeFutureProvider<Map<String, dynamic>>.internal(
+      personalData,
+      name: r'personalDataProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$personalDataHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef PersonalDataRef = AutoDisposeFutureProviderRef<Map<String, dynamic>>;
+String _$updatePersonalDataHash() =>
+    r'be724fbeaf49dc2f794d0f298a64a3eebae1029c';
+
+/// PUT /api/DatosPersonales/usuarios/datos-personales
+///
+/// Copied from [updatePersonalData].
+@ProviderFor(updatePersonalData)
+const updatePersonalDataProvider = UpdatePersonalDataFamily();
+
+/// PUT /api/DatosPersonales/usuarios/datos-personales
+///
+/// Copied from [updatePersonalData].
+class UpdatePersonalDataFamily extends Family<AsyncValue<bool>> {
+  /// PUT /api/DatosPersonales/usuarios/datos-personales
+  ///
+  /// Copied from [updatePersonalData].
+  const UpdatePersonalDataFamily();
+
+  /// PUT /api/DatosPersonales/usuarios/datos-personales
+  ///
+  /// Copied from [updatePersonalData].
+  UpdatePersonalDataProvider call(
+    String numeroTelefonico,
+    String cedula,
+    String codigoInstitucional,
+  ) {
+    return UpdatePersonalDataProvider(
+      numeroTelefonico,
+      cedula,
+      codigoInstitucional,
+    );
+  }
+
+  @override
+  UpdatePersonalDataProvider getProviderOverride(
+    covariant UpdatePersonalDataProvider provider,
+  ) {
+    return call(
+      provider.numeroTelefonico,
+      provider.cedula,
+      provider.codigoInstitucional,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'updatePersonalDataProvider';
+}
+
+/// PUT /api/DatosPersonales/usuarios/datos-personales
+///
+/// Copied from [updatePersonalData].
+class UpdatePersonalDataProvider extends AutoDisposeFutureProvider<bool> {
+  /// PUT /api/DatosPersonales/usuarios/datos-personales
+  ///
+  /// Copied from [updatePersonalData].
+  UpdatePersonalDataProvider(
+    String numeroTelefonico,
+    String cedula,
+    String codigoInstitucional,
+  ) : this._internal(
+        (ref) => updatePersonalData(
+          ref as UpdatePersonalDataRef,
+          numeroTelefonico,
+          cedula,
+          codigoInstitucional,
+        ),
+        from: updatePersonalDataProvider,
+        name: r'updatePersonalDataProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$updatePersonalDataHash,
+        dependencies: UpdatePersonalDataFamily._dependencies,
+        allTransitiveDependencies:
+            UpdatePersonalDataFamily._allTransitiveDependencies,
+        numeroTelefonico: numeroTelefonico,
+        cedula: cedula,
+        codigoInstitucional: codigoInstitucional,
+      );
+
+  UpdatePersonalDataProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.numeroTelefonico,
+    required this.cedula,
+    required this.codigoInstitucional,
+  }) : super.internal();
+
+  final String numeroTelefonico;
+  final String cedula;
+  final String codigoInstitucional;
+
+  @override
+  Override overrideWith(
+    FutureOr<bool> Function(UpdatePersonalDataRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: UpdatePersonalDataProvider._internal(
+        (ref) => create(ref as UpdatePersonalDataRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        numeroTelefonico: numeroTelefonico,
+        cedula: cedula,
+        codigoInstitucional: codigoInstitucional,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<bool> createElement() {
+    return _UpdatePersonalDataProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is UpdatePersonalDataProvider &&
+        other.numeroTelefonico == numeroTelefonico &&
+        other.cedula == cedula &&
+        other.codigoInstitucional == codigoInstitucional;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, numeroTelefonico.hashCode);
+    hash = _SystemHash.combine(hash, cedula.hashCode);
+    hash = _SystemHash.combine(hash, codigoInstitucional.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin UpdatePersonalDataRef on AutoDisposeFutureProviderRef<bool> {
+  /// The parameter `numeroTelefonico` of this provider.
+  String get numeroTelefonico;
+
+  /// The parameter `cedula` of this provider.
+  String get cedula;
+
+  /// The parameter `codigoInstitucional` of this provider.
+  String get codigoInstitucional;
+}
+
+class _UpdatePersonalDataProviderElement
+    extends AutoDisposeFutureProviderElement<bool>
+    with UpdatePersonalDataRef {
+  _UpdatePersonalDataProviderElement(super.provider);
+
+  @override
+  String get numeroTelefonico =>
+      (origin as UpdatePersonalDataProvider).numeroTelefonico;
+  @override
+  String get cedula => (origin as UpdatePersonalDataProvider).cedula;
+  @override
+  String get codigoInstitucional =>
+      (origin as UpdatePersonalDataProvider).codigoInstitucional;
+}
+
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -4,7 +4,13 @@ import 'package:reportes_unimayor/models/reports_model.dart';
 
 class ViewLocation extends StatelessWidget {
   final Ubicacion location;
-  const ViewLocation({super.key, required this.location});
+  final String? ubicacionTextOpcional;
+
+  const ViewLocation({
+    super.key,
+    required this.location,
+    this.ubicacionTextOpcional,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,37 +28,49 @@ class ViewLocation extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Sede ${location.sede}',
-                  style: GoogleFonts.poppins(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w600,
-                    color: colors.onSurface,
-                  ),
-                ),
-                Text(
-                  'Edificio ${location.edificio}, Piso ${location.piso}',
-                  style: GoogleFonts.poppins(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                    color: colors.onSurface,
-                  ),
-                ),
-                Text(
-                  'Lugar ${location.lugar}',
-                  style: GoogleFonts.poppins(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                    color: colors.onSurface,
-                  ),
-                ),
-                if (location.descripcion.isNotEmpty)
+                if (location.idUbicacion != 0) ...[
                   Text(
-                    'Descripción: ${location.descripcion}',
+                    'Sede ${location.sede}',
+                    style: GoogleFonts.poppins(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600,
+                      color: colors.onSurface,
+                    ),
+                  ),
+                  Text(
+                    'Edificio ${location.edificio}, Piso ${location.piso}',
                     style: GoogleFonts.poppins(
                       fontSize: 20,
                       fontWeight: FontWeight.w500,
-                      color: colors.onSurfaceVariant,
+                      color: colors.onSurface,
+                    ),
+                  ),
+                  Text(
+                    'Lugar ${location.lugar}',
+                    style: GoogleFonts.poppins(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: colors.onSurface,
+                    ),
+                  ),
+                  if (location.descripcion.isNotEmpty)
+                    Text(
+                      'Descripción: ${location.descripcion}',
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                        color: colors.onSurfaceVariant,
+                      ),
+                    ),
+                ],
+                if (ubicacionTextOpcional != null &&
+                    ubicacionTextOpcional!.isNotEmpty)
+                  Text(
+                    'Ubicación Descrita por el Usuario: ${ubicacionTextOpcional}',
+                    style: GoogleFonts.poppins(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: colors.onSurface,
                     ),
                   ),
               ],

@@ -51,11 +51,30 @@ class MedicalConditionPayload {
   }
 }
 
+class PersonalDataPayload {
+  final String numeroTelefonico;
+  final String cedula;
+  final String codigoInstitucional;
+
+  PersonalDataPayload({
+    required this.numeroTelefonico,
+    required this.cedula,
+    required this.codigoInstitucional,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      "numeroTelefonico": numeroTelefonico,
+      "cedula": cedula,
+      "codigoInstitucional": codigoInstitucional,
+    };
+  }
+}
+
 class ApiSettingsService extends BaseDioService {
-  // Endpoints existentes
   final String _contactsEndpoint = '/ContactoEmergencias';
-  // Nuevo endpoint para condiciones médicas
   final String _medicalEndpoint = '/CondicionMedica';
+  final String _personalEndpoint = '/DatosPersonales/usuarios/datos-personales';
 
   // -----------------------------
   // Contactos de emergencia (ya definidos)
@@ -154,7 +173,7 @@ class ApiSettingsService extends BaseDioService {
   }
 
   // -----------------------------
-  // NUEVO: Condiciones Médicas
+  // Condiciones Médicas
   // -----------------------------
 
   /// GET /api/CondicionMedica  -> lista de condiciones
@@ -251,6 +270,48 @@ class ApiSettingsService extends BaseDioService {
       rethrow;
     } catch (e) {
       print('Error general al eliminar condicion medica $id: $e');
+      rethrow;
+    }
+  }
+
+  // -----------------------------
+  // NUEVO: Datos Personales (Información General)
+  // -----------------------------
+
+  Future<Map<String, dynamic>> getPersonalData() async {
+    try {
+      final response = await dio.get(_personalEndpoint);
+
+      if (response.statusCode == 200 && response.data is Map) {
+        return Map<String, dynamic>.from(response.data);
+      }
+
+      throw Exception(
+        'Formato de respuesta incorrecto o código: ${response.statusCode}',
+      );
+    } on DioException catch (e) {
+      print('Error Dio al obtener datos personales: ${e.message}');
+      rethrow;
+    } catch (e) {
+      print('Error general al obtener datos personales: $e');
+      rethrow;
+    }
+  }
+
+  Future<bool> updatePersonalData(PersonalDataPayload payload) async {
+    try {
+      final response = await dio.put(
+        _personalEndpoint,
+        data: payload.toJson(),
+        options: Options(contentType: Headers.jsonContentType),
+      );
+
+      return response.statusCode == 200;
+    } on DioException catch (e) {
+      print('Error Dio al actualizar datos personales: ${e.message}');
+      rethrow;
+    } catch (e) {
+      print('Error general al actualizar datos personales: $e');
       rethrow;
     }
   }

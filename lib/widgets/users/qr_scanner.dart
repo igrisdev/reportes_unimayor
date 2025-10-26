@@ -18,7 +18,6 @@ class _QrScannerState extends ConsumerState<QrScanner> {
 
   @override
   Widget build(BuildContext context) {
-    final router = GoRouter.of(context);
     final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -57,6 +56,8 @@ class _QrScannerState extends ConsumerState<QrScanner> {
       body: MobileScanner(
         controller: cameraController,
         onDetect: (capture) async {
+          cameraController.stop();
+
           final List<Barcode> barcodes = capture.barcodes;
           for (final barcode in barcodes) {
             if (barcode.rawValue != null) {
@@ -64,7 +65,8 @@ class _QrScannerState extends ConsumerState<QrScanner> {
                   .read(idLocationQrScannerProvider.notifier)
                   .setIdLocationQrScanner(barcode.rawValue!);
 
-              router.go('/user/create-report');
+              // Navegar una vez el valor ha sido seteado
+              if (mounted) context.pop();
               break;
             }
           }

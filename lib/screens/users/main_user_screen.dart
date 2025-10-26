@@ -102,7 +102,10 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
             children: [
               BigBadgeViewProgress(text: report.estado),
               const SizedBox(height: 20),
-              ViewLocation(location: report.ubicacion),
+              ViewLocation(
+                location: report.ubicacion,
+                ubicacionTextOpcional: report.ubicacionTextOpcional,
+              ),
               const SizedBox(height: 20),
               DescriptionReportContainer(
                 idReport: report.idReporte,
@@ -171,7 +174,7 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
           child: InkWell(
             borderRadius: BorderRadius.circular(100),
             onTap: () {
-              router.push('/user/create-report');
+              context.push('/user/create-report');
             },
             child: Center(
               child: Row(

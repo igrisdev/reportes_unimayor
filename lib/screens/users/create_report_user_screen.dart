@@ -23,24 +23,25 @@ class _CreateReportUserScreenState
     extends ConsumerState<CreateReportUserScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  List<Headquarters> _locationTree = [];
-  List<String> _headquarters = [];
-  List<String> _buildings = [];
-  List<LocationEntry> _locationsList = [];
-
-  bool _locationsLoaded = false;
-
+  // ** Variables de estado de la UI (no de Riverpod) **
   String? formSelectedHeadquarter;
   String? formSelectedBuilding;
   String? formSelectedLocation;
   String? formDescription;
+  String? formUbicacionTextOpcional;
+  bool? formParaMi;
 
+  // Estado para la grabación de audio
   final AudioRecorder _audioRecorder = AudioRecorder();
   String? _recordingPath;
   bool _isRecording = false;
 
+  // Estado para el modo manual
   bool _isManualMode = false;
-  bool _isReadyToSend = false;
+
+  // ** Listas temporales para Dropdowns **
+  List<String> _buildings = [];
+  List<LocationEntry> _locationsList = [];
 
   @override
   void dispose() {
@@ -48,15 +49,18 @@ class _CreateReportUserScreenState
     super.dispose();
   }
 
-  void _checkIfReadyToSend() {
-    final idLocationFromQr = ref.read(idLocationQrScannerProvider);
-
+  // ** 1. FUNCIÓN CALCULADORA **
+  bool _calculateIsReady(String idLocationFromQr) {
     final hasManualLocation =
         formSelectedHeadquarter != null &&
         formSelectedBuilding != null &&
         formSelectedLocation != null;
 
     final hasQrLocation = idLocationFromQr.isNotEmpty;
+
+    final hasOptionalText =
+        formUbicacionTextOpcional != null &&
+        formUbicacionTextOpcional!.trim().isNotEmpty;
 
     final hasDescription =
         formDescription != null && formDescription!.trim().isNotEmpty;
@@ -66,26 +70,31 @@ class _CreateReportUserScreenState
     final hasContent = hasDescription || hasAudio;
 
     if (_isRecording) {
-      setState(() {
-        _isReadyToSend = false;
-      });
-      return;
+      return false;
     }
 
-    final ready = (hasManualLocation || hasQrLocation) && hasContent;
+    // Ubicación es válida si hay QR, O si hay selección manual completa Y modo manual activo, O si hay texto opcional.
+    final hasValidLocation =
+        hasQrLocation ||
+        (hasManualLocation && _isManualMode) ||
+        hasOptionalText;
 
-    setState(() {
-      _isReadyToSend = ready;
-    });
+    final ready = hasValidLocation && hasContent && formParaMi != null;
+
+    return ready;
   }
 
-  void _updateBuildingsForHeadquarter(String? headquarter) {
+  // ** 2. LÓGICA DE ACTUALIZACIÓN DE DROPDOWNS (Se mantiene) **
+  void _updateBuildingsForHeadquarter(
+    String? headquarter,
+    List<Headquarters> locationTree,
+  ) {
     if (headquarter == null) {
       _buildings = [];
       _locationsList = [];
       return;
     }
-    final h = _locationTree.firstWhere(
+    final h = locationTree.firstWhere(
       (t) => t.sede == headquarter,
       orElse: () => Headquarters(sede: headquarter, edificios: []),
     );
@@ -93,12 +102,16 @@ class _CreateReportUserScreenState
     _locationsList = [];
   }
 
-  void _updateLocationsForBuilding(String headquarter, String? building) {
+  void _updateLocationsForBuilding(
+    String headquarter,
+    String? building,
+    List<Headquarters> locationTree,
+  ) {
     if (building == null) {
       _locationsList = [];
       return;
     }
-    final h = _locationTree.firstWhere(
+    final h = locationTree.firstWhere(
       (t) => t.sede == headquarter,
       orElse: () => Headquarters(sede: headquarter, edificios: []),
     );
@@ -111,26 +124,15 @@ class _CreateReportUserScreenState
 
   @override
   Widget build(BuildContext context) {
+    // ** Riverpod watches **
     final idLocationQrScanner = ref.watch(idLocationQrScannerProvider);
+    final locationsAsync = ref.watch(locationsTreeProvider);
     final colors = Theme.of(context).colorScheme;
 
-    final locationsAsync = ref.watch(locationsTreeProvider);
-
+    // ** LÓGICA DE CARGA/ERROR DE UBICACIONES **
     locationsAsync.when(
-      data: (tree) {
-        if (!_locationsLoaded) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            setState(() {
-              _locationTree = tree;
-              _headquarters = tree.map((t) => t.sede).toList();
-              _locationsLoaded = true;
-            });
-          });
-        }
-      },
-      loading: () {
-        // opcional: podrías indicar carga en la UI si deseas
-      },
+      data: (_) {},
+      loading: () {},
       error: (err, stack) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           showMessage(
@@ -142,9 +144,8 @@ class _CreateReportUserScreenState
       },
     );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkIfReadyToSend();
-    });
+    // ** CÁLCULO DIRECTO para habilitar/deshabilitar el botón (visual, aunque se presione para validar) **
+    final bool isReadyToSend = _calculateIsReady(idLocationQrScanner);
 
     return Scaffold(
       appBar: AppBar(
@@ -170,7 +171,15 @@ class _CreateReportUserScreenState
               const SizedBox(height: 12),
               buttonManualMode(colors),
               if (_isManualMode) const SizedBox(height: 10),
-              if (_isManualMode) manualLocationSelector(),
+              if (_isManualMode) manualLocationSelector(locationsAsync),
+              const SizedBox(height: 14),
+              sectionHeader(title: 'Ubicación opcional'),
+              const SizedBox(height: 10),
+              ubicacionTextOpcionalField(),
+              const SizedBox(height: 14),
+              sectionHeader(title: '¿Para quién es el reporte? *'),
+              const SizedBox(height: 10),
+              paraMiToggleButtons(),
               const SizedBox(height: 14),
               sectionHeader(title: 'Descripción *'),
               const SizedBox(height: 10),
@@ -180,7 +189,7 @@ class _CreateReportUserScreenState
           ),
         ),
       ),
-      bottomNavigationBar: buttonSubmitReport(),
+      bottomNavigationBar: buttonSubmitReport(isReadyToSend),
     );
   }
 
@@ -189,19 +198,39 @@ class _CreateReportUserScreenState
 
     final AsyncValue<Map<String, dynamic>>? locationByIdAsync =
         (idLocationQrScanner.isNotEmpty)
-            ? ref.watch(
-                locationByIdProvider(int.tryParse(idLocationQrScanner) ?? -1),
-              )
-            : null;
+        ? ref.watch(
+            locationByIdProvider(int.tryParse(idLocationQrScanner) ?? -1),
+          )
+        : null;
 
     return FormField<String>(
       initialValue: idLocationQrScanner,
+      // Mantenemos AutovalidateMode.onUserInteraction para que los errores
+      // se muestren si el usuario ya interactuó o si llamamos a validate().
       autovalidateMode: AutovalidateMode.onUserInteraction,
+      // ** VALIDATOR DE UBICACIÓN PRINCIPAL/OPCIONAL **
       validator: (value) {
-        if (!_isManualMode && (value == null || value.isEmpty)) {
-          return 'Selecciona ubicación por QR o completa manualmente';
+        final hasQr = idLocationQrScanner.isNotEmpty;
+        final hasManualLocation =
+            _isManualMode &&
+            formSelectedHeadquarter != null &&
+            formSelectedBuilding != null &&
+            formSelectedLocation != null;
+
+        // Verificamos si la ubicación opcional tiene texto
+        final hasOptionalText =
+            formUbicacionTextOpcional != null &&
+            formUbicacionTextOpcional!.trim().isNotEmpty;
+
+        // La ubicación es válida si CUALQUIERA de las tres opciones se cumple.
+        final hasValidLocation = hasQr || hasManualLocation || hasOptionalText;
+
+        if (hasValidLocation) {
+          return null; // Todo bien
         }
-        return null;
+
+        // Si falla, es porque las 3 están vacías
+        return 'Selecciona ubicación por QR, completa la selección manual, o escribe en Ubicación Opcional.';
       },
       builder: (state) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -252,7 +281,7 @@ class _CreateReportUserScreenState
                 ),
                 decoration: BoxDecoration(
                   color: isScanned
-                      ? colors.tertiary.withValues(alpha: 0.1)
+                      ? colors.tertiary.withOpacity(0.1)
                       : colors.secondary,
                   border: Border.all(
                     color: isScanned ? colors.tertiary : colors.onSurface,
@@ -315,6 +344,103 @@ class _CreateReportUserScreenState
     );
   }
 
+  Widget ubicacionTextOpcionalField() {
+    return TextFormField(
+      initialValue: formUbicacionTextOpcional,
+      onChanged: (value) {
+        setState(() {
+          formUbicacionTextOpcional = value;
+        });
+      },
+      style: GoogleFonts.poppins(fontSize: 20),
+      decoration: InputDecoration(
+        hintText:
+            "Escribe la ubicación o especifica más la ubicación seleccionada",
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
+      ),
+    );
+  }
+
+  Widget paraMiToggleButtons() {
+    final colors = Theme.of(context).colorScheme;
+
+    return FormField<bool>(
+      initialValue: formParaMi,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      validator: (value) {
+        if (formParaMi == null) {
+          return 'Selecciona una opción';
+        }
+        return null;
+      },
+      builder: (state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: double.infinity,
+              child: ToggleButtons(
+                isSelected: [formParaMi == true, formParaMi == false],
+                onPressed: (index) {
+                  setState(() {
+                    formParaMi = index == 0;
+                    state.didChange(formParaMi);
+                  });
+                },
+                borderRadius: BorderRadius.circular(10),
+                constraints: const BoxConstraints.tightFor(
+                  height: 60,
+                  width: 160,
+                ),
+                fillColor: colors.primary.withOpacity(0.2),
+                selectedColor: colors.primary,
+                color: colors.onSurface,
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: Center(
+                      child: Text(
+                        'Yo',
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: Center(
+                      child: Text(
+                        'Otro',
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (state.hasError)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0, left: 8.0),
+                child: Text(
+                  state.errorText!,
+                  style: GoogleFonts.poppins(
+                    color: colors.error,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget descriptionField() {
     final colors = Theme.of(context).colorScheme;
 
@@ -326,10 +452,12 @@ class _CreateReportUserScreenState
           minLines: 3,
           maxLines: 7,
           onChanged: (value) {
-            formDescription = value;
-            _checkIfReadyToSend();
+            setState(() {
+              formDescription = value;
+            });
           },
           style: GoogleFonts.poppins(fontSize: 20),
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           validator: (value) {
             final hasDescription = value != null && value.trim().isNotEmpty;
             final hasAudio = _recordingPath != null;
@@ -346,10 +474,9 @@ class _CreateReportUserScreenState
               color: _isRecording
                   ? colors.error
                   : _recordingPath == null
-                      ? colors.onSurface
-                      : colors.tertiary,
-              icon:
-                  Icon(_isRecording ? Icons.stop_circle_outlined : Icons.mic),
+                  ? colors.onSurface
+                  : colors.tertiary,
+              icon: Icon(_isRecording ? Icons.stop_circle_outlined : Icons.mic),
               onPressed: _toggleRecording,
             ),
           ),
@@ -376,26 +503,24 @@ class _CreateReportUserScreenState
     );
   }
 
+  // ** BOTÓN CORREGIDO **
   TextButton buttonManualMode(ColorScheme colors) {
     return TextButton(
       onPressed: () {
-        // Si vamos a activar el modo manual y aún no cargamos ubicaciones,
-        // forzamos la recarga del provider para que el selector muestre loading.
         final nextMode = !_isManualMode;
         setState(() {
           _isManualMode = nextMode;
+
+          if (!nextMode) {
+            formSelectedHeadquarter = null;
+            formSelectedBuilding = null;
+            formSelectedLocation = null;
+            _buildings = [];
+            _locationsList = [];
+          }
+          // ** ELIMINADA la llamada a _formKey.currentState!.validate(); **
+          // para que no salten las alertas de los campos al abrir el modo manual.
         });
-
-        if (nextMode && !_locationsLoaded) {
-          // Forzamos recarga inmediata del árbol de ubicaciones.
-          ref.refresh(locationsTreeProvider);
-          // Dejamos _locationsLoaded en false para que el widget muestre loader
-          setState(() {
-            _locationsLoaded = false;
-          });
-        }
-
-        _checkIfReadyToSend();
       },
       style: TextButton.styleFrom(
         backgroundColor: colors.primary,
@@ -411,22 +536,17 @@ class _CreateReportUserScreenState
             style: GoogleFonts.poppins(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: colors.onTertiary,
+              color: colors.onPrimary,
             ),
           ),
           const SizedBox(width: 10),
-          if (!_isManualMode)
-            Icon(
-              Icons.keyboard_arrow_up_sharp,
-              size: 30,
-              color: colors.onTertiary,
-            )
-          else
-            Icon(
-              Icons.keyboard_arrow_down_sharp,
-              size: 30,
-              color: colors.onTertiary,
-            ),
+          Icon(
+            _isManualMode
+                ? Icons.keyboard_arrow_up_sharp
+                : Icons.keyboard_arrow_down_sharp,
+            size: 30,
+            color: colors.onPrimary,
+          ),
         ],
       ),
     );
@@ -439,7 +559,7 @@ class _CreateReportUserScreenState
         Text(
           title,
           style: GoogleFonts.poppins(
-            fontSize: 28,
+            fontSize: 26,
             fontWeight: FontWeight.w700,
             color: colors.primary,
           ),
@@ -448,21 +568,18 @@ class _CreateReportUserScreenState
     );
   }
 
-  // ---------- REEMPLAZADO: manualLocationSelector -----------
-  Widget manualLocationSelector() {
+  // ** 3. MANUAL LOCATION SELECTOR **
+  Widget manualLocationSelector(AsyncValue<List<Headquarters>> locationsAsync) {
     final colors = Theme.of(context).colorScheme;
-
-    final locationsAsync = ref.watch(locationsTreeProvider);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
         borderRadius: BorderRadius.circular(4),
       ),
       child: locationsAsync.when(
         loading: () {
-          // Mientras carga, mostramos un indicador centrado con un texto amable
           return SizedBox(
             height: 180,
             child: Center(
@@ -484,7 +601,6 @@ class _CreateReportUserScreenState
           );
         },
         error: (err, stack) {
-          // En caso de error, mostrar mensaje y un botón para reintentar
           return SizedBox(
             height: 180,
             child: Center(
@@ -492,27 +608,17 @@ class _CreateReportUserScreenState
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'Error cargando ubicaciones',
+                    'Error de carga. Intenta de nuevo.',
                     style: GoogleFonts.poppins(
                       fontSize: 16,
                       color: colors.error,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Intenta de nuevo.',
-                    style:
-                        GoogleFonts.poppins(fontSize: 14, color: colors.onSurface),
-                  ),
                   const SizedBox(height: 12),
                   ElevatedButton(
                     onPressed: () {
-                      // Forzar recarga
-                      ref.refresh(locationsTreeProvider);
-                      setState(() {
-                        _locationsLoaded = false;
-                      });
+                      ref.invalidate(locationsTreeProvider);
                     },
                     child: Text('Reintentar', style: GoogleFonts.poppins()),
                   ),
@@ -521,17 +627,8 @@ class _CreateReportUserScreenState
             ),
           );
         },
-        data: (tree) {
-          // Cuando hay datos, rellenamos las listas si aún no lo habíamos hecho
-          if (!_locationsLoaded) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              setState(() {
-                _locationTree = tree;
-                _headquarters = tree.map((t) => t.sede).toList();
-                _locationsLoaded = true;
-              });
-            });
-          }
+        data: (locationTree) {
+          final _headquarters = locationTree.map((t) => t.sede).toList();
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -571,12 +668,20 @@ class _CreateReportUserScreenState
                     formSelectedHeadquarter = value;
                     formSelectedBuilding = null;
                     formSelectedLocation = null;
-                    _updateBuildingsForHeadquarter(value);
+                    _updateBuildingsForHeadquarter(value, locationTree);
                   });
-                  _checkIfReadyToSend();
+                  // Forzamos la validación del qrFormField para que se limpie el error
+                  // si el usuario está llenando correctamente la ubicación principal.
+                  _formKey.currentState!.validate();
                 },
                 validator: (value) {
-                  if (_isManualMode && (value == null || value.isEmpty)) {
+                  // Si estamos en modo manual Y el QR está vacío, este campo es obligatorio.
+                  final isQrEmpty = ref
+                      .read(idLocationQrScannerProvider)
+                      .isEmpty;
+                  if (_isManualMode &&
+                      isQrEmpty &&
+                      (value == null || value.isEmpty)) {
                     return 'Selecciona una sede';
                   }
                   return null;
@@ -603,7 +708,9 @@ class _CreateReportUserScreenState
                       (build) => DropdownMenuItem(
                         value: build,
                         child: Text(
-                          build.startsWith(RegExp(r'\d')) ? 'Edificio $build' : build,
+                          build.startsWith(RegExp(r'\d'))
+                              ? 'Edificio $build'
+                              : build,
                           style: GoogleFonts.poppins(
                             fontSize: 20,
                             color: Colors.black,
@@ -618,15 +725,24 @@ class _CreateReportUserScreenState
                     formSelectedBuilding = value;
                     formSelectedLocation = null;
                     if (formSelectedHeadquarter != null) {
-                      _updateLocationsForBuilding(formSelectedHeadquarter!, value);
+                      _updateLocationsForBuilding(
+                        formSelectedHeadquarter!,
+                        value,
+                        locationTree,
+                      );
                     } else {
                       _locationsList = [];
                     }
                   });
-                  _checkIfReadyToSend();
+                  _formKey.currentState!.validate();
                 },
                 validator: (value) {
-                  if (_isManualMode && (value == null || value.isEmpty)) {
+                  final isQrEmpty = ref
+                      .read(idLocationQrScannerProvider)
+                      .isEmpty;
+                  if (_isManualMode &&
+                      isQrEmpty &&
+                      (value == null || value.isEmpty)) {
                     return 'Selecciona un edificio';
                   }
                   return null;
@@ -665,11 +781,16 @@ class _CreateReportUserScreenState
                     .toList(),
                 onChanged: (value) {
                   setState(() => formSelectedLocation = value);
-                  _checkIfReadyToSend();
+                  _formKey.currentState!.validate();
                 },
                 validator: (value) {
-                  if (_isManualMode && (value == null || value.isEmpty)) {
-                    return 'Selecciona un salón';
+                  final isQrEmpty = ref
+                      .read(idLocationQrScannerProvider)
+                      .isEmpty;
+                  if (_isManualMode &&
+                      isQrEmpty &&
+                      (value == null || value.isEmpty)) {
+                    return 'Selecciona un salón para completar la ubicación manual.';
                   }
                   return null;
                 },
@@ -680,7 +801,7 @@ class _CreateReportUserScreenState
       ),
     );
   }
-  // ---------- FIN manualLocationSelector ---------------
+  // ------------------------------------------------------------------
 
   Future<void> _toggleRecording() async {
     if (_isRecording) {
@@ -689,7 +810,6 @@ class _CreateReportUserScreenState
         _isRecording = false;
         _recordingPath = path;
       });
-      _checkIfReadyToSend();
     } else {
       if (await _audioRecorder.hasPermission()) {
         final appDocumentsDir = await getApplicationDocumentsDirectory();
@@ -711,7 +831,8 @@ class _CreateReportUserScreenState
     }
   }
 
-  Widget buttonSubmitReport() {
+  // ** 4. BOTÓN DE ENVIAR **
+  Widget buttonSubmitReport(bool isReady) {
     final colors = Theme.of(context).colorScheme;
 
     return Padding(
@@ -720,18 +841,18 @@ class _CreateReportUserScreenState
         height: 80,
         child: ElevatedButton.icon(
           style: ElevatedButton.styleFrom(
-            backgroundColor: colors.secondary,
+            backgroundColor: colors.primary,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(100),
             ),
-            textStyle: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            disabledBackgroundColor: _isRecording
+                ? colors.error
+                : colors.primary,
           ),
-          onPressed: _isRecording
+          onPressed: (_isRecording)
               ? null
               : () {
+                  // 1. Ejecutamos la validación de todos los campos.
                   final valid = _formKey.currentState!.validate();
 
                   if (!valid) {
@@ -758,56 +879,74 @@ class _CreateReportUserScreenState
           label: Text(
             'Enviar Reporte',
             style: GoogleFonts.poppins(
-              color: colors.onSurface,
+              color: colors.onPrimary,
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
           ),
-          icon: Icon(Icons.send, color: colors.onSurface, size: 24),
+          icon: Icon(
+            _isRecording ? Icons.cancel : Icons.send,
+            color: colors.onPrimary,
+            size: 24,
+          ),
         ),
       ),
     );
   }
 
   Future<void> _submitReport() async {
-    if (!_formKey.currentState!.validate()) return;
+    final idLocationFromQr = ref.read(idLocationQrScannerProvider);
 
-    try {
-      final idLocationFromQr = ref.read(idLocationQrScannerProvider);
-      final locationToSend = idLocationFromQr.isNotEmpty
-          ? idLocationFromQr
-          : formSelectedLocation;
+    // Prioridad: QR ID > Manual ID
+    final locationToSend = idLocationFromQr.isNotEmpty
+        ? idLocationFromQr
+        : formSelectedLocation;
 
-      bool response = await ref.read(
-        createReportProvider(
-          locationToSend!,
-          formDescription,
-          _recordingPath,
-        ).future,
-      );
-
-      if (response == true && mounted) {
-        ref.read(idLocationQrScannerProvider.notifier).removeIdLocationQrScanner();
-
-        if (mounted) {
-          context.pushReplacement('/user');
-        }
-      } else {
+    // Verificación final de contenido (redundante pero seguro)
+    if (formParaMi == null ||
+        (formDescription == null && _recordingPath == null)) {
+      if (mounted) {
         showMessage(
           context,
-          'No se pudo enviar el reporte. Intente de nuevo.',
+          'Faltan datos de Contenido o Destino.',
           Theme.of(context).colorScheme.error,
         );
       }
-    } catch (e) {
-      showMessage(
-        context,
-        'Error:${e.toString().split(':').last}',
-        Theme.of(context).colorScheme.error,
+      return;
+    }
+
+    try {
+      final response = await ref.read(
+        createReportProvider(
+          locationToSend, // Será null si solo se usó la ubicación opcional
+          formDescription,
+          _recordingPath,
+          formParaMi!,
+          formUbicacionTextOpcional,
+        ).future,
       );
-    } finally {
+
+      if (response && mounted) {
+        ref
+            .read(idLocationQrScannerProvider.notifier)
+            .removeIdLocationQrScanner();
+        context.go('/user');
+      } else {
+        if (mounted) {
+          showMessage(
+            context,
+            'No se pudo enviar el reporte. Intente de nuevo.',
+            Theme.of(context).colorScheme.error,
+          );
+        }
+      }
+    } catch (e) {
       if (mounted) {
-        _checkIfReadyToSend();
+        showMessage(
+          context,
+          'Error:${e.toString().split(':').last}',
+          Theme.of(context).colorScheme.error,
+        );
       }
     }
   }
