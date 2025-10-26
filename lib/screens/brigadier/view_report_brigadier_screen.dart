@@ -104,7 +104,10 @@ class ViewReportBrigadierScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ViewLocation(location: report.ubicacion),
+          ViewLocation(
+            location: report.ubicacion,
+            ubicacionTextOpcional: report.ubicacionTextOpcional,
+          ),
           const SizedBox(height: 20),
           DescriptionReportContainer(
             idReport: report.idReporte,

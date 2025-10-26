@@ -221,7 +221,10 @@ class MainBrigadierScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(12),
             child: Column(
               children: [
-                ViewLocation(location: report.ubicacion),
+                ViewLocation(
+                  location: report.ubicacion,
+                  ubicacionTextOpcional: report.ubicacionTextOpcional,
+                ),
                 const SizedBox(height: 20),
                 DescriptionReportContainer(
                   idReport: report.idReporte,
@@ -352,7 +355,10 @@ class MainBrigadierScreen extends ConsumerWidget {
         children: [
           BigBadgeViewProgress(text: report.estado),
           const SizedBox(height: 20),
-          ViewLocation(location: report.ubicacion),
+          ViewLocation(
+            location: report.ubicacion,
+            ubicacionTextOpcional: report.ubicacionTextOpcional,
+          ),
           const SizedBox(height: 20),
           DescriptionReportContainer(
             idReport: report.idReporte,

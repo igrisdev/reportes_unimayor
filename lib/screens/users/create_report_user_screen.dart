@@ -172,10 +172,8 @@ class _CreateReportUserScreenState
               buttonManualMode(colors),
               if (_isManualMode) const SizedBox(height: 10),
               if (_isManualMode) manualLocationSelector(locationsAsync),
-              const SizedBox(height: 14),
-              sectionHeader(title: 'Ubicación opcional'),
-              const SizedBox(height: 10),
-              ubicacionTextOpcionalField(),
+              if (_isManualMode) const SizedBox(height: 20),
+              if (_isManualMode) ubicacionTextOpcionalField(),
               const SizedBox(height: 14),
               sectionHeader(title: '¿Para quién es el reporte? *'),
               const SizedBox(height: 10),
@@ -211,7 +209,10 @@ class _CreateReportUserScreenState
       // ** VALIDATOR DE UBICACIÓN PRINCIPAL/OPCIONAL **
       validator: (value) {
         final hasQr = idLocationQrScanner.isNotEmpty;
-        final hasManualLocation =
+
+        // Lógica corregida:
+        // Los campos manuales solo son válidos si *ambos* están llenos y el modo manual está activo.
+        final hasManualLocationComplete =
             _isManualMode &&
             formSelectedHeadquarter != null &&
             formSelectedBuilding != null &&
@@ -223,7 +224,8 @@ class _CreateReportUserScreenState
             formUbicacionTextOpcional!.trim().isNotEmpty;
 
         // La ubicación es válida si CUALQUIERA de las tres opciones se cumple.
-        final hasValidLocation = hasQr || hasManualLocation || hasOptionalText;
+        final hasValidLocation =
+            hasQr || hasManualLocationComplete || hasOptionalText;
 
         if (hasValidLocation) {
           return null; // Todo bien
@@ -345,6 +347,8 @@ class _CreateReportUserScreenState
   }
 
   Widget ubicacionTextOpcionalField() {
+    final colors = Theme.of(context).colorScheme;
+
     return TextFormField(
       initialValue: formUbicacionTextOpcional,
       onChanged: (value) {
@@ -352,12 +356,43 @@ class _CreateReportUserScreenState
           formUbicacionTextOpcional = value;
         });
       },
+      textCapitalization: TextCapitalization.sentences,
       style: GoogleFonts.poppins(fontSize: 20),
       decoration: InputDecoration(
-        hintText:
-            "Escribe la ubicación o especifica más la ubicación seleccionada",
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
+        // Estilo de Contorno
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: colors.primary, width: 2),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: colors.onSurface.withOpacity(0.5),
+            width: 1,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: colors.primary, width: 2),
+        ),
+
+        labelText: 'Ultima forma de mandar la ubicación',
+        labelStyle: GoogleFonts.poppins(
+          color: colors.primary,
+          fontWeight: FontWeight.w600,
+          fontSize: 16,
+        ),
+
+        // Icono al inicio
+        // prefixIcon: Icon(Icons.location_on, color: colors.primary),
+
+        // Hint text
+        hintText: "Ejemplo: Bicentenario, Piso 2, Salon 202",
+        hintStyle: GoogleFonts.poppins(fontSize: 15),
       ),
+      // Nota: Este campo es opcional, por lo que su validador debería ser null o solo
+      // manejar validaciones de longitud si es necesario.
+      // El validador de obligatoriedad está en qrFormField para evaluar las 3 opciones.
     );
   }
 
@@ -392,8 +427,8 @@ class _CreateReportUserScreenState
                   height: 60,
                   width: 160,
                 ),
-                fillColor: colors.primary.withOpacity(0.2),
-                selectedColor: colors.primary,
+                fillColor: colors.primary,
+                selectedColor: colors.onPrimary,
                 color: colors.onSurface,
                 children: [
                   SizedBox(
@@ -672,13 +707,20 @@ class _CreateReportUserScreenState
                   });
                   // Forzamos la validación del qrFormField para que se limpie el error
                   // si el usuario está llenando correctamente la ubicación principal.
-                  _formKey.currentState!.validate();
                 },
                 validator: (value) {
-                  // Si estamos en modo manual Y el QR está vacío, este campo es obligatorio.
                   final isQrEmpty = ref
                       .read(idLocationQrScannerProvider)
                       .isEmpty;
+
+                  final hasOptionalText =
+                      formUbicacionTextOpcional != null &&
+                      formUbicacionTextOpcional!.trim().isNotEmpty;
+
+                  if (hasOptionalText) {
+                    return null;
+                  }
+
                   if (_isManualMode &&
                       isQrEmpty &&
                       (value == null || value.isEmpty)) {
@@ -734,12 +776,21 @@ class _CreateReportUserScreenState
                       _locationsList = [];
                     }
                   });
-                  _formKey.currentState!.validate();
                 },
                 validator: (value) {
                   final isQrEmpty = ref
                       .read(idLocationQrScannerProvider)
                       .isEmpty;
+
+                  // NUEVA VERIFICACIÓN: Si el campo opcional tiene texto, no validamos.
+                  final hasOptionalText =
+                      formUbicacionTextOpcional != null &&
+                      formUbicacionTextOpcional!.trim().isNotEmpty;
+
+                  if (hasOptionalText) {
+                    return null;
+                  }
+
                   if (_isManualMode &&
                       isQrEmpty &&
                       (value == null || value.isEmpty)) {
@@ -781,12 +832,21 @@ class _CreateReportUserScreenState
                     .toList(),
                 onChanged: (value) {
                   setState(() => formSelectedLocation = value);
-                  _formKey.currentState!.validate();
                 },
                 validator: (value) {
                   final isQrEmpty = ref
                       .read(idLocationQrScannerProvider)
                       .isEmpty;
+
+                  // NUEVA VERIFICACIÓN: Si el campo opcional tiene texto, no validamos.
+                  final hasOptionalText =
+                      formUbicacionTextOpcional != null &&
+                      formUbicacionTextOpcional!.trim().isNotEmpty;
+
+                  if (hasOptionalText) {
+                    return null;
+                  }
+
                   if (_isManualMode &&
                       isQrEmpty &&
                       (value == null || value.isEmpty)) {
@@ -804,6 +864,8 @@ class _CreateReportUserScreenState
   // ------------------------------------------------------------------
 
   Future<void> _toggleRecording() async {
+    FocusScope.of(context).unfocus();
+
     if (_isRecording) {
       final path = await _audioRecorder.stop();
       setState(() {

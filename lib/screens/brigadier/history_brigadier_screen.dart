@@ -109,7 +109,10 @@ class HistoryBrigadierScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(12),
             child: Column(
               children: [
-                ViewLocation(location: report.ubicacion),
+                ViewLocation(
+                  location: report.ubicacion,
+                  ubicacionTextOpcional: report.ubicacionTextOpcional,
+                ),
                 const SizedBox(height: 10),
                 TextNoteBrigadier(
                   title: 'Nota Brigadista',

@@ -44,7 +44,7 @@ class TextNoReports extends ConsumerWidget {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  "Sin Reportes",
+                  "Sin Reporte",
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.bold,
                     fontSize: 28,
