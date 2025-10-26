@@ -5,10 +5,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/widgets/brigadier/app_bar_brigadier.dart';
+import 'package:reportes_unimayor/widgets/brigadier/person_details_display.dart';
 import 'package:reportes_unimayor/widgets/general/confirm_dialog.dart';
 import 'package:reportes_unimayor/widgets/general/description_report_container.dart';
 import 'package:reportes_unimayor/widgets/general/date_and_hour_container.dart';
-import 'package:reportes_unimayor/widgets/general/info_user.dart';
+import 'package:reportes_unimayor/widgets/general/text_health_assistance.dart';
 import 'package:reportes_unimayor/widgets/general/view_location.dart';
 
 class ViewReportProcessBrigadierScreen extends ConsumerWidget {
@@ -126,6 +127,8 @@ class ViewReportProcessBrigadierScreen extends ConsumerWidget {
             ubicacionTextOpcional: report.ubicacionTextOpcional,
           ),
           const SizedBox(height: 20),
+          TextHealthAssistance(isForMy: report.paraMi),
+          const SizedBox(height: 10),
           DescriptionReportContainer(
             idReport: report.idReporte,
             description: report.descripcion == '' ? '' : report.descripcion,
@@ -138,10 +141,11 @@ class ViewReportProcessBrigadierScreen extends ConsumerWidget {
             hour: report.horaCreacion,
           ),
           const SizedBox(height: 20),
-          InfoUser(
-            name: report.usuario.nombre ?? "",
-            email: report.usuario.correo,
-          ),
+          // InfoUser(
+          //   name: report.usuario.nombre ?? "",
+          //   email: report.usuario.correo,
+          // ),
+          PersonDetailsDisplay(paraMi: report.paraMi, usuario: report.usuario),
         ],
       ),
     );

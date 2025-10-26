@@ -18,6 +18,7 @@ class ReportsModel {
   String descripcion;
   String detallesFinalizacion;
   String ubicacionTextOpcional;
+  String telefonoReportado;
   String rutaAudio;
   String estado;
   bool paraMi;
@@ -31,6 +32,7 @@ class ReportsModel {
     required this.descripcion,
     required this.detallesFinalizacion,
     required this.ubicacionTextOpcional,
+    required this.telefonoReportado,
     required this.rutaAudio,
     required this.estado,
     required this.paraMi,
@@ -45,6 +47,7 @@ class ReportsModel {
     String? descripcion,
     String? detallesFinalizacion,
     String? ubicacionTextOpcional,
+    String? telefonoReportado,
     String? rutaAudio,
     String? estado,
     bool? paraMi,
@@ -57,6 +60,7 @@ class ReportsModel {
     descripcion: descripcion ?? this.descripcion,
     detallesFinalizacion: detallesFinalizacion ?? this.detallesFinalizacion,
     ubicacionTextOpcional: ubicacionTextOpcional ?? this.ubicacionTextOpcional,
+    telefonoReportado: telefonoReportado ?? this.telefonoReportado,
     rutaAudio: rutaAudio ?? this.rutaAudio,
     estado: estado ?? this.estado,
     paraMi: paraMi ?? this.paraMi,
@@ -81,6 +85,7 @@ class ReportsModel {
     descripcion: json["descripcion"] ?? "",
     detallesFinalizacion: json["detallesFinalizacion"] ?? "",
     ubicacionTextOpcional: json["ubicacionTextOpcional"] ?? "",
+    telefonoReportado: json["telefonoReportado"] ?? "",
     rutaAudio: json["rutaAudio"] ?? "",
     estado: json["estado"],
     paraMi: json["paraMi"],
@@ -95,6 +100,7 @@ class ReportsModel {
     "descripcion": descripcion,
     "detallesFinalizacion": detallesFinalizacion,
     "ubicacionTextOpcional": ubicacionTextOpcional,
+    "telefonoReportado": telefonoReportado,
     "rutaAudio": rutaAudio,
     "estado": estado,
     "paraMi": paraMi,

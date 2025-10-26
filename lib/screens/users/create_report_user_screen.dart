@@ -992,7 +992,7 @@ class _CreateReportUserScreenState
         ref
             .read(idLocationQrScannerProvider.notifier)
             .removeIdLocationQrScanner();
-        context.go('/user');
+        context.pop();
       } else {
         if (mounted) {
           showMessage(

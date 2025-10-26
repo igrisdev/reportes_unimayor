@@ -8,6 +8,7 @@ import 'package:reportes_unimayor/widgets/brigadier/app_bar_brigadier.dart';
 import 'package:reportes_unimayor/widgets/general/description_report_container.dart';
 import 'package:reportes_unimayor/widgets/general/date_and_hour_container.dart';
 import 'package:reportes_unimayor/widgets/general/info_user.dart';
+import 'package:reportes_unimayor/widgets/general/text_health_assistance.dart';
 import 'package:reportes_unimayor/widgets/general/text_note_brigadier.dart';
 import 'package:reportes_unimayor/widgets/general/view_location.dart';
 
@@ -109,6 +110,8 @@ class ViewReportBrigadierScreen extends ConsumerWidget {
             ubicacionTextOpcional: report.ubicacionTextOpcional,
           ),
           const SizedBox(height: 20),
+          TextHealthAssistance(isForMy: report.paraMi),
+          const SizedBox(height: 10),
           DescriptionReportContainer(
             idReport: report.idReporte,
             description: report.descripcion == '' ? '' : report.descripcion,

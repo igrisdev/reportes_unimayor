@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
+import 'package:reportes_unimayor/widgets/general/text_health_assistance.dart';
 import 'package:reportes_unimayor/widgets/users/app_bar_user.dart';
 import 'package:reportes_unimayor/widgets/general/big_badge_view_progress.dart';
 import 'package:reportes_unimayor/widgets/general/date_and_hour_container.dart';
@@ -107,6 +108,8 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
                 ubicacionTextOpcional: report.ubicacionTextOpcional,
               ),
               const SizedBox(height: 20),
+              TextHealthAssistance(isForMy: report.paraMi),
+              const SizedBox(height: 10),
               DescriptionReportContainer(
                 idReport: report.idReporte,
                 description: report.descripcion == '' ? '' : report.descripcion,
