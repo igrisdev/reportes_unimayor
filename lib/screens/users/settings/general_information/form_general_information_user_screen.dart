@@ -198,53 +198,56 @@ class _FormGeneralInformationUserScreenState
                 strokeWidth: 3,
               ),
             )
-          : Form(
-              key: _formKey,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 10,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Información General',
-                      style: GoogleFonts.poppins(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                        color: colors.primary,
+          : GestureDetector(
+              onTap: () => FocusScope.of(context).unfocus(),
+              child: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 10,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Información General',
+                        style: GoogleFonts.poppins(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
+                          color: colors.primary,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
-                    _CampoTexto(
-                      label: 'Número telefónico',
-                      controller: _telefonoController,
-                      icono: Icons.phone_android,
-                      keyboardType: TextInputType.phone,
-                    ),
-                    const SizedBox(height: 16),
+                      _CampoTexto(
+                        label: 'Número telefónico',
+                        controller: _telefonoController,
+                        icono: Icons.phone_android,
+                        keyboardType: TextInputType.phone,
+                      ),
+                      const SizedBox(height: 16),
 
-                    _CampoTexto(
-                      label: 'Cédula',
-                      controller: _cedulaController,
-                      icono: Icons.badge,
-                      keyboardType: TextInputType.number,
-                    ),
-                    const SizedBox(height: 16),
+                      _CampoTexto(
+                        label: 'Cédula',
+                        controller: _cedulaController,
+                        icono: Icons.badge,
+                        keyboardType: TextInputType.number,
+                      ),
+                      const SizedBox(height: 16),
 
-                    _CampoTexto(
-                      label: 'Código institucional',
-                      controller: _codigoInstitucionalController,
-                      icono: Icons.account_balance,
-                      keyboardType: TextInputType.number,
-                    ),
-                    const SizedBox(height: 20),
+                      _CampoTexto(
+                        label: 'Código institucional',
+                        controller: _codigoInstitucionalController,
+                        icono: Icons.account_balance,
+                        keyboardType: TextInputType.number,
+                      ),
+                      const SizedBox(height: 20),
 
-                    _buildCheckbox(colors),
-                    const SizedBox(height: 90),
-                  ],
+                      _buildCheckbox(colors),
+                      const SizedBox(height: 90),
+                    ],
+                  ),
                 ),
               ),
             ),

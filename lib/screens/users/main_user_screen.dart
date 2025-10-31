@@ -135,6 +135,39 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
+        const SizedBox(height: 50),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            children: [
+              Icon(
+                Icons.inbox_outlined,
+                size: 80,
+                color: colors.onSurfaceVariant.withValues(alpha: 0.5),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                "SIN REPORTE EN PROCESO",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.poppins(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                  color: colors.onSurface,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                "Cuando realices un reporte, lo verás aquí.",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  color: colors.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 60),
         Padding(
           padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
           child: Text(
@@ -200,38 +233,6 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
         ),
 
         const SizedBox(height: 30),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            children: [
-              Icon(
-                Icons.inbox_outlined,
-                size: 80,
-                color: colors.onSurfaceVariant.withValues(alpha: 0.5),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                "SIN REPORTE EN PROCESO",
-                textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                  color: colors.onSurface,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                "Cuando realices un reporte, lo verás aquí.",
-                textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(
-                  fontSize: 18,
-                  color: colors.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 30),
       ],
     );
   }
@@ -270,8 +271,6 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
     BuildContext context,
     ColorScheme colors,
   ) {
-    final router = GoRouter.of(context);
-
     return BottomAppBar(
       color: Colors.transparent,
       elevation: 0,

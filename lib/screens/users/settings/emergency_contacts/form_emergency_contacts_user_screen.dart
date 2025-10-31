@@ -320,75 +320,78 @@ class _FormEmergencyContactsUserScreenState
           ),
         ),
       ),
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _sectionHeader(
-                title: 'Información Básica *',
-                color: colors.primary,
-              ),
-              _buildTextFormField(
-                controller: _nombreController,
-                label: 'Nombre Completo',
-                icon: Icons.person,
-                keyboardType: TextInputType.name,
-                onSave: (value) => newContact.nombre = value!,
-                validator: (value) =>
-                    value!.isEmpty ? 'El nombre es obligatorio' : null,
-              ),
-              const SizedBox(height: 16),
-              _buildTextFormField(
-                controller: _relacionController,
-                label: 'Relación (Ej: Padre, Amigo, etc.)',
-                icon: Icons.family_restroom,
-                keyboardType: TextInputType.text,
-                onSave: (value) => newContact.relacion = value!,
-                validator: (value) =>
-                    value!.isEmpty ? 'La relación es obligatoria' : null,
-              ),
-              const SizedBox(height: 16),
-              _sectionHeader(
-                title: 'Información de Contacto *',
-                color: colors.primary,
-              ),
-              _buildTextFormField(
-                controller: _telefonoController,
-                label: 'Teléfono Principal',
-                icon: Icons.phone_android,
-                keyboardType: TextInputType.phone,
-                onSave: (value) => newContact.telefono = value!,
-                validator: (value) => value!.isEmpty
-                    ? 'El teléfono principal es obligatorio'
-                    : null,
-              ),
-              const SizedBox(height: 16),
-              _buildTextFormField(
-                controller: _telefonoAlternativoController,
-                label: 'Teléfono Alternativo (Opcional)',
-                icon: Icons.phone_in_talk,
-                keyboardType: TextInputType.phone,
-                onSave: (value) => newContact.telefonoAlternativo = value,
-                validator: (value) => null,
-              ),
-              const SizedBox(height: 16),
-              _buildTextFormField(
-                controller: _emailController,
-                label: 'Correo Electrónico (Opcional)',
-                icon: Icons.email,
-                keyboardType: TextInputType.emailAddress,
-                onSave: (value) => newContact.email = value,
-                validator: (value) => null,
-              ),
-              const SizedBox(height: 24),
-              _buildPrincipalCheckbox(colors),
-              const SizedBox(height: 8),
-              _buildTerminosCheckbox(colors),
-              const SizedBox(height: 32),
-            ],
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _sectionHeader(
+                  title: 'Información Básica *',
+                  color: colors.primary,
+                ),
+                _buildTextFormField(
+                  controller: _nombreController,
+                  label: 'Nombre Completo',
+                  icon: Icons.person,
+                  keyboardType: TextInputType.name,
+                  onSave: (value) => newContact.nombre = value!,
+                  validator: (value) =>
+                      value!.isEmpty ? 'El nombre es obligatorio' : null,
+                ),
+                const SizedBox(height: 16),
+                _buildTextFormField(
+                  controller: _relacionController,
+                  label: 'Relación (Ej: Padre, Amigo, etc.)',
+                  icon: Icons.family_restroom,
+                  keyboardType: TextInputType.text,
+                  onSave: (value) => newContact.relacion = value!,
+                  validator: (value) =>
+                      value!.isEmpty ? 'La relación es obligatoria' : null,
+                ),
+                const SizedBox(height: 16),
+                _sectionHeader(
+                  title: 'Información de Contacto *',
+                  color: colors.primary,
+                ),
+                _buildTextFormField(
+                  controller: _telefonoController,
+                  label: 'Teléfono Principal',
+                  icon: Icons.phone_android,
+                  keyboardType: TextInputType.phone,
+                  onSave: (value) => newContact.telefono = value!,
+                  validator: (value) => value!.isEmpty
+                      ? 'El teléfono principal es obligatorio'
+                      : null,
+                ),
+                const SizedBox(height: 16),
+                _buildTextFormField(
+                  controller: _telefonoAlternativoController,
+                  label: 'Teléfono Alternativo (Opcional)',
+                  icon: Icons.phone_in_talk,
+                  keyboardType: TextInputType.phone,
+                  onSave: (value) => newContact.telefonoAlternativo = value,
+                  validator: (value) => null,
+                ),
+                const SizedBox(height: 16),
+                _buildTextFormField(
+                  controller: _emailController,
+                  label: 'Correo Electrónico (Opcional)',
+                  icon: Icons.email,
+                  keyboardType: TextInputType.emailAddress,
+                  onSave: (value) => newContact.email = value,
+                  validator: (value) => null,
+                ),
+                const SizedBox(height: 24),
+                _buildPrincipalCheckbox(colors),
+                const SizedBox(height: 8),
+                _buildTerminosCheckbox(colors),
+                const SizedBox(height: 32),
+              ],
+            ),
           ),
         ),
       ),

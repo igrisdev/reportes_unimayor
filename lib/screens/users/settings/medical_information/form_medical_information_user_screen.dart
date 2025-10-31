@@ -374,62 +374,65 @@ class _FormMedicalInformationUserScreenState
           ),
         ),
       ),
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 8),
-              Text(
-                'Información Básica *',
-                style: GoogleFonts.poppins(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  color: colors.primary,
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _nombreController,
-                style: GoogleFonts.poppins(fontSize: 18),
-                textCapitalization: TextCapitalization.sentences,
-                decoration: InputDecoration(
-                  labelText: 'Nombre de la Condición',
-                  prefixIcon: const Icon(Icons.medical_services),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 8),
+                Text(
+                  'Información Básica *',
+                  style: GoogleFonts.poppins(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: colors.primary,
                   ),
                 ),
-                validator: (v) => v == null || v.trim().isEmpty
-                    ? 'El nombre es obligatorio'
-                    : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _descripcionController,
-                maxLines: 4,
-                textCapitalization: TextCapitalization.sentences,
-                keyboardType: TextInputType.multiline,
-                style: GoogleFonts.poppins(fontSize: 16),
-                decoration: InputDecoration(
-                  labelText: 'Descripción',
-                  prefixIcon: const Icon(Icons.description),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _nombreController,
+                  style: GoogleFonts.poppins(fontSize: 18),
+                  textCapitalization: TextCapitalization.sentences,
+                  decoration: InputDecoration(
+                    labelText: 'Nombre de la Condición',
+                    prefixIcon: const Icon(Icons.medical_services),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
+                  validator: (v) => v == null || v.trim().isEmpty
+                      ? 'El nombre es obligatorio'
+                      : null,
                 ),
-                validator: (v) => v == null || v.trim().isEmpty
-                    ? 'La descripción es obligatoria'
-                    : null,
-              ),
-              const SizedBox(height: 16),
-              _buildFechaDiagnostico(colors),
-              const SizedBox(height: 16),
-              _buildTerminosCheckbox(colors),
-              const SizedBox(height: 32),
-            ],
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _descripcionController,
+                  maxLines: 4,
+                  textCapitalization: TextCapitalization.sentences,
+                  keyboardType: TextInputType.multiline,
+                  style: GoogleFonts.poppins(fontSize: 16),
+                  decoration: InputDecoration(
+                    labelText: 'Descripción',
+                    prefixIcon: const Icon(Icons.description),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  validator: (v) => v == null || v.trim().isEmpty
+                      ? 'La descripción es obligatoria'
+                      : null,
+                ),
+                const SizedBox(height: 16),
+                _buildFechaDiagnostico(colors),
+                const SizedBox(height: 16),
+                _buildTerminosCheckbox(colors),
+                const SizedBox(height: 32),
+              ],
+            ),
           ),
         ),
       ),
