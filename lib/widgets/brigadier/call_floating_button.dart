@@ -31,7 +31,6 @@ class CallFloatingButton extends StatelessWidget {
       if (await canLaunchUrl(phoneUri)) {
         await launchUrl(phoneUri);
       } else {
-        // En caso de que el sistema operativo no pueda manejar la URI
         showMessage(
           context,
           'No se pudo abrir la aplicación de teléfono para llamar a $phoneNumber.',
@@ -49,20 +48,21 @@ class CallFloatingButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 1. Visibilidad Condicional: Solo aparece si el número no es nulo ni está vacío
     if (phoneNumber == null || phoneNumber!.isEmpty) {
       return const SizedBox.shrink();
     }
 
     return Padding(
-      padding: const EdgeInsets.only(
-        bottom: 100.0,
-      ), // Espacio por encima del FAB de "Consultar"
+      padding: const EdgeInsets.only(bottom: 5.0),
       child: FloatingActionButton.extended(
         onPressed: () => _makeCall(context),
-        backgroundColor: primaryColor, // Usar color primario para destacarlo
-        elevation: 4,
+        backgroundColor: primaryColor,
+        heroTag: 'llamarButtonTag',
+        elevation: 0,
         highlightElevation: 0,
+        focusElevation: 0,
+        hoverElevation: 0,
+        disabledElevation: 0,
         icon: Icon(Icons.phone, color: onPrimaryColor, size: 24),
         label: Text(
           "Llamar",

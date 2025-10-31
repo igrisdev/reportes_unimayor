@@ -11,9 +11,9 @@ import 'package:reportes_unimayor/widgets/general/date_and_hour_container.dart';
 import 'package:reportes_unimayor/widgets/general/description_report_container.dart';
 import 'package:reportes_unimayor/widgets/users/drawer_user.dart';
 import 'package:reportes_unimayor/widgets/general/confirm_dialog.dart';
-import 'package:reportes_unimayor/widgets/general/text_no_reports.dart';
 import 'package:reportes_unimayor/widgets/general/text_note.dart';
 import 'package:reportes_unimayor/widgets/general/view_location.dart';
+import 'package:reportes_unimayor/utils/list_menu_user.dart';
 
 class MainUserScreen extends ConsumerStatefulWidget {
   const MainUserScreen({super.key});
@@ -83,7 +83,7 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
     WidgetRef ref,
   ) {
     if (reports.isEmpty) {
-      return const TextNoReports();
+      return _buildEmptyStateBody(context);
     }
 
     return ListView.builder(
@@ -126,6 +126,113 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildEmptyStateBody(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+          child: Text(
+            "Accesos Rápidos",
+            style: GoogleFonts.poppins(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: colors.onSurface,
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 12),
+
+        Column(
+          children: listMenuItemsUser.map((item) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 4.0),
+              child: Card(
+                elevation: 0,
+                color: colors.surface,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(
+                    color: colors.outlineVariant.withValues(alpha: 0.5),
+                  ),
+                ),
+                child: InkWell(
+                  onTap: () => context.push(item.route),
+                  borderRadius: BorderRadius.circular(12),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 16.0,
+                      horizontal: 16.0,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(item.icon, size: 28, color: colors.primary),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Text(
+                            item.title,
+                            textAlign: TextAlign.left,
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 18,
+                              color: colors.onSurface,
+                            ),
+                          ),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          size: 16,
+                          color: colors.outline,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+
+        const SizedBox(height: 30),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            children: [
+              Icon(
+                Icons.inbox_outlined,
+                size: 80,
+                color: colors.onSurfaceVariant.withValues(alpha: 0.5),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                "SIN REPORTE EN PROCESO",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.poppins(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                  color: colors.onSurface,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                "Cuando realices un reporte, lo verás aquí.",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  color: colors.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 30),
+      ],
     );
   }
 
@@ -252,7 +359,6 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
                 },
               );
             },
-
             child: Center(
               child: Row(
                 mainAxisSize: MainAxisSize.min,

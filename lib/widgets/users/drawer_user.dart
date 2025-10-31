@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/services/api_auth_with_google.dart';
 import 'package:reportes_unimayor/services/api_token_device_service.dart';
 import 'package:reportes_unimayor/utils/local_storage.dart';
+import 'package:reportes_unimayor/utils/list_menu_user.dart';
 
 class DrawerUser extends ConsumerStatefulWidget {
   final BuildContext context;
@@ -54,6 +55,12 @@ class _DrawerUserState extends ConsumerState<DrawerUser> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
+    final listTileStyle = GoogleFonts.poppins(
+      fontWeight: FontWeight.w500,
+      fontSize: 18,
+      color: textTheme.bodyLarge?.color ?? colorScheme.onSurface,
+    );
+
     return Stack(
       children: [
         Drawer(
@@ -71,67 +78,17 @@ class _DrawerUserState extends ConsumerState<DrawerUser> {
 
               ListTile(
                 leading: Icon(Icons.home, color: colorScheme.primary),
-                title: Text(
-                  'Inicio',
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 18,
-                    color: textTheme.bodyLarge?.color ?? colorScheme.onSurface,
-                  ),
-                ),
+                title: Text('Inicio', style: listTileStyle),
                 onTap: () => router.push('/user'),
               ),
 
-              ListTile(
-                leading: Icon(Icons.history, color: colorScheme.primary),
-                title: Text(
-                  'Historial',
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 18,
-                    color: textTheme.bodyLarge?.color ?? colorScheme.onSurface,
-                  ),
-                ),
-                onTap: () => router.push('/user/history'),
-              ),
-
-              ListTile(
-                leading: Icon(Icons.person, color: colorScheme.primary),
-                title: Text(
-                  'Datos Generales',
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 18,
-                    color: textTheme.bodyLarge?.color ?? colorScheme.onSurface,
-                  ),
-                ),
-                onTap: () => router.push('/user/settings/general_information'),
-              ),
-              ListTile(
-                leading: Icon(
-                  Icons.medical_information,
-                  color: colorScheme.primary,
-                ),
-                title: Text(
-                  'Información Medica',
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 18,
-                  ),
-                ),
-                onTap: () => router.push('/user/settings/medical_information'),
-              ),
-              ListTile(
-                leading: Icon(Icons.phone, color: colorScheme.primary),
-                title: Text(
-                  'Contactos de emergencia',
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 18,
-                  ),
-                ),
-                onTap: () => router.push('/user/settings/emergency_contacts'),
-              ),
+              ...listMenuItemsUser.map((item) {
+                return ListTile(
+                  leading: Icon(item.icon, color: colorScheme.primary),
+                  title: Text(item.title, style: listTileStyle),
+                  onTap: () => router.push(item.route),
+                );
+              }).toList(),
 
               const Spacer(),
 
@@ -153,16 +110,11 @@ class _DrawerUserState extends ConsumerState<DrawerUser> {
           ),
         ),
 
-        // Overlay loader
         if (_isLoading)
           Container(
-            color: colorScheme.scrim.withValues(
-              alpha: 0.5,
-            ), // Overlay adaptado al tema
+            color: colorScheme.scrim.withValues(alpha: 0.5),
             alignment: Alignment.center,
-            child: CircularProgressIndicator(
-              color: colorScheme.onPrimary, // color dinámico del loader
-            ),
+            child: CircularProgressIndicator(color: colorScheme.onPrimary),
           ),
       ],
     );

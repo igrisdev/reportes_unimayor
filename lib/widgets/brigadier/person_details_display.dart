@@ -44,8 +44,6 @@ class _PersonDetailsDisplayState extends ConsumerState<PersonDetailsDisplay> {
     try {
       final email = widget.usuario.correo.trim();
 
-      // NOTA: Asumo que ApiReportsService().searchPerson(email) devuelve PersonModel
-      // si es necesario adaptarlo al nuevo modelo, avísame.
       final person = await ApiReportsService().searchPerson(email);
 
       if (!mounted) return;
@@ -95,13 +93,20 @@ class _PersonDetailsDisplayState extends ConsumerState<PersonDetailsDisplay> {
     }
 
     if (_person == null) {
-      // Muestra un mensaje si la búsqueda fue automática pero no encontró datos
-      return const Center(
-        child: Text(
-          'No se pudo obtener la información detallada del paciente.',
-          textAlign: TextAlign.center,
-        ),
-      );
+      // Si la búsqueda automática falló o no encontró datos, volvemos a la vista simple
+      return _buildInfoUser(context);
+    }
+
+    // LÓGICA DE FALLBACK AÑADIDA:
+    final hasContacts = _person!.contactos.any((c) => c.mensaje == null);
+    final hasConditions = _person!.condicionesMedicas.any(
+      (cm) => cm.mensaje == null,
+    );
+
+    // Si la persona no tiene contactos ni condiciones médicas,
+    // mostramos la vista simple de 'Informante'.
+    if (!hasContacts && !hasConditions) {
+      return _buildInfoUser(context);
     }
 
     // Muestra los detalles de la persona
@@ -166,6 +171,13 @@ class _PersonDetailsDisplayState extends ConsumerState<PersonDetailsDisplay> {
   Widget _buildPersonDetails(BuildContext context) {
     final theme = Theme.of(context);
 
+    // Los mensajes en tu modelo indican que si hay mensaje, no hay lista de detalles.
+    // Usaremos el mismo check para la visibilidad de la sección.
+    final showContacts = _person!.contactos.any((c) => c.mensaje == null);
+    final showConditions = _person!.condicionesMedicas.any(
+      (cm) => cm.mensaje == null,
+    );
+
     // **********************************************
     // Este contenido es el mismo que la sección de resultados en SearchPerson
     // **********************************************
@@ -182,7 +194,7 @@ class _PersonDetailsDisplayState extends ConsumerState<PersonDetailsDisplay> {
           ),
         ),
         const SizedBox(height: 15),
-        // Información del usuario
+        // Información del usuario (siempre se muestra si llegamos aquí)
         _buildDetailSection(
           context,
           Icons.person,
@@ -197,58 +209,64 @@ class _PersonDetailsDisplayState extends ConsumerState<PersonDetailsDisplay> {
         const Divider(height: 30),
 
         // Contactos de emergencia
-        _buildDetailSection(
-          context,
-          Icons.contact_phone,
-          "Contactos de emergencia",
-          theme.colorScheme.onSecondary,
-          _person!.contactos.isNotEmpty &&
-                  _person!.contactos.first.mensaje != null
-              ? [
-                  _buildMessageListTile(
-                    context,
-                    _person!.contactos.first.mensaje!,
-                  ),
-                ]
-              : _person!.contactos
-                    .map(
-                      (c) => ListTile(
-                        leading: const Icon(Icons.person),
-                        title: Text(c.nombre ?? "Sin nombre"),
-                        subtitle: Text(
-                          "${c.relacion ?? "Sin relación"} - ${c.telefono ?? "N/A"}",
+        if (showContacts) // <-- SOLO MUESTRA SI HAY DATOS NO MENSAJE
+        ...[
+          _buildDetailSection(
+            context,
+            Icons.contact_phone,
+            "Contactos de emergencia",
+            theme.colorScheme.onSecondary,
+            _person!.contactos.isNotEmpty &&
+                    _person!.contactos.first.mensaje != null
+                ? [
+                    _buildMessageListTile(
+                      context,
+                      _person!.contactos.first.mensaje!,
+                    ),
+                  ]
+                : _person!.contactos
+                      .map(
+                        (c) => ListTile(
+                          leading: const Icon(Icons.person),
+                          title: Text(c.nombre ?? "Sin nombre"),
+                          subtitle: Text(
+                            "${c.relacion ?? "Sin relación"} - ${c.telefono ?? "N/A"}",
+                          ),
                         ),
-                      ),
-                    )
-                    .toList(),
-        ),
-
-        const Divider(height: 30),
+                      )
+                      .toList(),
+          ),
+          const Divider(height: 30),
+        ],
 
         // Condiciones médicas
-        _buildDetailSection(
-          context,
-          Icons.local_hospital,
-          "Condiciones médicas",
-          theme.colorScheme.tertiary,
-          _person!.condicionesMedicas.isNotEmpty &&
-                  _person!.condicionesMedicas.first.mensaje != null
-              ? [
-                  _buildMessageListTile(
-                    context,
-                    _person!.condicionesMedicas.first.mensaje!,
-                  ),
-                ]
-              : _person!.condicionesMedicas
-                    .map(
-                      (cm) => ListTile(
-                        leading: const Icon(Icons.health_and_safety),
-                        title: Text(cm.nombre ?? ""),
-                        subtitle: Text(cm.descripcion ?? ""),
-                      ),
-                    )
-                    .toList(),
-        ),
+        if (showConditions) // <-- SOLO MUESTRA SI HAY DATOS NO MENSAJE
+        ...[
+          _buildDetailSection(
+            context,
+            Icons.local_hospital,
+            "Condiciones médicas",
+            theme.colorScheme.tertiary,
+            _person!.condicionesMedicas.isNotEmpty &&
+                    _person!.condicionesMedicas.first.mensaje != null
+                ? [
+                    _buildMessageListTile(
+                      context,
+                      _person!.condicionesMedicas.first.mensaje!,
+                    ),
+                  ]
+                : _person!.condicionesMedicas
+                      .map(
+                        (cm) => ListTile(
+                          leading: const Icon(Icons.health_and_safety),
+                          title: Text(cm.nombre ?? ""),
+                          subtitle: Text(cm.descripcion ?? ""),
+                        ),
+                      )
+                      .toList(),
+          ),
+          // No se agrega un Divider al final de la última sección
+        ],
       ],
     );
   }

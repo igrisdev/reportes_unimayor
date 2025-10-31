@@ -50,13 +50,12 @@ class _DrawerBrigadierState extends ConsumerState<DrawerBrigadier> {
 
   @override
   Widget build(BuildContext context) {
-    final router = GoRouter.of(context);
     final colors = Theme.of(context).colorScheme;
 
     return Stack(
       children: [
         Drawer(
-          backgroundColor: colors.surface, // 👈 Fondo adaptado al tema
+          backgroundColor: colors.surface,
           child: Column(
             children: [
               DrawerHeader(
@@ -75,26 +74,26 @@ class _DrawerBrigadierState extends ConsumerState<DrawerBrigadier> {
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w500,
                     fontSize: 18,
-                    color: colors.onSurface, // 👈 Texto principal
+                    color: colors.onSurface,
                   ),
                 ),
                 onTap: () {
-                  router.push('/brigadier');
+                  context.push('/brigadier');
                 },
               ),
 
               ListTile(
                 leading: Icon(Icons.history, color: colors.primary),
                 title: Text(
-                  'Historial',
+                  'Historial Finalizados',
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w500,
                     fontSize: 18,
-                    color: colors.onSurface, // 👈 Texto secundario
+                    color: colors.onSurface,
                   ),
                 ),
                 onTap: () {
-                  router.push('/brigadier/history');
+                  context.push('/brigadier/history');
                 },
               ),
 
@@ -107,7 +106,7 @@ class _DrawerBrigadierState extends ConsumerState<DrawerBrigadier> {
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w500,
                     fontSize: 18,
-                    color: colors.error, // 👈 Color de error/danger
+                    color: colors.error,
                   ),
                 ),
                 onTap: () => _logout(context),
@@ -118,7 +117,6 @@ class _DrawerBrigadierState extends ConsumerState<DrawerBrigadier> {
           ),
         ),
 
-        // Overlay loader
         if (_isLoading)
           Container(
             color: Colors.black.withValues(alpha: 0.5),

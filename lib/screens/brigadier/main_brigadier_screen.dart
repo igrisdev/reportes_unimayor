@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/widgets/brigadier/app_bar_brigadier.dart';
+import 'package:reportes_unimayor/widgets/brigadier/call_floating_button.dart';
 import 'package:reportes_unimayor/widgets/brigadier/person_details_display.dart';
 import 'package:reportes_unimayor/widgets/general/finalize_report_dialog.dart';
 import 'package:reportes_unimayor/widgets/general/confirm_dialog.dart';
@@ -26,6 +27,14 @@ class MainBrigadierScreen extends ConsumerWidget {
 
     final idReport = reportsAsync.whenData(
       (reports) => reports.first.idReporte,
+    );
+
+    final activeReport = reportsAsync.maybeWhen(
+      data: (reports) =>
+          reports.isNotEmpty && reports.first.estado == 'En proceso'
+          ? reports.first
+          : null,
+      orElse: () => null,
     );
 
     return Scaffold(
@@ -81,35 +90,54 @@ class MainBrigadierScreen extends ConsumerWidget {
         orElse: () => null,
       ),
 
-      floatingActionButton: reportsAsync.maybeWhen(
-        data: (reports) =>
-            reports.isNotEmpty && reports.first.estado == 'En proceso'
-            ? FloatingActionButton.extended(
-                onPressed: () {
-                  GoRouter.of(context).push('/brigadier/search-person');
-                },
-                backgroundColor: colorScheme.secondary,
-                elevation: 0,
-                highlightElevation: 0,
-                focusElevation: 0,
-                hoverElevation: 0,
-                disabledElevation: 0,
-                icon: Icon(
-                  Icons.search,
-                  color: colorScheme.onSecondary,
-                  size: 30,
-                ),
-                label: Text(
-                  "Consultar",
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: colorScheme.onSecondary,
+      floatingActionButton: AnimatedSwitcher(
+        // Duración cero para anular la animación por defecto
+        duration: Duration.zero,
+        child: activeReport != null
+            ? Column(
+                // Se usa una Key para que AnimatedSwitcher pueda diferenciar entre los estados
+                key: const ValueKey<bool>(true),
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  CallFloatingButton(
+                    phoneNumber: activeReport.telefonoReportado,
+                    primaryColor: colorScheme.primary,
+                    onPrimaryColor: colorScheme.onPrimary,
                   ),
-                ),
+                  // Pequeña separación vertical entre botones
+
+                  FloatingActionButton.extended(
+                    heroTag: 'consultarButtonTag',
+                    onPressed: () {
+                      GoRouter.of(context).push('/brigadier/search-person');
+                    },
+                    backgroundColor: colorScheme.secondary,
+                    elevation: 0,
+                    highlightElevation: 0,
+                    focusElevation: 0,
+                    hoverElevation: 0,
+                    disabledElevation: 0,
+                    icon: Icon(
+                      Icons.search,
+                      color: colorScheme.onSecondary,
+                      size: 30,
+                    ),
+                    label: Text(
+                      "Consultar",
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.onSecondary,
+                      ),
+                    ),
+                  ),
+                ],
               )
-            : null,
-        orElse: () => null,
+            : const SizedBox.shrink(
+                // Se usa una Key para que AnimatedSwitcher pueda diferenciar entre los estados
+                key: ValueKey<bool>(false),
+              ),
       ),
     );
   }

@@ -4,9 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
-import 'package:reportes_unimayor/widgets/brigadier/app_bar_brigadier.dart';
 import 'package:reportes_unimayor/widgets/general/date_and_hour_container.dart';
-import 'package:reportes_unimayor/widgets/brigadier/drawer_brigadier.dart';
 import 'package:reportes_unimayor/widgets/general/text_note_brigadier.dart';
 import 'package:reportes_unimayor/widgets/general/text_no_reports.dart';
 import 'package:reportes_unimayor/widgets/general/view_location.dart';
@@ -23,34 +21,21 @@ class HistoryBrigadierScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: colors.surface,
-      appBar: AppBarBrigadier(),
-      drawer: DrawerBrigadier(context: context),
+      appBar: AppBar(
+        title: Text(
+          'Historial Finalizados',
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w600,
+            fontSize: 24,
+            color: colors.onSurface,
+          ),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            reportsAsync.maybeWhen(
-              data: (reports) =>
-                  reports.isNotEmpty &&
-                      reports.first.estado != 'En proceso' &&
-                      reports.first.estado != 'Pendiente'
-                  ? Column(
-                      children: [
-                        Text(
-                          'Historial de Reportes',
-                          style: textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            fontFamily: GoogleFonts.poppins().fontFamily,
-                            color: colors.onSurface,
-                          ),
-                        ),
-                      ],
-                    )
-                  : const SizedBox.shrink(),
-              orElse: () => const SizedBox.shrink(),
-            ),
-            const SizedBox(height: 16),
             Expanded(
               child: reportsAsync.when(
                 data: (reports) => RefreshIndicator(

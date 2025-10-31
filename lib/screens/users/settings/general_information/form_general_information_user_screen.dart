@@ -23,7 +23,7 @@ class _FormGeneralInformationUserScreenState
 
   bool _aceptaTerminos = false;
   bool _showErrorTerminos = false;
-  bool _cargando = true; // <-- NUEVO estado de carga inicial
+  bool _cargando = true;
 
   @override
   void initState() {
@@ -32,7 +32,6 @@ class _FormGeneralInformationUserScreenState
     _cedulaController = TextEditingController();
     _codigoInstitucionalController = TextEditingController();
 
-    // Cargar datos iniciales
     Future.microtask(() async {
       try {
         final datos = await ref.read(personalDataProvider.future);
@@ -44,9 +43,7 @@ class _FormGeneralInformationUserScreenState
         debugPrint('Error cargando datos personales: $e');
       } finally {
         if (mounted) {
-          setState(
-            () => _cargando = false,
-          ); // <-- Cuando termine, quitamos el loader
+          setState(() => _cargando = false);
         }
       }
     });
@@ -206,7 +203,7 @@ class _FormGeneralInformationUserScreenState
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,
-                  vertical: 20,
+                  vertical: 10,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

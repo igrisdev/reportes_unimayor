@@ -27,8 +27,8 @@ class GeneralInformationUserScreen extends ConsumerWidget {
         onPressed: () {
           context.go('/user/settings/general_information/edit');
         },
-        label: const Text('Editar'),
-        icon: const Icon(Icons.edit_note),
+        label: Text('Editar', style: GoogleFonts.poppins(fontSize: 20, color: colors.onPrimary, fontWeight: FontWeight.w600)),
+        icon: const Icon(Icons.edit_note, color: Colors.white, size: 30,),
         backgroundColor: colors.primary,
         foregroundColor: colors.onPrimary,
       ),
@@ -111,7 +111,7 @@ class GeneralInformationUserScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 80), // Espacio extra para el FAB
+                const SizedBox(height: 80),
               ],
             ),
           );
@@ -188,17 +188,14 @@ class _InfoBlock extends StatelessWidget {
         if (value != null && value!.isNotEmpty)
           Text(
             value!,
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              color: colors.onSurface.withOpacity(0.9),
-            ),
+            style: GoogleFonts.poppins(fontSize: 16, color: colors.onSurface),
           )
         else
           Text(
             'No tiene registrado este campo.',
             style: GoogleFonts.poppins(
               fontSize: 14,
-              color: colors.onSurface.withOpacity(0.6),
+              color: colors.onSurface,
               fontStyle: FontStyle.italic,
             ),
           ),

@@ -129,20 +129,40 @@ class _CreateReportUserScreenState
     final locationsAsync = ref.watch(locationsTreeProvider);
     final colors = Theme.of(context).colorScheme;
 
-    // ** LÓGICA DE CARGA/ERROR DE UBICACIONES **
-    locationsAsync.when(
-      data: (_) {},
-      loading: () {},
-      error: (err, stack) {
+    ref.listen<AsyncValue<List<Headquarters>>>(locationsTreeProvider, (
+      previous,
+      next,
+    ) {
+      final bool isError = next is AsyncError;
+      final bool wasError = previous is AsyncError;
+
+      if (isError && !wasError) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          showMessage(
-            context,
-            'Error cargando ubicaciones',
-            Theme.of(context).colorScheme.error,
-          );
+          if (mounted) {
+            showMessage(
+              context,
+              'Error cargando ubicaciones',
+              Theme.of(context).colorScheme.error,
+            );
+          }
         });
-      },
-    );
+      }
+    });
+
+    // ** LÓGICA DE CARGA/ERROR DE UBICACIONES **
+    // locationsAsync.when(
+    //   data: (_) {},
+    //   loading: () {},
+    //   error: (err, stack) {
+    //     WidgetsBinding.instance.addPostFrameCallback((_) {
+    //       showMessage(
+    //         context,
+    //         'Error cargando ubicaciones',
+    //         Theme.of(context).colorScheme.error,
+    //       );
+    //     });
+    //   },
+    // );
 
     // ** CÁLCULO DIRECTO para habilitar/deshabilitar el botón (visual, aunque se presione para validar) **
     final bool isReadyToSend = _calculateIsReady(idLocationQrScanner);
@@ -546,13 +566,13 @@ class _CreateReportUserScreenState
         setState(() {
           _isManualMode = nextMode;
 
-          if (!nextMode) {
-            formSelectedHeadquarter = null;
-            formSelectedBuilding = null;
-            formSelectedLocation = null;
-            _buildings = [];
-            _locationsList = [];
-          }
+          // if (!nextMode) {
+          //   formSelectedHeadquarter = null;
+          //   formSelectedBuilding = null;
+          //   formSelectedLocation = null;
+          //   _buildings = [];
+          //   _locationsList = [];
+          // }
           // ** ELIMINADA la llamada a _formKey.currentState!.validate(); **
           // para que no salten las alertas de los campos al abrir el modo manual.
         });
@@ -705,8 +725,6 @@ class _CreateReportUserScreenState
                     formSelectedLocation = null;
                     _updateBuildingsForHeadquarter(value, locationTree);
                   });
-                  // Forzamos la validación del qrFormField para que se limpie el error
-                  // si el usuario está llenando correctamente la ubicación principal.
                 },
                 validator: (value) {
                   final isQrEmpty = ref
@@ -980,7 +998,7 @@ class _CreateReportUserScreenState
     try {
       final response = await ref.read(
         createReportProvider(
-          locationToSend, // Será null si solo se usó la ubicación opcional
+          locationToSend,
           formDescription,
           _recordingPath,
           formParaMi!,

@@ -12,20 +12,19 @@ class AppBarUser extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final router = GoRouter.of(context);
     final colors = Theme.of(context).colorScheme;
 
     final isBrigadierAsync = ref.watch(isBrigadierProvider);
 
     return AppBar(
       centerTitle: true,
-      backgroundColor: colors.primary,
+      backgroundColor: colors.secondary,
       title: Text(
-        'Reportes Unimayor',
+        'REPORTADOR',
         style: GoogleFonts.poppins(
-          fontWeight: FontWeight.w600,
-          fontSize: 18,
-          color: colors.onPrimary,
+          fontWeight: FontWeight.w700,
+          fontSize: 24,
+          color: colors.onSecondary,
         ),
       ),
       actions: [
@@ -34,14 +33,14 @@ class AppBarUser extends ConsumerWidget implements PreferredSizeWidget {
             if (isBrigadier) {
               return IconButton(
                 style: IconButton.styleFrom(
-                  backgroundColor: colors.secondary,
-                  foregroundColor: colors.onSecondary,
+                  backgroundColor: colors.primary,
+                  foregroundColor: colors.onError,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
                 icon: const Icon(Icons.person),
-                onPressed: () => router.pushReplacement('/brigadier'),
+                onPressed: () => context.go('/brigadier'),
               );
             }
             return const SizedBox.shrink();

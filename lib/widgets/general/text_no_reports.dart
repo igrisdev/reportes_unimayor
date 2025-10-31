@@ -38,7 +38,7 @@ class TextNoReports extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  Icons.assignment_outlined,
+                  Icons.inbox_outlined,
                   size: 64,
                   color: colorScheme.outlineVariant,
                 ),

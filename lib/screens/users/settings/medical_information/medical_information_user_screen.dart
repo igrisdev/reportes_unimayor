@@ -85,11 +85,12 @@ class MedicalInformationUserScreen extends ConsumerWidget {
         label: Text(
           'Nueva Condición',
           style: GoogleFonts.poppins(
-            fontWeight: FontWeight.w600,
+            fontSize: 20,
             color: colors.onPrimary,
+            fontWeight: FontWeight.w600,
           ),
         ),
-        icon: const Icon(Icons.add, color: Colors.white),
+        icon: const Icon(Icons.add, color: Colors.white, size: 30),
         backgroundColor: colors.primary,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       ),

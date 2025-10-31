@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/widgets/general/text_health_assistance.dart';
@@ -21,7 +22,16 @@ class ViewReportUserScreen extends ConsumerWidget {
     final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBarUser(),
+      appBar: AppBar(
+        title: Text(
+          'Detalles del Reporte',
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w600,
+            fontSize: 24,
+            color: colors.onSurface,
+          ),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.only(left: 18, right: 18, top: 10),
         child: asyncReport.when(
