@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:reportes_unimayor/providers/id_location_qr_scanner.dart';
 
-class QrScanner extends ConsumerStatefulWidget {
+class QrScanner extends StatefulWidget {
   const QrScanner({super.key});
 
   @override
-  ConsumerState<QrScanner> createState() => _QrScannerState();
+  State<QrScanner> createState() => _QrScannerState();
 }
 
-class _QrScannerState extends ConsumerState<QrScanner> {
+class _QrScannerState extends State<QrScanner> {
   MobileScannerController cameraController = MobileScannerController();
   bool _isTorchOn = false;
   bool _isBackCamera = true;
@@ -61,12 +59,7 @@ class _QrScannerState extends ConsumerState<QrScanner> {
           final List<Barcode> barcodes = capture.barcodes;
           for (final barcode in barcodes) {
             if (barcode.rawValue != null) {
-              ref
-                  .read(idLocationQrScannerProvider.notifier)
-                  .setIdLocationQrScanner(barcode.rawValue!);
-
-              // Navegar una vez el valor ha sido seteado
-              if (mounted) context.pop();
+              if (mounted) context.pop(barcode.rawValue!);
               break;
             }
           }

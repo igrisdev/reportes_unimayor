@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
-import 'package:reportes_unimayor/widgets/brigadier/app_bar_brigadier.dart';
 import 'package:reportes_unimayor/widgets/general/description_report_container.dart';
 import 'package:reportes_unimayor/widgets/general/date_and_hour_container.dart';
 import 'package:reportes_unimayor/widgets/general/info_user.dart';
@@ -24,7 +23,16 @@ class ViewReportBrigadierScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: colors.surface,
-      appBar: const AppBarBrigadier(),
+      appBar: AppBar(
+        title: Text(
+          'Detalles Reporte Finalizado',
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w600,
+            fontSize: 24,
+            color: colors.onSurface,
+          ),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.only(left: 18, right: 18, top: 10),
         child: asyncReport.when(
