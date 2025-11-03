@@ -336,7 +336,7 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
                     message:
                         "¿Estás seguro de que quieres cancelar el reporte?",
                     confirmText: "Aceptar",
-                    cancelText: "Cancelar",
+                    cancelText: "Cerrar",
                     onConfirm: () async {
                       final result = await ref.read(
                         cancelReportProvider(idReport.value!).future,

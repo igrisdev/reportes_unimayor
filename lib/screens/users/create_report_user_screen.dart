@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
+import 'package:reportes_unimayor/providers/audio_player_notifier.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/providers/location_providers.dart';
 import 'package:reportes_unimayor/models/location_tree.dart';
-import 'package:path/path.dart' as p;
 import 'package:reportes_unimayor/utils/show_message.dart';
 import 'package:reportes_unimayor/widgets/general/confirm_dialog.dart';
+import 'package:reportes_unimayor/widgets/users/audio_player_widget.dart';
+import 'package:reportes_unimayor/widgets/users/audio_recorder_widget.dart';
 
 class CreateReportUserScreen extends ConsumerStatefulWidget {
   const CreateReportUserScreen({super.key});
@@ -31,9 +32,8 @@ class _CreateReportUserScreenState
 
   String _idLocationQrScanner = '';
 
-  final AudioRecorder _audioRecorder = AudioRecorder();
   String? _recordingPath;
-  bool _isRecording = false;
+  bool _isRecordingMode = false;
 
   bool _isManualMode = false;
   List<String> _buildings = [];
@@ -41,7 +41,6 @@ class _CreateReportUserScreenState
 
   @override
   void dispose() {
-    _audioRecorder.dispose();
     super.dispose();
   }
 
@@ -49,6 +48,27 @@ class _CreateReportUserScreenState
     setState(() {
       _idLocationQrScanner = '';
     });
+  }
+
+  Future<void> _startRecordingMode() async {
+    FocusScope.of(context).unfocus();
+
+    final recorder = AudioRecorder();
+    if (await recorder.hasPermission()) {
+      setState(() {
+        _recordingPath = null;
+        _isRecordingMode = true;
+      });
+    } else {
+      if (mounted) {
+        showMessage(
+          context,
+          'Se necesita permiso para usar el micrófono.',
+          Theme.of(context).colorScheme.error,
+        );
+      }
+    }
+    recorder.dispose();
   }
 
   bool _calculateIsReady(String idLocationFromQr) {
@@ -70,7 +90,7 @@ class _CreateReportUserScreenState
 
     final hasContent = hasDescription || hasAudio;
 
-    if (_isRecording) {
+    if (_isRecordingMode) {
       return false;
     }
 
@@ -120,38 +140,6 @@ class _CreateReportUserScreenState
     );
     _locationsList = b.ubicaciones;
   }
-
-  Future<void> _toggleRecording() async {
-    FocusScope.of(context).unfocus();
-
-    if (_isRecording) {
-      final path = await _audioRecorder.stop();
-      setState(() {
-        _isRecording = false;
-        _recordingPath = path;
-      });
-    } else {
-      if (await _audioRecorder.hasPermission()) {
-        final appDocumentsDir = await getApplicationDocumentsDirectory();
-        final filePath = p.join(appDocumentsDir.path, 'audio_report.m4a');
-
-        await _audioRecorder.start(const RecordConfig(), path: filePath);
-
-        setState(() {
-          _isRecording = true;
-          _recordingPath = null;
-        });
-      } else {
-        showMessage(
-          context,
-          'Se necesita permiso para usar el micrófono.',
-          Theme.of(context).colorScheme.error,
-        );
-      }
-    }
-  }
-
-  // --- LÓGICA DE ENVÍO ---
 
   Future<void> _submitReport() async {
     final idLocationFromQr = _idLocationQrScanner;
@@ -488,10 +476,61 @@ class _CreateReportUserScreenState
     );
   }
 
-  Widget _buildDescriptionField() {
+  Widget _buildAudioPlayer() {
+    if (_recordingPath == null) {
+      return const SizedBox.shrink();
+    }
+
+    final audioNotifier = ref.read(audioPlayerNotifierProvider.notifier);
+
+    return AudioPlayerWidget(
+      key: ValueKey(_recordingPath!),
+      filePath: _recordingPath!,
+      audioNotifier: audioNotifier,
+
+      onDeleted: () {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (dialogContext) {
+            return ConfirmDialog(
+              title: "Confirmar eliminación del audio",
+              message: "¿Estás seguro de que quieres eliminar esta grabación?",
+              confirmText: "Eliminar",
+              cancelText: "Cancelar",
+              onConfirm: () async {
+                setState(() {
+                  _recordingPath = null;
+                });
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildContentSection() {
     final colors = Theme.of(context).colorScheme;
+
+    if (_isRecordingMode) {
+      return AudioRecorderWidget(
+        onStop: (path) {
+          setState(() {
+            _recordingPath = path;
+            _isRecordingMode = false;
+          });
+        },
+        onCancel: () {
+          setState(() {
+            _recordingPath = null;
+            _isRecordingMode = false;
+          });
+        },
+      );
+    }
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TextFormField(
           initialValue: formDescription,
@@ -517,34 +556,15 @@ class _CreateReportUserScreenState
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
             suffixIcon: IconButton(
               iconSize: 40,
-              color: _isRecording
-                  ? colors.error
-                  : _recordingPath == null
-                  ? colors.onSurface
-                  : colors.tertiary,
-              icon: Icon(_isRecording ? Icons.stop_circle_outlined : Icons.mic),
-              onPressed: _toggleRecording,
+              color: colors.primary,
+              icon: const Icon(Icons.mic),
+              onPressed: _startRecordingMode,
             ),
           ),
         ),
-        const SizedBox(height: 8),
-        (_recordingPath != null && !_isRecording)
-            ? Text(
-                'Audio grabado. ¡Listo para enviar!',
-                style: GoogleFonts.poppins(
-                  color: colors.tertiary,
-                  fontSize: 18,
-                ),
-              )
-            : Text(
-                _isRecording
-                    ? 'Grabando..., click para parar'
-                    : 'Un toque para grabar',
-                style: GoogleFonts.poppins(
-                  color: colors.onSurface,
-                  fontSize: 18,
-                ),
-              ),
+        const SizedBox(height: 12),
+        if (_recordingPath != null)
+          Align(alignment: Alignment.centerLeft, child: _buildAudioPlayer()),
       ],
     );
   }
@@ -817,11 +837,11 @@ class _CreateReportUserScreenState
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(100),
           ),
-          disabledBackgroundColor: _isRecording
+          disabledBackgroundColor: _isRecordingMode
               ? Colors.grey.withValues(alpha: 0.5)
               : colors.primary,
         ),
-        onPressed: (_isRecording)
+        onPressed: (_isRecordingMode)
             ? null
             : () {
                 final valid = _formKey.currentState!.validate();
@@ -857,7 +877,7 @@ class _CreateReportUserScreenState
           ),
         ),
         icon: Icon(
-          _isRecording ? Icons.cancel : Icons.send,
+          _isRecordingMode ? Icons.cancel : Icons.send,
           color: colors.onSecondary,
           size: 24,
         ),
@@ -935,7 +955,7 @@ class _CreateReportUserScreenState
                       const SizedBox(height: 14),
                       _buildSectionHeader(title: 'Descripción *'),
                       const SizedBox(height: 10),
-                      _buildDescriptionField(),
+                      _buildContentSection(),
                       const SizedBox(height: 40),
                       _buildSubmitButton(isReadyToSend),
                     ],
