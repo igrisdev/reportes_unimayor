@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/emergency_contact.dart';
 import 'package:reportes_unimayor/providers/settings_provider.dart';
@@ -139,6 +140,7 @@ class _FormEmergencyContactsUserScreenState
 
       if (mounted) {
         if (success) {
+          context.pop();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
@@ -412,6 +414,7 @@ class _FormEmergencyContactsUserScreenState
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
+      textCapitalization: TextCapitalization.sentences,
       style: GoogleFonts.poppins(fontSize: 18),
       decoration: InputDecoration(
         labelText: label,
