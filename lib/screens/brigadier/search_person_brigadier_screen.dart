@@ -32,8 +32,49 @@ class _AuthScreenState extends ConsumerState<SearchPerson> {
     super.dispose();
   }
 
+  // REEMPLAZA ESTE MÉTODO
+  void _search() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    FocusScope.of(context).unfocus();
+
+    setState(() {
+      _isLoading = true;
+      _person = null;
+    });
+
+    try {
+      final email = _emailController.text.trim();
+
+      // --- CORRECCIÓN AQUÍ ---
+      // Obtenemos el servicio a través de ref.read()
+      final person = await ref
+          .read(apiReportsServiceProvider)
+          .searchPerson(email);
+
+      if (!mounted) return;
+
+      setState(() {
+        _person = person;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      print(e);
+      showMessage(
+        context,
+        'Error al consultar al usuario. Intenta nuevamente.',
+        Theme.of(context).colorScheme.error,
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // ... (El resto del archivo no necesita cambios)
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
@@ -150,7 +191,7 @@ class _AuthScreenState extends ConsumerState<SearchPerson> {
                             style: TextStyle(
                               color: Theme.of(
                                 context,
-                              ).colorScheme.onSurface.withValues(alpha: 0.7),
+                              ).colorScheme.onSurface.withOpacity(0.7),
                             ),
                           ),
                         )
@@ -199,7 +240,7 @@ class _AuthScreenState extends ConsumerState<SearchPerson> {
                             style: TextStyle(
                               color: Theme.of(
                                 context,
-                              ).colorScheme.onSurface.withValues(alpha: 0.7),
+                              ).colorScheme.onSurface.withOpacity(0.7),
                             ),
                           ),
                         )
@@ -266,40 +307,5 @@ class _AuthScreenState extends ConsumerState<SearchPerson> {
       prefixIcon: Icon(icon),
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
     );
-  }
-
-  void _search() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    FocusScope.of(context).unfocus();
-
-    setState(() {
-      _isLoading = true;
-      _person = null;
-    });
-
-    try {
-      final email = _emailController.text.trim();
-
-      final person = await ApiReportsService().searchPerson(email);
-
-      if (!mounted) return;
-
-      setState(() {
-        _person = person;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      print(e);
-      showMessage(
-        context,
-        'Error al consultar al usuario. Intenta nuevamente.',
-        Theme.of(context).colorScheme.error,
-      );
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
   }
 }

@@ -13,7 +13,7 @@ part 'settings_provider.g.dart';
 Future<List<EmergencyContact>> emergencyContactsList(
   EmergencyContactsListRef ref,
 ) async {
-  final api = ApiSettingsService();
+  final api = ref.watch(apiSettingsServiceProvider);
   final List<Map<String, dynamic>> rawData = await api.getEmergencyContacts();
 
   return rawData.map((data) => EmergencyContact.fromJson(data)).toList();
@@ -24,7 +24,7 @@ Future<EmergencyContact> emergencyContactById(
   EmergencyContactByIdRef ref,
   String id,
 ) async {
-  final api = ApiSettingsService();
+  final api = ref.watch(apiSettingsServiceProvider);
   final Map<String, dynamic> rawData = await api.getEmergencyContactById(id);
 
   return EmergencyContact.fromJson(rawData);
@@ -41,7 +41,7 @@ Future<bool> createEmergencyContact(
   bool esPrincipal,
 ) async {
   try {
-    final api = ApiSettingsService();
+    final api = ref.watch(apiSettingsServiceProvider);
 
     final payload = EmergencyContactPayload(
       nombre: nombre,
@@ -79,7 +79,7 @@ Future<bool> updateEmergencyContact(
   bool esPrincipal,
 ) async {
   try {
-    final api = ApiSettingsService();
+    final api = ref.watch(apiSettingsServiceProvider);
     final payload = EmergencyContactPayload(
       nombre: nombre,
       relacion: relacion,
@@ -110,8 +110,8 @@ Future<bool> deleteEmergencyContact(
   String id,
 ) async {
   try {
-    final apiService = ApiSettingsService();
-    final response = await apiService.deleteEmergencyContact(id);
+    final api = ref.watch(apiSettingsServiceProvider);
+    final response = await api.deleteEmergencyContact(id);
 
     if (response) {
       await ref.refresh(emergencyContactsListProvider.future);
@@ -133,7 +133,7 @@ Future<bool> deleteEmergencyContact(
 Future<List<MedicalCondition>> medicalConditionsList(
   MedicalConditionsListRef ref,
 ) async {
-  final api = ApiSettingsService();
+  final api = ref.watch(apiSettingsServiceProvider);
   final raw = await api.getMedicalConditions();
 
   return raw.map((m) => MedicalCondition.fromJson(m)).toList();
@@ -144,7 +144,7 @@ Future<MedicalCondition> medicalConditionById(
   MedicalConditionByIdRef ref,
   String id,
 ) async {
-  final api = ApiSettingsService();
+  final api = ref.watch(apiSettingsServiceProvider);
   final raw = await api.getMedicalConditionById(id);
   return MedicalCondition.fromJson(raw);
 }
@@ -157,7 +157,7 @@ Future<bool> createMedicalCondition(
   DateTime fechaDiagnostico,
 ) async {
   try {
-    final api = ApiSettingsService();
+    final api = ref.watch(apiSettingsServiceProvider);
     final payload = MedicalConditionPayload(
       nombre: nombre,
       descripcion: descripcion,
@@ -188,7 +188,7 @@ Future<bool> updateMedicalCondition(
   DateTime fechaDiagnostico,
 ) async {
   try {
-    final api = ApiSettingsService();
+    final api = ref.watch(apiSettingsServiceProvider);
     final payload = MedicalConditionPayload(
       nombre: nombre,
       descripcion: descripcion,
@@ -216,8 +216,8 @@ Future<bool> deleteMedicalCondition(
   String id,
 ) async {
   try {
-    final apiService = ApiSettingsService();
-    final response = await apiService.deleteMedicalCondition(id);
+    final api = ref.watch(apiSettingsServiceProvider);
+    final response = await api.deleteMedicalCondition(id);
 
     if (response) {
       await ref.refresh(medicalConditionsListProvider.future);
@@ -239,7 +239,7 @@ Future<bool> deleteMedicalCondition(
 /// GET /api/DatosPersonales/usuarios/datos-personales
 @riverpod
 Future<Map<String, dynamic>> personalData(PersonalDataRef ref) async {
-  final api = ApiSettingsService();
+  final api = ref.watch(apiSettingsServiceProvider);
   try {
     final result = await api.getPersonalData();
     return result;
@@ -258,7 +258,7 @@ Future<bool> updatePersonalData(
   String codigoInstitucional,
 ) async {
   try {
-    final api = ApiSettingsService();
+    final api = ref.watch(apiSettingsServiceProvider);
     final payload = PersonalDataPayload(
       numeroTelefonico: numeroTelefonico,
       cedula: cedula,

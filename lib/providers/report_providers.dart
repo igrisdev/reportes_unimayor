@@ -8,7 +8,7 @@ part 'report_providers.g.dart';
 @riverpod
 Future<List<ReportsModel>> reportList(ReportListRef ref) async {
   try {
-    final apiService = ApiReportsService();
+    final apiService = ref.watch(apiReportsServiceProvider);
     final reports = await apiService.getReports();
 
     final history = reports
@@ -43,7 +43,7 @@ Future<List<ReportsModel>> reportListBrigadier(
   ReportListBrigadierRef ref,
 ) async {
   try {
-    final apiService = ApiReportsService();
+    final apiService = ref.watch(apiReportsServiceProvider);
 
     final reportAccepted = await apiService.getReportsBrigadierAssigned();
 
@@ -67,7 +67,7 @@ Future<List<ReportsModel>> reportListHistoryBrigadier(
   ReportListHistoryBrigadierRef ref,
 ) async {
   try {
-    final apiService = ApiReportsService();
+    final apiService = ref.watch(apiReportsServiceProvider);
 
     final allReports = await apiService.getReportsBrigadierAssigned();
 
@@ -101,7 +101,7 @@ Future<List<ReportsModel>> reportListHistoryBrigadier(
 @riverpod
 Future<List<ReportsModel>> reportListPending(ReportListPendingRef ref) async {
   try {
-    final apiService = ApiReportsService();
+    final apiService = ref.watch(apiReportsServiceProvider);
     final reports = await apiService.getReports();
 
     final pendingReports = reports
@@ -120,7 +120,7 @@ Future<List<ReportsModel>> reportListPending(ReportListPendingRef ref) async {
 @riverpod
 Future<bool> cancelReport(CancelReportRef ref, int id) async {
   try {
-    final apiService = ApiReportsService();
+    final apiService = ref.watch(apiReportsServiceProvider);
     final response = await apiService.cancelReport(id);
 
     if (response) {
@@ -140,7 +140,7 @@ Future<bool> cancelReport(CancelReportRef ref, int id) async {
 @riverpod
 Future<ReportsModel> getReportById(GetReportByIdRef ref, String id) async {
   try {
-    final apiService = ApiReportsService();
+    final apiService = ref.watch(apiReportsServiceProvider);
     final report = await apiService.getReportById(id);
 
     return report;
@@ -156,7 +156,7 @@ Future<ReportsModel> getReportByIdBrigadier(
   String id,
 ) async {
   try {
-    final apiService = ApiReportsService();
+    final apiService = ref.watch(apiReportsServiceProvider);
     final reports = await apiService.getReportsBrigadierPending();
 
     final report = reports.where((report) => report.idReporte.toString() == id);
@@ -183,9 +183,9 @@ Future<bool> createReport(
   String? ubicacionTextOpcional,
 ) async {
   try {
-    final api = ApiReportsService();
+    final apiService = ref.watch(apiReportsServiceProvider);
 
-    final response = await api.createReport(
+    final response = await apiService.createReport(
       idUbicacion,
       descripcion,
       record,
@@ -206,38 +206,10 @@ Future<bool> createReport(
   }
 }
 
-// @riverpod
-// Future<bool> createReport(
-//   CreateReportRef ref,
-//   String idUbicacion,
-//   String? descripcion,
-//   String? record,
-// ) async {
-//   try {
-//     final apiService = ApiReportsService();
-//     final response = await apiService.createReport(
-//       idUbicacion,
-//       descripcion,
-//       record,
-//     );
-
-//     if (response) {
-//       await ref.refresh(reportListPendingProvider.future);
-
-//       return true;
-//     }
-
-//     return false;
-//   } catch (e) {
-//     print('Error en report provider: $e');
-//     rethrow;
-//   }
-// }
-
 @riverpod
 Future<bool> acceptReport(AcceptReportRef ref, int id) async {
   try {
-    final apiService = ApiReportsService();
+    final apiService = ref.watch(apiReportsServiceProvider);
     final response = await apiService.acceptReport(id);
 
     if (response) {
@@ -255,7 +227,7 @@ Future<bool> acceptReport(AcceptReportRef ref, int id) async {
 @riverpod
 Future<bool> endReport(EndReportRef ref, int id, String description) async {
   try {
-    final apiService = ApiReportsService();
+    final apiService = ref.watch(apiReportsServiceProvider);
     final response = await apiService.endReport(id, description);
 
     if (response) {
@@ -279,7 +251,7 @@ Future<String> getRecord(
   String urlRecord,
 ) async {
   try {
-    final apiService = ApiReportsService();
+    final apiService = ref.watch(apiReportsServiceProvider);
     final response = await apiService.getRecordReport(idReport, urlRecord);
 
     if (response.isEmpty) {

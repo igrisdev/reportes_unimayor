@@ -1,5 +1,8 @@
 import 'package:dio/dio.dart';
-import 'package:reportes_unimayor/services/base_dio_service.dart'; // Ajusta si tu ruta es distinta
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:reportes_unimayor/services/base_dio_service.dart';
+
+final apiSettingsServiceProvider = Provider((ref) => ApiSettingsService(ref));
 
 class EmergencyContactPayload {
   final String nombre;
@@ -71,7 +74,11 @@ class PersonalDataPayload {
   }
 }
 
+
 class ApiSettingsService extends BaseDioService {
+  final Ref _ref;
+  ApiSettingsService(this._ref) : super(_ref);
+
   final String _contactsEndpoint = '/ContactoEmergencias';
   final String _medicalEndpoint = '/CondicionMedica';
   final String _personalEndpoint = '/DatosPersonales/usuarios/datos-personales';

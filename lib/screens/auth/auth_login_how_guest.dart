@@ -4,8 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/providers/is_brigadier_provider.dart';
 import 'package:reportes_unimayor/services/api_auth_service.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:reportes_unimayor/services/api_token_device_service.dart';
 import 'package:reportes_unimayor/utils/local_storage.dart';
 import 'package:reportes_unimayor/utils/show_message.dart';
 
@@ -194,41 +192,24 @@ class _AuthScreenState extends ConsumerState<AuthLoginHowGuest> {
 
   void _login() async {
     if (!_formKey.currentState!.validate()) return;
-
     FocusScope.of(context).unfocus();
-
     setState(() => _isLoading = true);
 
     try {
       final email = _emailController.text.trim();
       final password = _passwordController.text;
 
-      final String? token = await ApiAuthService().login(email, password);
+      final String? token = await ref
+          .read(apiAuthServiceProvider)
+          .login(email, password);
 
-      if (token == null) {
-        if (!mounted) return;
+      if (token == null && mounted) {
         showMessage(
           context,
           'Credenciales incorrectas',
           Theme.of(context).colorScheme.error,
         );
         return;
-      }
-
-      String? deviceToken = await FirebaseMessaging.instance.getToken();
-
-      if (deviceToken != null) {
-        await ApiTokenDeviceService().setTokenDevice(deviceToken);
-      }
-
-      final userType = await ref.read(isBrigadierProvider.future);
-
-      if (!mounted) return;
-
-      if (userType) {
-        context.go('/brigadier');
-      } else {
-        context.go('/user');
       }
     } catch (e) {
       if (!mounted) return;

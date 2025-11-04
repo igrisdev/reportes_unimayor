@@ -7,7 +7,7 @@ part 'location_providers.g.dart';
 
 @riverpod
 Future<List<Headquarters>> locationsTree(LocationsTreeRef ref) async {
-  final api = ApiLocationsService();
+  final api = ref.watch(apiLocationsServiceProvider);
   final list = await api.getUbicaciones();
   final tree = buildLocationTree(list);
 
@@ -17,7 +17,7 @@ Future<List<Headquarters>> locationsTree(LocationsTreeRef ref) async {
 @riverpod
 Future<Map<String, dynamic>> locationById(LocationByIdRef ref, int id) async {
   try {
-    final api = ApiLocationsService();
+    final api = ref.watch(apiLocationsServiceProvider);
     final map = await api.getUbicacionById(id);
     return map;
   } catch (e) {

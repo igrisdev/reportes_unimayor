@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:record/record.dart';
-import 'package:reportes_unimayor/providers/audio_player_notifier.dart';
-import 'package:reportes_unimayor/providers/report_providers.dart';
-import 'package:reportes_unimayor/providers/location_providers.dart';
 import 'package:reportes_unimayor/models/location_tree.dart';
+import 'package:reportes_unimayor/providers/audio_player_notifier.dart';
+import 'package:reportes_unimayor/providers/location_providers.dart';
+import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/utils/show_message.dart';
 import 'package:reportes_unimayor/widgets/general/confirm_dialog.dart';
 import 'package:reportes_unimayor/widgets/users/audio_player_widget.dart';
@@ -47,6 +47,7 @@ class _CreateReportUserScreenState
   void _removeIdLocationQrScanner() {
     setState(() {
       _idLocationQrScanner = '';
+      _isManualMode = false;
     });
   }
 
@@ -96,8 +97,7 @@ class _CreateReportUserScreenState
 
     final hasValidLocation =
         hasQrLocation ||
-        (hasManualLocation && _isManualMode) ||
-        hasOptionalText;
+        ((hasManualLocation && _isManualMode) || hasOptionalText);
 
     final ready = hasValidLocation && hasContent && formParaMi != null;
 
@@ -212,20 +212,18 @@ class _CreateReportUserScreenState
 
   Widget _buildQrLocationField() {
     final colors = Theme.of(context).colorScheme;
-    final idLocationQrScanner = _idLocationQrScanner;
+    final isScanned = _idLocationQrScanner.isNotEmpty;
 
-    final AsyncValue<Map<String, dynamic>>? locationByIdAsync =
-        (idLocationQrScanner.isNotEmpty)
+    final locationByIdAsync = isScanned
         ? ref.watch(
-            locationByIdProvider(int.tryParse(idLocationQrScanner) ?? -1),
+            locationByIdProvider(int.tryParse(_idLocationQrScanner) ?? -1),
           )
         : null;
 
     return FormField<String>(
-      initialValue: idLocationQrScanner,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
+      initialValue: _idLocationQrScanner,
       validator: (value) {
-        final hasQr = idLocationQrScanner.isNotEmpty;
+        final hasQr = _idLocationQrScanner.isNotEmpty;
         final hasManualLocationComplete =
             _isManualMode &&
             formSelectedHeadquarter != null &&
@@ -234,112 +232,24 @@ class _CreateReportUserScreenState
         final hasOptionalText =
             formUbicacionTextOpcional != null &&
             formUbicacionTextOpcional!.trim().isNotEmpty;
-        final hasValidLocation =
-            hasQr || hasManualLocationComplete || hasOptionalText;
 
-        if (hasValidLocation) {
+        if (hasQr || hasManualLocationComplete || hasOptionalText) {
           return null;
         }
-
-        return 'Selecciona ubicación por QR, completa la selección manual, o escribe en Ubicación Opcional.';
+        return 'Debes proporcionar una ubicación (QR, manual o texto).';
       },
       builder: (state) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (state.value != idLocationQrScanner) {
-            state.didChange(idLocationQrScanner);
+          if (state.value != _idLocationQrScanner) {
+            state.didChange(_idLocationQrScanner);
           }
         });
 
-        final bool isScanned = (idLocationQrScanner.isNotEmpty);
-
-        String titleText = 'QR Más Cercano';
-        if (isScanned) {
-          final idInt = int.tryParse(idLocationQrScanner);
-          if (idInt == null || locationByIdAsync == null) {
-            titleText = 'Ubicación Escaneada';
-          } else {
-            titleText = locationByIdAsync.when(
-              data: (map) {
-                final sede = (map['sede'] as String?) ?? '';
-                final lugar = (map['lugar'] as String?) ?? '';
-                if (sede.isNotEmpty && lugar.isNotEmpty) return '$sede, $lugar';
-                if (sede.isNotEmpty) return sede;
-                if (lugar.isNotEmpty) return lugar;
-                return 'Ubicación Escaneada';
-              },
-              loading: () => 'Cargando ubicación...',
-              error: (err, st) => 'Ubicación (error al cargar)',
-            );
-          }
-        }
-
         return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            GestureDetector(
-              onTap: () async {
-                final String? result = await context.push<String>(
-                  '/user/create-report/qr-scanner',
-                );
-
-                if (result != null && result.isNotEmpty) {
-                  setState(() {
-                    _idLocationQrScanner = result;
-                  });
-                }
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 16,
-                  horizontal: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: isScanned
-                      ? colors.tertiary.withValues(alpha: 0.1)
-                      : colors.primary,
-                  border: Border.all(
-                    color: isScanned ? colors.tertiary : colors.onSurface,
-                  ),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            titleText,
-                            style: GoogleFonts.poppins(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w700,
-                              color: isScanned
-                                  ? colors.tertiary
-                                  : colors.onTertiary,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Presionar para escanear la ubicación',
-                            style: GoogleFonts.poppins(
-                              color: colors.onTertiary.withValues(alpha: 0.9),
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Icon(
-                      isScanned ? Icons.check_circle : Icons.qr_code_scanner,
-                      size: 80,
-                      color: isScanned ? colors.tertiary : colors.onPrimary,
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            isScanned
+                ? _buildScannedLocationCard(colors, locationByIdAsync!)
+                : _buildScanPrompt(colors),
             if (state.hasError)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0, left: 8.0),
@@ -347,7 +257,7 @@ class _CreateReportUserScreenState
                   state.errorText!,
                   style: GoogleFonts.poppins(
                     color: colors.error,
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -355,6 +265,149 @@ class _CreateReportUserScreenState
           ],
         );
       },
+    );
+  }
+
+  Widget _buildScannedLocationCard(
+    ColorScheme colors,
+    AsyncValue<Map<String, dynamic>> locationAsync,
+  ) {
+    return Card(
+      key: const ValueKey('scanned_card'),
+      elevation: 2.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+        side: BorderSide(color: colors.tertiary, width: 1.5),
+      ),
+      child: Column(
+        children: [
+          ListTile(
+            leading: Icon(Icons.location_on, color: colors.tertiary, size: 40),
+            title: locationAsync.when(
+              data: (map) {
+                final lugar = (map['lugar'] as String?) ?? 'Lugar Desconocido';
+                return Text(
+                  lugar,
+                  style: GoogleFonts.poppins(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: colors.tertiary,
+                  ),
+                );
+              },
+              loading: () => Text(
+                'Cargando...',
+                style: GoogleFonts.poppins(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              error: (err, st) => Text(
+                'Error al cargar',
+                style: GoogleFonts.poppins(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            subtitle: locationAsync.when(
+              data: (map) {
+                final sede = (map['sede'] as String?) ?? 'Sede no especificada';
+                final edificio = (map['edificio'] as String?) ?? '';
+                final piso = (map['piso'] as String?) ?? '';
+
+                // Construimos el subtítulo dinámicamente
+                final details = [
+                  sede,
+                  if (edificio.isNotEmpty) 'Edificio $edificio',
+                  if (piso.isNotEmpty) 'Piso $piso',
+                ];
+
+                return Text(
+                  details.join(' - '),
+                  style: GoogleFonts.poppins(color: colors.onSurfaceVariant),
+                );
+              },
+              loading: () => const Text('...'),
+              error: (err, st) => null,
+            ),
+          ),
+          const Divider(height: 1, indent: 16, endIndent: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: TextButton.icon(
+              onPressed: _removeIdLocationQrScanner,
+              icon: Icon(Icons.delete_forever, size: 20),
+              label: Text('Limpiar Ubicación Escaneada'),
+              style: TextButton.styleFrom(
+                foregroundColor: colors.primary,
+                textStyle: GoogleFonts.poppins(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildScanPrompt(ColorScheme colors) {
+    return GestureDetector(
+      key: const ValueKey('scan_prompt'),
+      onTap: () async {
+        final String? result = await context.push<String>(
+          '/user/create-report/qr-scanner',
+        );
+        if (result != null && result.isNotEmpty) {
+          setState(() {
+            _idLocationQrScanner = result;
+            _isManualMode = false;
+            formSelectedHeadquarter = null;
+            formSelectedBuilding = null;
+            formSelectedLocation = null;
+            formUbicacionTextOpcional = null;
+          });
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        decoration: BoxDecoration(
+          color: colors.primary,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'QR Más Cercano',
+                    style: GoogleFonts.poppins(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                      color: colors.onPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Presionar para escanear la ubicación',
+                    style: GoogleFonts.poppins(
+                      color: colors.onPrimary.withOpacity(0.9),
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.qr_code_scanner, size: 80, color: colors.onPrimary),
+          ],
+        ),
+      ),
     );
   }
 
@@ -367,6 +420,8 @@ class _CreateReportUserScreenState
           formUbicacionTextOpcional = value;
         });
       },
+      minLines: 2,
+      maxLines: 3,
       textCapitalization: TextCapitalization.sentences,
       style: GoogleFonts.poppins(fontSize: 20),
       decoration: InputDecoration(
@@ -377,7 +432,7 @@ class _CreateReportUserScreenState
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(
-            color: colors.onSurface.withOpacity(0.5),
+            color: colors.onSurface.withValues(alpha: 0.5),
             width: 1,
           ),
         ),
@@ -385,14 +440,16 @@ class _CreateReportUserScreenState
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(color: colors.primary, width: 2),
         ),
-        labelText: 'Ultima forma de mandar la ubicación',
-        labelStyle: GoogleFonts.poppins(
-          color: colors.primary,
-          fontWeight: FontWeight.w600,
-          fontSize: 16,
-        ),
         hintText: "Ejemplo: Bicentenario, Piso 2, Salon 202",
         hintStyle: GoogleFonts.poppins(fontSize: 15),
+        label: Text(
+          'Usar solo si no se puede escanear o seleccionar manualmente la ubicación',
+          style: GoogleFonts.poppins(
+            color: colors.primary,
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+          ),
+        ),
       ),
     );
   }
@@ -487,7 +544,6 @@ class _CreateReportUserScreenState
       key: ValueKey(_recordingPath!),
       filePath: _recordingPath!,
       audioNotifier: audioNotifier,
-
       onDeleted: () {
         showDialog(
           context: context,
@@ -531,40 +587,54 @@ class _CreateReportUserScreenState
     }
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TextFormField(
-          initialValue: formDescription,
-          minLines: 3,
-          maxLines: 7,
-          onChanged: (value) {
-            setState(() {
-              formDescription = value;
-            });
-          },
-          style: GoogleFonts.poppins(fontSize: 20),
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          validator: (value) {
-            final hasDescription = value != null && value.trim().isNotEmpty;
-            final hasAudio = _recordingPath != null;
-            if (!hasDescription && !hasAudio) {
-              return 'Se requiere descripción o un audio.';
-            }
-            return null;
-          },
-          decoration: InputDecoration(
-            hintText: "Descripción del reporte",
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
-            suffixIcon: IconButton(
-              iconSize: 40,
-              color: colors.primary,
-              icon: const Icon(Icons.mic),
-              onPressed: _startRecordingMode,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: TextFormField(
+                initialValue: formDescription,
+                minLines: 1,
+                maxLines: 7,
+                onChanged: (value) {
+                  setState(() {
+                    formDescription = value;
+                  });
+                },
+                style: GoogleFonts.poppins(fontSize: 20),
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                validator: (value) {
+                  final hasDescription =
+                      value != null && value.trim().isNotEmpty;
+                  final hasAudio = _recordingPath != null;
+                  if (!hasDescription && !hasAudio) {
+                    return 'Se requiere descripción o un audio.';
+                  }
+                  return null;
+                },
+                decoration: InputDecoration(
+                  hintText: "Descripción del reporte",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ),
             ),
-          ),
+            const SizedBox(width: 8),
+            FloatingActionButton.small(
+              heroTag: 'recorder',
+              onPressed: _startRecordingMode,
+              backgroundColor: colors.primary,
+              foregroundColor: colors.onPrimary,
+              tooltip: 'Grabar un audio',
+              elevation: 0,
+              child: const Icon(Icons.mic),
+            ),
+          ],
         ),
         const SizedBox(height: 12),
-        if (_recordingPath != null)
-          Align(alignment: Alignment.centerLeft, child: _buildAudioPlayer()),
+        if (_recordingPath != null) _buildAudioPlayer(),
       ],
     );
   }
@@ -838,7 +908,7 @@ class _CreateReportUserScreenState
             borderRadius: BorderRadius.circular(100),
           ),
           disabledBackgroundColor: _isRecordingMode
-              ? Colors.grey.withValues(alpha: 0.5)
+              ? Colors.grey.withAlpha(128)
               : colors.primary,
         ),
         onPressed: (_isRecordingMode)
@@ -912,6 +982,11 @@ class _CreateReportUserScreenState
 
     final bool isReadyToSend = _calculateIsReady(_idLocationQrScanner);
 
+    final bool isManualSelectionComplete =
+        formSelectedHeadquarter != null &&
+        formSelectedBuilding != null &&
+        formSelectedLocation != null;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -940,14 +1015,21 @@ class _CreateReportUserScreenState
                     children: [
                       _buildSectionHeader(title: 'Ubicación *'),
                       const SizedBox(height: 10),
-                      _buildQrLocationField(),
-                      const SizedBox(height: 12),
-                      _buildManualModeButton(colors),
-                      if (_isManualMode) const SizedBox(height: 10),
-                      if (_isManualMode)
-                        _buildManualLocationSelector(locationsAsync),
-                      if (_isManualMode) const SizedBox(height: 20),
-                      if (_isManualMode) _buildOptionalLocationField(),
+                      if (!_isManualMode) ...[
+                        _buildQrLocationField(),
+                        const SizedBox(height: 12),
+                      ],
+                      if (_idLocationQrScanner.isEmpty) ...[
+                        _buildManualModeButton(colors),
+                        if (_isManualMode) ...[
+                          const SizedBox(height: 10),
+                          _buildManualLocationSelector(locationsAsync),
+                          const SizedBox(height: 20),
+
+                          if (!isManualSelectionComplete)
+                            _buildOptionalLocationField(),
+                        ],
+                      ],
                       const SizedBox(height: 14),
                       _buildSectionHeader(title: '¿Tú eres el herido? *'),
                       const SizedBox(height: 10),

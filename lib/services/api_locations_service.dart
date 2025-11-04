@@ -1,7 +1,13 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reportes_unimayor/services/base_dio_service.dart';
 import 'package:reportes_unimayor/models/ubicacion_model.dart';
 
+final apiLocationsServiceProvider = Provider((ref) => ApiLocationsService(ref));
+
 class ApiLocationsService extends BaseDioService {
+  final Ref _ref;
+  ApiLocationsService(this._ref) : super(_ref);
+
   Future<List<Ubicacion>> getUbicaciones() async {
     try {
       final response = await dio.get('/admin/ubicaciones');

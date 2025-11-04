@@ -1,6 +1,14 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reportes_unimayor/services/base_dio_service.dart';
 
+final apiTokenDeviceServiceProvider = Provider(
+  (ref) => ApiTokenDeviceService(ref),
+);
+
 class ApiTokenDeviceService extends BaseDioService {
+  final Ref _ref;
+  ApiTokenDeviceService(this._ref) : super(_ref);
+
   Future<bool> setTokenDevice(String tokenDevice) async {
     try {
       final response = await dio.post(

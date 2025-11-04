@@ -1,11 +1,8 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:reportes_unimayor/providers/is_brigadier_provider.dart';
 import 'package:reportes_unimayor/services/api_auth_with_google.dart';
-import 'package:reportes_unimayor/services/api_token_device_service.dart';
 import 'package:reportes_unimayor/utils/show_message.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
@@ -22,35 +19,18 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final String? tokenGoogle = await ApiAuthWithGoogle().signInWithGoogle();
+      final String? tokenGoogle = await ref
+          .read(apiAuthWithGoogleProvider)
+          .signInWithGoogle();
 
-      if (tokenGoogle == null) {
-        if (!mounted) return;
+      if (tokenGoogle == null && mounted) {
         showMessage(
           context,
           'Credenciales incorrectas',
           Theme.of(context).colorScheme.error,
         );
-        return;
-      }
-
-      String? deviceToken = await FirebaseMessaging.instance.getToken();
-      if (deviceToken != null) {
-        await ApiTokenDeviceService().setTokenDevice(deviceToken);
-      }
-
-      final userType = await ref.read(isBrigadierProvider.future);
-
-      if (!mounted) return;
-
-      if (userType) {
-        context.go('/brigadier');
-      } else {
-        context.go('/user');
       }
     } catch (e) {
-      await ApiAuthWithGoogle().googleSingOut();
-
       if (!mounted) return;
       showMessage(
         context,

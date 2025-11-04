@@ -6,7 +6,7 @@ part of 'report_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$reportListHash() => r'eb6a7e616afc4ae702fb3d134bafc718dcb47a12';
+String _$reportListHash() => r'0e1e251bfe27184de65f586a29761ba6febfe8b0';
 
 /// See also [reportList].
 @ProviderFor(reportList)
@@ -25,7 +25,7 @@ final reportListProvider =
 // ignore: unused_element
 typedef ReportListRef = AutoDisposeFutureProviderRef<List<ReportsModel>>;
 String _$reportListBrigadierHash() =>
-    r'6af45b0c9311a815c3c2a8c1787ae13b8a8fb42f';
+    r'8e7a651383ccbc10eb6419738930f259a6ad3f0b';
 
 /// See also [reportListBrigadier].
 @ProviderFor(reportListBrigadier)
@@ -45,7 +45,7 @@ final reportListBrigadierProvider =
 typedef ReportListBrigadierRef =
     AutoDisposeFutureProviderRef<List<ReportsModel>>;
 String _$reportListHistoryBrigadierHash() =>
-    r'a2a6aa684151a6a51fd469d5024eb13e84d40e7f';
+    r'1795d78f0dafa05de78674cbe818c683c5974448';
 
 /// See also [reportListHistoryBrigadier].
 @ProviderFor(reportListHistoryBrigadier)
@@ -64,7 +64,7 @@ final reportListHistoryBrigadierProvider =
 // ignore: unused_element
 typedef ReportListHistoryBrigadierRef =
     AutoDisposeFutureProviderRef<List<ReportsModel>>;
-String _$reportListPendingHash() => r'b061340b1a231ce0a3dade3b8412d98fc727de4f';
+String _$reportListPendingHash() => r'8a8b53d714d44458d3c5660e2b79b334ba5ebf8d';
 
 /// See also [reportListPending].
 @ProviderFor(reportListPending)
@@ -82,7 +82,7 @@ final reportListPendingProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef ReportListPendingRef = AutoDisposeFutureProviderRef<List<ReportsModel>>;
-String _$cancelReportHash() => r'7bba703caadc0bcdaa17d12931eaa6b9ee288705';
+String _$cancelReportHash() => r'1e398b0eb8210f14194f0493ca80171e841b0354';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -223,7 +223,7 @@ class _CancelReportProviderElement
   int get id => (origin as CancelReportProvider).id;
 }
 
-String _$getReportByIdHash() => r'f9a6ef5da251bee207256934e3110da35126568c';
+String _$getReportByIdHash() => r'f7ba8b0bc5977fe640ea8dfc019904d390dc4470';
 
 /// See also [getReportById].
 @ProviderFor(getReportById)
@@ -344,7 +344,7 @@ class _GetReportByIdProviderElement
 }
 
 String _$getReportByIdBrigadierHash() =>
-    r'2ac5e600aee41126a447a8c26f6e8bf1951d1902';
+    r'7e24544e3dcd47a0e5472d970284c01492425cd8';
 
 /// See also [getReportByIdBrigadier].
 @ProviderFor(getReportByIdBrigadier)
@@ -465,7 +465,7 @@ class _GetReportByIdBrigadierProviderElement
   String get id => (origin as GetReportByIdBrigadierProvider).id;
 }
 
-String _$createReportHash() => r'd9287fbd9238a31af3f5a2d2d3ba9e131c60ef7f';
+String _$createReportHash() => r'ce470aa8cb740e779dce4a629a8292b714bc932b';
 
 /// See also [createReport].
 @ProviderFor(createReport)
@@ -661,7 +661,7 @@ class _CreateReportProviderElement
       (origin as CreateReportProvider).ubicacionTextOpcional;
 }
 
-String _$acceptReportHash() => r'e3c853efbf7f080fa884365290d821313ee520e2';
+String _$acceptReportHash() => r'e6d162079b60edb4fb90765e64138f740c1156e5';
 
 /// See also [acceptReport].
 @ProviderFor(acceptReport)
@@ -781,7 +781,7 @@ class _AcceptReportProviderElement
   int get id => (origin as AcceptReportProvider).id;
 }
 
-String _$endReportHash() => r'70a0d1f440b8fff9923b0b44c58d056d5b51abc3';
+String _$endReportHash() => r'063e353d3bd390fa893e62c200028932b37619d5';
 
 /// See also [endReport].
 @ProviderFor(endReport)
@@ -907,7 +907,7 @@ class _EndReportProviderElement extends AutoDisposeFutureProviderElement<bool>
   String get description => (origin as EndReportProvider).description;
 }
 
-String _$getRecordHash() => r'69274c4887ec4403050a0a53cc7ecd321a3b17d8';
+String _$getRecordHash() => r'a95d8974d3c10bae1d4f99d58b6b02f3cb06bc42';
 
 /// See also [getRecord].
 @ProviderFor(getRecord)

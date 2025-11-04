@@ -6,7 +6,7 @@ part of 'location_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$locationsTreeHash() => r'371c024ca8f4f9356e1859268667ed85e2f5c314';
+String _$locationsTreeHash() => r'5796b873eb31422be956f49e3de6c003d92eedba';
 
 /// See also [locationsTree].
 @ProviderFor(locationsTree)
@@ -24,7 +24,7 @@ final locationsTreeProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef LocationsTreeRef = AutoDisposeFutureProviderRef<List<Headquarters>>;
-String _$locationByIdHash() => r'967ce3fe19666c93888fa8f6be7a805c4c4d8aa3';
+String _$locationByIdHash() => r'96e19721cc50d47590c3bdf214b2e7da63bde901';
 
 /// Copied from Dart SDK
 class _SystemHash {

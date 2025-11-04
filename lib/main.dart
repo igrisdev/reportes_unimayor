@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:record/record.dart';
 import 'package:reportes_unimayor/providers/config/themes_provider.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
-import 'package:reportes_unimayor/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:reportes_unimayor/routes/routes.dart';
 import 'firebase_options.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -57,7 +57,7 @@ void main() async {
 
   await dotenv.load(fileName: ".env");
 
-  runApp(ProviderScope(child: MainApp()));
+  runApp(const ProviderScope(child: MainApp()));
 }
 
 class MainApp extends ConsumerStatefulWidget {
@@ -85,11 +85,13 @@ class _MainAppState extends ConsumerState<MainApp> {
   Widget build(BuildContext context) {
     final theme = ref.watch(themeControllerProvider);
 
+    final appRouter = ref.watch(goRouterProvider);
+
     return MaterialApp.router(
       title: 'Reportes Unimayor',
       debugShowCheckedModeBanner: false,
       theme: theme,
-      routerConfig: router,
+      routerConfig: appRouter,
     );
   }
 }

@@ -7,7 +7,7 @@ part of 'settings_provider.dart';
 // **************************************************************************
 
 String _$emergencyContactsListHash() =>
-    r'887e85a01a29df4d650e8bff45c91f1386766e57';
+    r'8d05b818b7f4599041595b295fd9457ca44f2b6d';
 
 /// See also [emergencyContactsList].
 @ProviderFor(emergencyContactsList)
@@ -27,7 +27,7 @@ final emergencyContactsListProvider =
 typedef EmergencyContactsListRef =
     AutoDisposeFutureProviderRef<List<EmergencyContact>>;
 String _$emergencyContactByIdHash() =>
-    r'232a55928a972832e87d594c1d2d3a5949c6af87';
+    r'b64f80b5cbd6cabe3e8722a75760cd7829470ddc';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -172,7 +172,7 @@ class _EmergencyContactByIdProviderElement
 }
 
 String _$createEmergencyContactHash() =>
-    r'2ef4b247f79f5388f1f1452a4216047cf7b9cd9e';
+    r'c21679db3d298d29873030f74e509e94d0715cd4';
 
 /// See also [createEmergencyContact].
 @ProviderFor(createEmergencyContact)
@@ -386,7 +386,7 @@ class _CreateEmergencyContactProviderElement
 }
 
 String _$updateEmergencyContactHash() =>
-    r'48b0402a91c5f61d63bd8ef3e8fd50493370d50d';
+    r'7a2f01aecf26bdeea33bd55f7f227e148233bfca';
 
 /// See also [updateEmergencyContact].
 @ProviderFor(updateEmergencyContact)
@@ -616,7 +616,7 @@ class _UpdateEmergencyContactProviderElement
 }
 
 String _$deleteEmergencyContactHash() =>
-    r'd9c79d258d7db08f0dfef0fb6a306781b63c6d3d';
+    r'aba3dda906da8c2c131bd31f401109a470e61a15';
 
 /// See also [deleteEmergencyContact].
 @ProviderFor(deleteEmergencyContact)
@@ -737,7 +737,7 @@ class _DeleteEmergencyContactProviderElement
 }
 
 String _$medicalConditionsListHash() =>
-    r'7471fc09f4f0050a7c7aba7c0f97ec18430cf990';
+    r'f0e728648dc1fb8eaeddb3f5e5cc62719bed1b96';
 
 /// See also [medicalConditionsList].
 @ProviderFor(medicalConditionsList)
@@ -757,7 +757,7 @@ final medicalConditionsListProvider =
 typedef MedicalConditionsListRef =
     AutoDisposeFutureProviderRef<List<MedicalCondition>>;
 String _$medicalConditionByIdHash() =>
-    r'9718b9f984bf29bf2ce32e806eeb98835e73a741';
+    r'c17b05dc7d8978e0cdd81cc666ea434b5635c1f7';
 
 /// See also [medicalConditionById].
 @ProviderFor(medicalConditionById)
@@ -881,7 +881,7 @@ class _MedicalConditionByIdProviderElement
 }
 
 String _$createMedicalConditionHash() =>
-    r'b20f0f3d6790c370e272f33c951e9e8ac4c1f2e8';
+    r'e56f8679cd50ad5c4e5f202852a5d14cd4937056';
 
 /// See also [createMedicalCondition].
 @ProviderFor(createMedicalCondition)
@@ -1047,7 +1047,7 @@ class _CreateMedicalConditionProviderElement
 }
 
 String _$updateMedicalConditionHash() =>
-    r'3a16ecc131a2a96c9bd0a951bc66e3865e58f57a';
+    r'43ea4902155e5452d9f3904d198aafff292c7513';
 
 /// See also [updateMedicalCondition].
 @ProviderFor(updateMedicalCondition)
@@ -1229,7 +1229,7 @@ class _UpdateMedicalConditionProviderElement
 }
 
 String _$deleteMedicalConditionHash() =>
-    r'c9e622a11837b732051a84a47e788983df887ce9';
+    r'ff61acd59df79d8916d709583c0b4587206e74a9';
 
 /// See also [deleteMedicalCondition].
 @ProviderFor(deleteMedicalCondition)
@@ -1349,7 +1349,7 @@ class _DeleteMedicalConditionProviderElement
   String get id => (origin as DeleteMedicalConditionProvider).id;
 }
 
-String _$personalDataHash() => r'7dfa5c6eca94c609f751538c4bbf1b5af4f263d6';
+String _$personalDataHash() => r'842b4755a74928dec2ea101987e5ee99ccd90f67';
 
 /// GET /api/DatosPersonales/usuarios/datos-personales
 ///
@@ -1370,7 +1370,7 @@ final personalDataProvider =
 // ignore: unused_element
 typedef PersonalDataRef = AutoDisposeFutureProviderRef<Map<String, dynamic>>;
 String _$updatePersonalDataHash() =>
-    r'be724fbeaf49dc2f794d0f298a64a3eebae1029c';
+    r'9646e9ef5d8d4abb57ea0307a29f296da18dd7f7';
 
 /// PUT /api/DatosPersonales/usuarios/datos-personales
 ///

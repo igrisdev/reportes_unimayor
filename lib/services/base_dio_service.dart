@@ -1,8 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reportes_unimayor/utils/local_storage.dart';
 
+final baseDioServiceProvider = Provider((ref) => BaseDioService(ref));
+
 class BaseDioService {
+  final Ref _ref;
+
   static final String url = dotenv.env['BASE_URL']!;
   static final String baseUrl = '$url/api';
 
@@ -14,7 +19,7 @@ class BaseDioService {
 
   final dio = Dio(optionsDio);
 
-  BaseDioService() {
+  BaseDioService(this._ref) {
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {

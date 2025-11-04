@@ -28,13 +28,11 @@ class _PersonDetailsDisplayState extends ConsumerState<PersonDetailsDisplay> {
   @override
   void initState() {
     super.initState();
-    // Ejecuta la búsqueda automáticamente si 'paraMi' es true
     if (widget.paraMi) {
       _searchPersonDetails();
     }
   }
 
-  // Método de búsqueda automática (adaptado de SearchPerson)
   void _searchPersonDetails() async {
     setState(() {
       _isLoading = true;
@@ -44,7 +42,9 @@ class _PersonDetailsDisplayState extends ConsumerState<PersonDetailsDisplay> {
     try {
       final email = widget.usuario.correo.trim();
 
-      final person = await ApiReportsService().searchPerson(email);
+      final person = await ref
+          .read(apiReportsServiceProvider)
+          .searchPerson(email);
 
       if (!mounted) return;
 
@@ -69,15 +69,9 @@ class _PersonDetailsDisplayState extends ConsumerState<PersonDetailsDisplay> {
   @override
   Widget build(BuildContext context) {
     if (!widget.paraMi) {
-      // ------------------------------------------------
-      // LÓGICA 1: Si paraMi es FALSE (como InfoUser)
-      // ------------------------------------------------
       return _buildInfoUser(context);
     }
 
-    // ------------------------------------------------
-    // LÓGICA 2: Si paraMi es TRUE (como SearchPerson, pero automático)
-    // ------------------------------------------------
     if (_isLoading) {
       return Center(
         child: Column(
@@ -93,27 +87,21 @@ class _PersonDetailsDisplayState extends ConsumerState<PersonDetailsDisplay> {
     }
 
     if (_person == null) {
-      // Si la búsqueda automática falló o no encontró datos, volvemos a la vista simple
       return _buildInfoUser(context);
     }
 
-    // LÓGICA DE FALLBACK AÑADIDA:
     final hasContacts = _person!.contactos.any((c) => c.mensaje == null);
     final hasConditions = _person!.condicionesMedicas.any(
       (cm) => cm.mensaje == null,
     );
 
-    // Si la persona no tiene contactos ni condiciones médicas,
-    // mostramos la vista simple de 'Informante'.
     if (!hasContacts && !hasConditions) {
       return _buildInfoUser(context);
     }
 
-    // Muestra los detalles de la persona
     return _buildPersonDetails(context);
   }
 
-  // Diseño para 'paraMi = false' (Informante)
   Widget _buildInfoUser(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final name = widget.usuario.nombre ?? '';
@@ -167,20 +155,14 @@ class _PersonDetailsDisplayState extends ConsumerState<PersonDetailsDisplay> {
     );
   }
 
-  // Diseño para 'paraMi = true' (Detalles del Paciente)
   Widget _buildPersonDetails(BuildContext context) {
     final theme = Theme.of(context);
 
-    // Los mensajes en tu modelo indican que si hay mensaje, no hay lista de detalles.
-    // Usaremos el mismo check para la visibilidad de la sección.
     final showContacts = _person!.contactos.any((c) => c.mensaje == null);
     final showConditions = _person!.condicionesMedicas.any(
       (cm) => cm.mensaje == null,
     );
 
-    // **********************************************
-    // Este contenido es el mismo que la sección de resultados en SearchPerson
-    // **********************************************
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -194,7 +176,6 @@ class _PersonDetailsDisplayState extends ConsumerState<PersonDetailsDisplay> {
           ),
         ),
         const SizedBox(height: 15),
-        // Información del usuario (siempre se muestra si llegamos aquí)
         _buildDetailSection(
           context,
           Icons.person,
@@ -205,12 +186,8 @@ class _PersonDetailsDisplayState extends ConsumerState<PersonDetailsDisplay> {
             Text("Correo: ${_person!.infoUsuario.correo}"),
           ],
         ),
-
         const Divider(height: 30),
-
-        // Contactos de emergencia
-        if (showContacts) // <-- SOLO MUESTRA SI HAY DATOS NO MENSAJE
-        ...[
+        if (showContacts) ...[
           _buildDetailSection(
             context,
             Icons.contact_phone,
@@ -238,10 +215,7 @@ class _PersonDetailsDisplayState extends ConsumerState<PersonDetailsDisplay> {
           ),
           const Divider(height: 30),
         ],
-
-        // Condiciones médicas
-        if (showConditions) // <-- SOLO MUESTRA SI HAY DATOS NO MENSAJE
-        ...[
+        if (showConditions) ...[
           _buildDetailSection(
             context,
             Icons.local_hospital,
@@ -265,13 +239,11 @@ class _PersonDetailsDisplayState extends ConsumerState<PersonDetailsDisplay> {
                       )
                       .toList(),
           ),
-          // No se agrega un Divider al final de la última sección
         ],
       ],
     );
   }
 
-  // Helper para construir secciones (Contactos, Condiciones)
   Widget _buildDetailSection(
     BuildContext context,
     IconData icon,
@@ -302,7 +274,6 @@ class _PersonDetailsDisplayState extends ConsumerState<PersonDetailsDisplay> {
     );
   }
 
-  // Helper para el ListTile de mensaje de condición/contacto
   ListTile _buildMessageListTile(BuildContext context, String message) {
     return ListTile(
       leading: const Icon(Icons.info_outline, color: Colors.grey),

@@ -1,11 +1,8 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:reportes_unimayor/services/api_auth_with_google.dart';
-import 'package:reportes_unimayor/services/api_token_device_service.dart';
-import 'package:reportes_unimayor/utils/local_storage.dart';
+import 'package:reportes_unimayor/providers/auth_notifier_provider.dart';
 
 class DrawerBrigadier extends ConsumerStatefulWidget {
   final BuildContext context;
@@ -23,22 +20,7 @@ class _DrawerBrigadierState extends ConsumerState<DrawerBrigadier> {
     setState(() => _isLoading = true);
 
     try {
-      await ApiAuthWithGoogle().googleSingOut();
-
-      String? deviceToken = await FirebaseMessaging.instance.getToken();
-
-      if (deviceToken != null) {
-        final res = await ApiTokenDeviceService().deleteTokenDevice(
-          deviceToken,
-        );
-
-        await deleteStorage('token');
-        await deleteStorage('refresh_token');
-
-        if (res) {
-          GoRouter.of(context).go('/auth');
-        }
-      }
+      await ref.read(authNotifierProvider.notifier).logout();
     } catch (e) {
       debugPrint("Error al cerrar sesión: $e");
     } finally {
@@ -119,7 +101,7 @@ class _DrawerBrigadierState extends ConsumerState<DrawerBrigadier> {
 
         if (_isLoading)
           Container(
-            color: Colors.black.withValues(alpha: 0.5),
+            color: Colors.black.withOpacity(0.5),
             alignment: Alignment.center,
             child: CircularProgressIndicator(color: colors.onPrimary),
           ),

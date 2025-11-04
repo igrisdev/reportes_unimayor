@@ -1,27 +1,25 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'is_brigadier_provider.dart';
+part of 'auth_notifier_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$isBrigadierHash() => r'44709b0ec5f47c930f626ac26a2acb4dd5c3a29c';
+String _$authNotifierHash() => r'c1e220e15dba9aca725a8fe27e3d02c4f1503d22';
 
-/// See also [isBrigadier].
-@ProviderFor(isBrigadier)
-final isBrigadierProvider = AutoDisposeFutureProvider<bool>.internal(
-  isBrigadier,
-  name: r'isBrigadierProvider',
+/// See also [AuthNotifier].
+@ProviderFor(AuthNotifier)
+final authNotifierProvider = NotifierProvider<AuthNotifier, AuthState>.internal(
+  AuthNotifier.new,
+  name: r'authNotifierProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$isBrigadierHash,
+      : _$authNotifierHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef IsBrigadierRef = AutoDisposeFutureProviderRef<bool>;
+typedef _$AuthNotifier = Notifier<AuthState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

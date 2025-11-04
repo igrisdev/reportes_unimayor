@@ -1,11 +1,17 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:reportes_unimayor/models/person_model.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/services/base_dio_service.dart';
 
+final apiReportsServiceProvider = Provider((ref) => ApiReportsService(ref));
+
 class ApiReportsService extends BaseDioService {
+  final Ref _ref;
+  ApiReportsService(this._ref) : super(_ref);
+
   Future<List<ReportsModel>> getReports() async {
     try {
       final response = await dio.get('/reportes');
@@ -63,7 +69,7 @@ class ApiReportsService extends BaseDioService {
       return reports;
     } catch (e) {
       print('Error detallado en ApiReportsService: $e');
-      rethrow; // Re-lanzar el error para que lo maneje el provider
+      rethrow;
     }
   }
 
@@ -143,46 +149,9 @@ class ApiReportsService extends BaseDioService {
       return true;
     } catch (e) {
       print('Error crear reporte con audio:  $e');
-      rethrow; // Re-lanzar el error para que lo maneje el provider
+      rethrow;
     }
   }
-  // Future<bool> createReport(
-  //   String id,
-  //   String? description,
-  //   String? record,
-  // ) async {
-  //   FormData formData;
-
-  //   if (record != null && record.isNotEmpty) {
-  //     formData = FormData.fromMap({
-  //       'IdUbicacion': id,
-  //       'Descripcion': description,
-  //       'ArchivoAudio': await MultipartFile.fromFile(
-  //         record,
-  //         filename: 'audio.m4a',
-  //         contentType: DioMediaType('audio', 'm4a'),
-  //       ),
-  //     });
-  //   } else {
-  //     formData = FormData.fromMap({
-  //       'IdUbicacion': id,
-  //       'Descripcion': description,
-  //     });
-  //   }
-
-  //   try {
-  //     final response = await dio.post('/reportes', data: formData);
-
-  //     if (response.statusCode != 200) {
-  //       throw Exception('Error al crear el reporte con audio');
-  //     }
-
-  //     return true;
-  //   } catch (e) {
-  //     print('Error crear reporte con audio: $e');
-  //     rethrow; // Re-lanzar el error para que lo maneje el provider
-  //   }
-  // }
 
   Future<bool> cancelReport(int id) async {
     try {

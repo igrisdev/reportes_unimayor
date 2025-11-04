@@ -108,7 +108,14 @@ class _AudioRecorderWidgetState extends State<AudioRecorderWidget> {
         final fileName = 'audio_report_$timestamp.m4a';
         final filePath = p.join(appDocumentsDir.path, fileName);
 
-        await _audioRecorder.start(const RecordConfig(), path: filePath);
+        await _audioRecorder.start(
+          const RecordConfig(
+            encoder: AudioEncoder.aacLc,
+            bitRate: 64000,
+            sampleRate: 44100,
+          ),
+          path: filePath,
+        );
 
         if (!mounted) return;
         setState(() {
