@@ -10,32 +10,41 @@ class AppBarBrigadier extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return AppBar(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: colors.surface,
       centerTitle: true,
       title: Text(
         'BRIGADISTA',
         style: GoogleFonts.poppins(
           fontWeight: FontWeight.w700,
           fontSize: 24,
-          color: colorScheme.onSurface,
+          color: colors.onSurface,
         ),
       ),
       actions: [
-        IconButton(
-          style: IconButton.styleFrom(
-            backgroundColor: colorScheme.primary,
-            foregroundColor: colorScheme.onPrimary,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+        Padding(
+          padding: const EdgeInsets.only(right: 8.0),
+          child: TextButton.icon(
+            onPressed: () => context.go('/user'),
+            icon: const Icon(Icons.engineering, size: 20),
+            label: Text(
+              'Cambiar',
+              style: GoogleFonts.poppins(
+                fontSize: 11,
+                color: colors.onPrimary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            style: TextButton.styleFrom(
+              foregroundColor: colors.onPrimary,
+              backgroundColor: colors.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
           ),
-          icon: const Icon(Icons.engineering),
-          onPressed: () {
-            context.go('/user');
-          },
         ),
       ],
     );

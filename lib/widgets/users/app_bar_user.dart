@@ -31,16 +31,23 @@ class AppBarUser extends ConsumerWidget implements PreferredSizeWidget {
         isBrigadierAsync.when(
           data: (isBrigadier) {
             if (isBrigadier) {
-              return IconButton(
-                style: IconButton.styleFrom(
-                  backgroundColor: colors.primary,
-                  foregroundColor: colors.onError,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+              return Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: TextButton.icon(
+                  onPressed: () => context.go('/brigadier'),
+                  icon: const Icon(Icons.person, size: 20),
+                  label: Text(
+                    'Cambiar',
+                    style: GoogleFonts.poppins(fontSize: 11, color: colors.onPrimary, fontWeight: FontWeight.w700),
+                  ),
+                  style: TextButton.styleFrom(
+                    foregroundColor: colors.onPrimary,
+                    backgroundColor: colors.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
-                icon: const Icon(Icons.person),
-                onPressed: () => context.go('/brigadier'),
               );
             }
             return const SizedBox.shrink();
