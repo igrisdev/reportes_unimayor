@@ -271,6 +271,8 @@ class _FormEmergencyContactsUserScreenState
                   _aceptaTerminos = value ?? false;
                   _showErrorTerminos = false;
                 });
+
+                FocusScope.of(context).unfocus();
               },
               controlAffinity: ListTileControlAffinity.leading,
               checkColor: colors.onPrimary,

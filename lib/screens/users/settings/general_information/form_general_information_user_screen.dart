@@ -152,6 +152,8 @@ class _FormGeneralInformationUserScreenState
                   _aceptaTerminos = value ?? false;
                   _showErrorTerminos = false;
                 });
+
+                FocusScope.of(context).unfocus();
               },
               controlAffinity: ListTileControlAffinity.leading,
               activeColor: colors.primary,

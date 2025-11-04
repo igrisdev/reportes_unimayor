@@ -18,30 +18,43 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   Future<void> login() async {
     setState(() => _isLoading = true);
 
-    try {
-      final String? tokenGoogle = await ref
-          .read(apiAuthWithGoogleProvider)
-          .signInWithGoogle();
+    final result = await ref.read(apiAuthWithGoogleProvider).signInWithGoogle();
 
-      if (tokenGoogle == null && mounted) {
+    if (!mounted) return;
+
+    switch (result) {
+      case GoogleSignInResult.success:
+        break;
+
+      case GoogleSignInResult.wrongDomain:
         showMessage(
           context,
-          'Credenciales incorrectas',
+          'Solo puedes acceder con una cuenta de correo @unimayor.edu.co',
           Theme.of(context).colorScheme.error,
         );
-      }
-    } catch (e) {
-      if (!mounted) return;
-      showMessage(
-        context,
-        'Solo puedes acceder a la aplicación con una cuenta de correo unimayor',
-        Theme.of(context).colorScheme.error,
-      );
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+        break;
+
+      case GoogleSignInResult.networkError:
+        showMessage(
+          context,
+          'Error de conexión. Revisa tu WiFi o datos móviles.',
+          Theme.of(context).colorScheme.error,
+        );
+        break;
+
+      case GoogleSignInResult.apiError:
+        showMessage(
+          context,
+          'No se pudo iniciar sesión. Inténtalo de nuevo más tarde.',
+          Theme.of(context).colorScheme.error,
+        );
+        break;
+
+      case GoogleSignInResult.cancelled:
+        break;
     }
+
+    setState(() => _isLoading = false);
   }
 
   @override
@@ -68,7 +81,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                       style: GoogleFonts.poppins(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
-                        color: colorScheme.onSurface, // 👈 título
+                        color: colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -79,11 +92,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                         fontSize: 16,
                         color:
                             textTheme.bodyMedium?.color ??
-                            colorScheme.onSurfaceVariant, // 👈 subtítulo
+                            colorScheme.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(height: 40),
-
                     TextButton(
                       style: ButtonStyle(
                         backgroundColor: WidgetStateProperty.all(
@@ -101,7 +113,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                           ),
                         ),
                       ),
-                      onPressed: login,
+                      onPressed: _isLoading ? null : login,
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -121,10 +133,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                         ],
                       ),
                     ),
-
                     const SizedBox(height: 20),
-
-                    // Botón Invitado
                     TextButton(
                       style: ButtonStyle(
                         backgroundColor: WidgetStateProperty.all(
@@ -166,10 +175,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             ),
           ),
         ),
-
         if (_isLoading)
           Container(
-            color: colorScheme.surface.withValues(alpha: 0.5),
+            color: colorScheme.surface.withOpacity(0.5),
             alignment: Alignment.center,
             child: CircularProgressIndicator(color: colorScheme.onSurface),
           ),

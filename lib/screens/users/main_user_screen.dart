@@ -231,8 +231,6 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
             );
           }).toList(),
         ),
-
-        const SizedBox(height: 30),
       ],
     );
   }

@@ -595,7 +595,7 @@ class _CreateReportUserScreenState
             Expanded(
               child: TextFormField(
                 initialValue: formDescription,
-                minLines: 1,
+                minLines: 2,
                 maxLines: 7,
                 onChanged: (value) {
                   setState(() {
@@ -614,7 +614,7 @@ class _CreateReportUserScreenState
                   return null;
                 },
                 decoration: InputDecoration(
-                  hintText: "Descripción del reporte",
+                  hintText: "Ejemplo: Se desmayo una persona",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4),
                   ),
@@ -898,7 +898,7 @@ class _CreateReportUserScreenState
     final colors = Theme.of(context).colorScheme;
 
     return SizedBox(
-      height: 80,
+      height: 90,
       width: double.infinity,
       child: ElevatedButton.icon(
         style: ElevatedButton.styleFrom(
@@ -1040,6 +1040,7 @@ class _CreateReportUserScreenState
                       _buildContentSection(),
                       const SizedBox(height: 40),
                       _buildSubmitButton(isReadyToSend),
+                      const SizedBox(height: 40),
                     ],
                   ),
                 ),

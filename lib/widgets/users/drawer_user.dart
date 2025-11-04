@@ -49,11 +49,34 @@ class _DrawerUserState extends ConsumerState<DrawerUser> {
           backgroundColor: colorScheme.surface,
           child: Column(
             children: [
-              DrawerHeader(
-                child: Center(
-                  child: Image.asset(
-                    'assets/icons/logo_unimayor.png',
-                    width: 80,
+              SizedBox(
+                width: double.infinity,
+                height: 270,
+                child: DrawerHeader(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 10),
+                      Image.asset('assets/icons/logo_unimayor.png', width: 80),
+                      const SizedBox(height: 20),
+                      Text(
+                        'REPORTES UNIMAYOR',
+                        style: GoogleFonts.poppins(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w700,
+                          color: colorScheme.primary,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'ROL: REPORTADOR',
+                        style: GoogleFonts.poppins(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: colorScheme.onSecondary,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

@@ -93,6 +93,7 @@ class _FormMedicalInformationUserScreenState
         _showErrorFecha = false;
       });
     }
+    FocusScope.of(context).unfocus();
   }
 
   Future<void> _performSave() async {
@@ -251,6 +252,8 @@ class _FormMedicalInformationUserScreenState
                   _aceptaTerminos = value ?? false;
                   _showErrorTerminos = false;
                 });
+
+                FocusScope.of(context).unfocus();
               },
               controlAffinity: ListTileControlAffinity.leading,
               checkColor: colors.onPrimary,
