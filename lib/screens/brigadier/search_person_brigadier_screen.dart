@@ -31,7 +31,6 @@ class _AuthScreenState extends ConsumerState<SearchPerson> {
     super.dispose();
   }
 
-  // REEMPLAZA ESTE MÉTODO
   void _search() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -45,8 +44,6 @@ class _AuthScreenState extends ConsumerState<SearchPerson> {
     try {
       final email = _emailController.text.trim();
 
-      // --- CORRECCIÓN AQUÍ ---
-      // Obtenemos el servicio a través de ref.read()
       final person = await ref
           .read(apiReportsServiceProvider)
           .searchPerson(email);
@@ -73,7 +70,6 @@ class _AuthScreenState extends ConsumerState<SearchPerson> {
 
   @override
   Widget build(BuildContext context) {
-    // ... (El resto del archivo no necesita cambios)
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
@@ -206,7 +202,6 @@ class _AuthScreenState extends ConsumerState<SearchPerson> {
 
                       const Divider(height: 30),
 
-                      // Condiciones médicas
                       Row(
                         children: [
                           Icon(
