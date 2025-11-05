@@ -90,7 +90,7 @@ class ApiReportsService extends BaseDioService {
       return reports;
     } catch (e) {
       print('Error detallado en ApiReportsService: $e');
-      rethrow; // Re-lanzar el error para que lo maneje el provider
+      rethrow;
     }
   }
 
@@ -153,9 +153,12 @@ class ApiReportsService extends BaseDioService {
     }
   }
 
-  Future<bool> cancelReport(int id) async {
+  Future<bool> cancelReport(int id, String motivoCancelacion) async {
     try {
-      final response = await dio.put('/reportes/cancelar/$id');
+      final response = await dio.put(
+        '/reportes/cancelar/$id',
+        data: {'motivoCancelacion': motivoCancelacion},
+      );
 
       if (response.statusCode != 200) {
         throw Exception('Error al cancelar el reporte');
@@ -164,7 +167,7 @@ class ApiReportsService extends BaseDioService {
       return true;
     } catch (e) {
       print('Error en ApiReportsService: $e');
-      rethrow; // Re-lanzar el error para que lo maneje el provider
+      rethrow;
     }
   }
 

@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/person_model.dart';
 import 'package:reportes_unimayor/services/api_reports_service.dart';
 import 'package:reportes_unimayor/utils/show_message.dart';
-import 'package:reportes_unimayor/widgets/brigadier/app_bar_brigadier.dart';
 
 class SearchPerson extends ConsumerStatefulWidget {
   const SearchPerson({super.key});
@@ -80,7 +79,16 @@ class _AuthScreenState extends ConsumerState<SearchPerson> {
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
-      appBar: AppBarBrigadier(),
+      appBar: AppBar(
+        title: Text(
+          'Consular al Paciente',
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w600,
+            fontSize: 24,
+            color: colorScheme.onSurface,
+          ),
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.only(left: 18, right: 18, top: 10),
@@ -88,16 +96,6 @@ class _AuthScreenState extends ConsumerState<SearchPerson> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                'Consultar Al Paciente',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w600,
-                  color: textTheme.titleLarge?.color,
-                ),
-              ),
-              const SizedBox(height: 8),
               Text(
                 'Escribe el correo de la persona que desea consultar para ver su información.',
                 style: GoogleFonts.poppins(
@@ -285,7 +283,15 @@ class _AuthScreenState extends ConsumerState<SearchPerson> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('Buscar', style: GoogleFonts.poppins(fontSize: 16)),
+          Icon(Icons.search, size: 24, color: colorScheme.onPrimary),
+          SizedBox(width: 8),
+          Text(
+            'Buscar',
+            style: GoogleFonts.poppins(
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
           if (_isLoading) const SizedBox(width: 20),
           if (_isLoading)
             SizedBox(

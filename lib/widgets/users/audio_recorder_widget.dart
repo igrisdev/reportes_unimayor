@@ -76,7 +76,7 @@ class _AudioRecorderWidgetState extends State<AudioRecorderWidget> {
   StreamSubscription<Amplitude>? _amplitudeSub;
   List<double> _amplitudes = [];
 
-  static const Duration _maxDuration = Duration(minutes: 5);
+  static const Duration _maxDuration = Duration(minutes: 2);
 
   @override
   void initState() {

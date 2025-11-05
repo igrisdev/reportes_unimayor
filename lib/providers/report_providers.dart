@@ -118,21 +118,20 @@ Future<List<ReportsModel>> reportListPending(ReportListPendingRef ref) async {
 }
 
 @riverpod
-Future<bool> cancelReport(CancelReportRef ref, int id) async {
+Future<bool> cancelReport(CancelReportRef ref, {required int id, required String reason}) async {
   try {
     final apiService = ref.watch(apiReportsServiceProvider);
-    final response = await apiService.cancelReport(id);
+    final response = await apiService.cancelReport(id, reason);
 
     if (response) {
       await ref.refresh(reportListPendingProvider.future);
       ref.invalidate(reportListProvider);
-
       return true;
     }
 
     return false;
   } catch (e) {
-    print('Error en report provider: $e');
+    print('Error en cancelReport provider: $e');
     rethrow;
   }
 }

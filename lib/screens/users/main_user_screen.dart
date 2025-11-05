@@ -4,13 +4,13 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
+import 'package:reportes_unimayor/widgets/users/cancel_dialog.dart';
 import 'package:reportes_unimayor/widgets/general/text_health_assistance.dart';
 import 'package:reportes_unimayor/widgets/users/app_bar_user.dart';
 import 'package:reportes_unimayor/widgets/general/big_badge_view_progress.dart';
 import 'package:reportes_unimayor/widgets/general/date_and_hour_container.dart';
 import 'package:reportes_unimayor/widgets/general/description_report_container.dart';
 import 'package:reportes_unimayor/widgets/users/drawer_user.dart';
-import 'package:reportes_unimayor/widgets/general/confirm_dialog.dart';
 import 'package:reportes_unimayor/widgets/general/text_note.dart';
 import 'package:reportes_unimayor/widgets/general/view_location.dart';
 import 'package:reportes_unimayor/utils/list_menu_user.dart';
@@ -328,26 +328,32 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
               showDialog(
                 context: context,
                 barrierDismissible: false,
-                builder: (context) {
-                  return ConfirmDialog(
-                    title: "Confirmar cancelación",
+                builder: (dialogContext) {
+                  return CancelDialog(
+                    title: "Confirmar Cancelación",
                     message:
-                        "¿Estás seguro de que quieres cancelar el reporte?",
-                    confirmText: "Aceptar",
+                        "Por favor, selecciona un motivo para cancelar el reporte.",
+                    confirmText: "Cancelar Reporte",
                     cancelText: "Cerrar",
-                    onConfirm: () async {
+                    onConfirm: (String reason) async {
                       final result = await ref.read(
-                        cancelReportProvider(idReport.value!).future,
+                        cancelReportProvider(
+                          id: idReport.value!,
+                          reason: reason,
+                        ).future,
                       );
 
-                      if (result) {
+                      if (result && context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Reporte cancelado")),
+                          const SnackBar(
+                            content: Text("Reporte cancelado con éxito"),
+                          ),
                         );
-                      } else {
+                      } else if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text("No se pudo cancelar el reporte"),
+                            backgroundColor: Colors.red,
                           ),
                         );
                       }

@@ -82,7 +82,7 @@ final reportListPendingProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef ReportListPendingRef = AutoDisposeFutureProviderRef<List<ReportsModel>>;
-String _$cancelReportHash() => r'1e398b0eb8210f14194f0493ca80171e841b0354';
+String _$cancelReportHash() => r'2b07795c63eed524014b5fb74721dfd6da236635';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -115,15 +115,15 @@ class CancelReportFamily extends Family<AsyncValue<bool>> {
   const CancelReportFamily();
 
   /// See also [cancelReport].
-  CancelReportProvider call(int id) {
-    return CancelReportProvider(id);
+  CancelReportProvider call({required int id, required String reason}) {
+    return CancelReportProvider(id: id, reason: reason);
   }
 
   @override
   CancelReportProvider getProviderOverride(
     covariant CancelReportProvider provider,
   ) {
-    return call(provider.id);
+    return call(id: provider.id, reason: provider.reason);
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -144,9 +144,9 @@ class CancelReportFamily extends Family<AsyncValue<bool>> {
 /// See also [cancelReport].
 class CancelReportProvider extends AutoDisposeFutureProvider<bool> {
   /// See also [cancelReport].
-  CancelReportProvider(int id)
+  CancelReportProvider({required int id, required String reason})
     : this._internal(
-        (ref) => cancelReport(ref as CancelReportRef, id),
+        (ref) => cancelReport(ref as CancelReportRef, id: id, reason: reason),
         from: cancelReportProvider,
         name: r'cancelReportProvider',
         debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -156,6 +156,7 @@ class CancelReportProvider extends AutoDisposeFutureProvider<bool> {
         allTransitiveDependencies:
             CancelReportFamily._allTransitiveDependencies,
         id: id,
+        reason: reason,
       );
 
   CancelReportProvider._internal(
@@ -166,9 +167,11 @@ class CancelReportProvider extends AutoDisposeFutureProvider<bool> {
     required super.debugGetCreateSourceHash,
     required super.from,
     required this.id,
+    required this.reason,
   }) : super.internal();
 
   final int id;
+  final String reason;
 
   @override
   Override overrideWith(
@@ -184,6 +187,7 @@ class CancelReportProvider extends AutoDisposeFutureProvider<bool> {
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
         id: id,
+        reason: reason,
       ),
     );
   }
@@ -195,13 +199,16 @@ class CancelReportProvider extends AutoDisposeFutureProvider<bool> {
 
   @override
   bool operator ==(Object other) {
-    return other is CancelReportProvider && other.id == id;
+    return other is CancelReportProvider &&
+        other.id == id &&
+        other.reason == reason;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, id.hashCode);
+    hash = _SystemHash.combine(hash, reason.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -212,6 +219,9 @@ class CancelReportProvider extends AutoDisposeFutureProvider<bool> {
 mixin CancelReportRef on AutoDisposeFutureProviderRef<bool> {
   /// The parameter `id` of this provider.
   int get id;
+
+  /// The parameter `reason` of this provider.
+  String get reason;
 }
 
 class _CancelReportProviderElement
@@ -221,6 +231,8 @@ class _CancelReportProviderElement
 
   @override
   int get id => (origin as CancelReportProvider).id;
+  @override
+  String get reason => (origin as CancelReportProvider).reason;
 }
 
 String _$getReportByIdHash() => r'f7ba8b0bc5977fe640ea8dfc019904d390dc4470';

@@ -441,7 +441,10 @@ class _CreateReportUserScreenState
           borderSide: BorderSide(color: colors.primary, width: 2),
         ),
         hintText: "Ejemplo: Bicentenario, Piso 2, Salon 202",
-        hintStyle: GoogleFonts.poppins(fontSize: 15),
+        hintStyle: GoogleFonts.poppins(
+          fontSize: 15,
+          color: colors.onSurface.withValues(alpha: 0.4),
+        ),
         label: Text(
           'Usar solo si no se puede escanear o seleccionar manualmente la ubicación',
           style: GoogleFonts.poppins(
@@ -615,6 +618,10 @@ class _CreateReportUserScreenState
                 },
                 decoration: InputDecoration(
                   hintText: "Ejemplo: Se desmayo una persona",
+                  hintStyle: GoogleFonts.poppins(
+                    fontSize: 18,
+                    color: colors.onSurface.withValues(alpha: 0.4),
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4),
                   ),
