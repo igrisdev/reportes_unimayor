@@ -1,5 +1,6 @@
 import 'package:reportes_unimayor/services/api_auth_service.dart';
 import 'package:reportes_unimayor/services/api_auth_with_google.dart';
+import 'package:reportes_unimayor/services/api_token_device_service.dart';
 import 'package:reportes_unimayor/utils/local_storage.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -51,9 +52,9 @@ class AuthNotifier extends _$AuthNotifier {
   }
 
   Future<void> logout() async {
-    print("[AuthNotifier] logout: Empezando logout flow...");
     try {
       await ref.read(apiAuthWithGoogleProvider).googleSingOut();
+      await ref.read(apiTokenDeviceServiceProvider).deleteTokenDevice();
     } catch (e) {
       print('Error durante googleSignOut en AuthNotifier: $e');
     }

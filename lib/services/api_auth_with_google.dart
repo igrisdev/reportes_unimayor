@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:reportes_unimayor/providers/auth_notifier_provider.dart';
+import 'package:reportes_unimayor/services/api_token_device_service.dart';
 import 'package:reportes_unimayor/services/base_dio_service.dart';
 import 'package:reportes_unimayor/utils/local_storage.dart';
 
@@ -59,6 +61,7 @@ class ApiAuthWithGoogle extends BaseDioService {
 
         await _ref.read(authNotifierProvider.notifier).login();
 
+        await _ref.read(apiTokenDeviceServiceProvider).setTokenDevice();
         return GoogleSignInResult.success;
       } else {
         await googleSignIn.signOut();

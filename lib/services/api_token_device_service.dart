@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reportes_unimayor/services/base_dio_service.dart';
 
@@ -9,28 +10,41 @@ class ApiTokenDeviceService extends BaseDioService {
   final Ref _ref;
   ApiTokenDeviceService(this._ref) : super(_ref);
 
-  Future<bool> setTokenDevice(String tokenDevice) async {
+  Future<bool> setTokenDevice() async {
     try {
+      String? deviceToken = await FirebaseMessaging.instance.getToken();
+
+      if (deviceToken == null) {
+        throw Exception('No se pudo obtener el token del dispositivo');
+      }
+
       final response = await dio.post(
         '/dispositivos/registrar',
-        data: {'token': tokenDevice},
+        data: {'token': deviceToken},
       );
 
       if (response.statusCode == 200) {
         return true;
       } else {
-        return false;
+        throw Exception('No se pudo registrar el token del dispositivo');
       }
     } catch (e) {
-      return false;
+      throw Exception('No se pudo registrar el token del dispositivo');
     }
   }
 
-  Future<bool> deleteTokenDevice(String tokenDevice) async {
+  Future<bool> deleteTokenDevice() async {
     try {
+      String? deviceToken = await FirebaseMessaging.instance.getToken();
+
+      if (deviceToken == null) {
+        throw Exception(
+          'No se pudo obtener el token del dispositivo para eliminarlo',
+        );
+      }
       final response = await dio.delete(
         '/dispositivos/eliminar',
-        data: {'token': tokenDevice},
+        data: {'token': deviceToken},
       );
 
       if (response.statusCode == 200) {
@@ -39,7 +53,6 @@ class ApiTokenDeviceService extends BaseDioService {
         return false;
       }
     } catch (e) {
-      print('Error Delete **********************');
       print(e);
       return false;
     }

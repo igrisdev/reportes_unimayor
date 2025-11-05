@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reportes_unimayor/providers/auth_notifier_provider.dart';
+import 'package:reportes_unimayor/services/api_token_device_service.dart';
 import 'package:reportes_unimayor/services/base_dio_service.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:reportes_unimayor/utils/local_storage.dart';
@@ -23,6 +24,7 @@ class ApiAuthService extends BaseDioService {
 
         _ref.read(authNotifierProvider.notifier).login();
 
+        await _ref.read(apiTokenDeviceServiceProvider).setTokenDevice();
         return response.data['token'];
       } else {
         return null;

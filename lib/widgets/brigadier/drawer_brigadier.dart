@@ -124,7 +124,7 @@ class _DrawerBrigadierState extends ConsumerState<DrawerBrigadier> {
 
         if (_isLoading)
           Container(
-            color: Colors.black.withOpacity(0.5),
+            color: Colors.black.withValues(alpha: 0.5),
             alignment: Alignment.center,
             child: CircularProgressIndicator(color: colors.onPrimary),
           ),
