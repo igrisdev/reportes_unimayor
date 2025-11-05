@@ -27,7 +27,7 @@ class BigBadgeViewProgress extends StatelessWidget {
         textColor = colorScheme.onError;
         break;
       case 'Finalizado':
-        bgColor = colorScheme.primary; // azul = principal
+        bgColor = colorScheme.tertiary; // azul = principal
         textColor = colorScheme.onPrimary;
         break;
     }

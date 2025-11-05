@@ -99,7 +99,7 @@ class HistoryUserScreen extends ConsumerWidget {
 
         final isFinalized = report.estado == 'Finalizado';
 
-        Color colorBackground = isFinalized ? colors.primary : colors.error;
+        Color colorBackground = isFinalized ? colors.tertiary : colors.error;
 
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
@@ -136,7 +136,6 @@ class HistoryUserScreen extends ConsumerWidget {
                   hour: report.horaCreacion,
                 ),
                 const SizedBox(height: 20),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -170,8 +169,7 @@ class HistoryUserScreen extends ConsumerWidget {
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            border: Border.all(color: colors.outline),
+                            color: colors.primary,
                             borderRadius: BorderRadius.circular(100),
                           ),
                           padding: const EdgeInsets.symmetric(
@@ -183,8 +181,8 @@ class HistoryUserScreen extends ConsumerWidget {
                               'Ver Más',
                               style: GoogleFonts.poppins(
                                 fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                                color: colors.onSurface,
+                                fontWeight: FontWeight.w600,
+                                color: colors.onPrimary,
                               ),
                             ),
                           ),
