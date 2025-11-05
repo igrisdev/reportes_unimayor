@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
 import 'package:reportes_unimayor/widgets/general/date_and_hour_container.dart';
+import 'package:reportes_unimayor/widgets/general/text_cancel.dart';
 import 'package:reportes_unimayor/widgets/general/text_note_brigadier.dart';
 import 'package:reportes_unimayor/widgets/general/text_no_reports.dart';
 import 'package:reportes_unimayor/widgets/general/view_location.dart';
@@ -122,8 +123,14 @@ class HistoryUserScreen extends ConsumerWidget {
                       ? report.detallesFinalizacion
                       : 'Sin nota',
                 ),
-                if (report.detallesFinalizacion.isNotEmpty)
-                  const SizedBox(height: 10),
+                if (report.estado == 'Cancelado')
+                  TextCancel(
+                    title: 'Motivo de cancelación',
+                    description: report.motivoCancelacion.isNotEmpty
+                        ? report.motivoCancelacion
+                        : 'Sin motivo',
+                  ),
+                const SizedBox(height: 10),
                 DateAndHourContainer(
                   date: report.fechaCreacion,
                   hour: report.horaCreacion,

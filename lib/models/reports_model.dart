@@ -19,6 +19,7 @@ class ReportsModel {
   String detallesFinalizacion;
   String ubicacionTextOpcional;
   String telefonoReportado;
+  String motivoCancelacion;
   String rutaAudio;
   String estado;
   bool paraMi;
@@ -33,6 +34,7 @@ class ReportsModel {
     required this.detallesFinalizacion,
     required this.ubicacionTextOpcional,
     required this.telefonoReportado,
+    required this.motivoCancelacion,
     required this.rutaAudio,
     required this.estado,
     required this.paraMi,
@@ -48,6 +50,7 @@ class ReportsModel {
     String? detallesFinalizacion,
     String? ubicacionTextOpcional,
     String? telefonoReportado,
+    String? motivoCancelacion,
     String? rutaAudio,
     String? estado,
     bool? paraMi,
@@ -61,6 +64,7 @@ class ReportsModel {
     detallesFinalizacion: detallesFinalizacion ?? this.detallesFinalizacion,
     ubicacionTextOpcional: ubicacionTextOpcional ?? this.ubicacionTextOpcional,
     telefonoReportado: telefonoReportado ?? this.telefonoReportado,
+    motivoCancelacion: motivoCancelacion ?? this.motivoCancelacion,
     rutaAudio: rutaAudio ?? this.rutaAudio,
     estado: estado ?? this.estado,
     paraMi: paraMi ?? this.paraMi,
@@ -86,6 +90,7 @@ class ReportsModel {
     detallesFinalizacion: json["detallesFinalizacion"] ?? "",
     ubicacionTextOpcional: json["ubicacionTextOpcional"] ?? "",
     telefonoReportado: json["telefonoReportado"] ?? "",
+    motivoCancelacion: json["motivoCancelacion"] ?? "",
     rutaAudio: json["rutaAudio"] ?? "",
     estado: json["estado"],
     paraMi: json["paraMi"],
@@ -101,6 +106,7 @@ class ReportsModel {
     "detallesFinalizacion": detallesFinalizacion,
     "ubicacionTextOpcional": ubicacionTextOpcional,
     "telefonoReportado": telefonoReportado,
+    "motivoCancelacion": motivoCancelacion,
     "rutaAudio": rutaAudio,
     "estado": estado,
     "paraMi": paraMi,

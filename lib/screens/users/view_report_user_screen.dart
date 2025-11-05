@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
+import 'package:reportes_unimayor/widgets/general/text_cancel.dart';
 import 'package:reportes_unimayor/widgets/general/text_health_assistance.dart';
 import 'package:reportes_unimayor/widgets/general/big_badge_view_progress.dart';
 import 'package:reportes_unimayor/widgets/general/date_and_hour_container.dart';
@@ -56,6 +57,23 @@ class ViewReportUserScreen extends ConsumerWidget {
         children: [
           BigBadgeViewProgress(text: report.estado),
           const SizedBox(height: 20),
+          if (report.estado == 'Cancelado')
+            TextCancel(
+              title: 'Motivo de cancelación',
+              description: report.motivoCancelacion.isNotEmpty
+                  ? report.motivoCancelacion
+                  : 'Sin motivo',
+            ),
+
+          TextNoteBrigadier(
+            title: 'Nota Brigadista',
+            description: report.detallesFinalizacion.isNotEmpty
+                ? report.detallesFinalizacion
+                : 'Sin nota',
+          ),
+          const SizedBox(height: 20),
+          Divider(height: 1),
+          const SizedBox(height: 10),
           ViewLocation(
             location: report.ubicacion,
             ubicacionTextOpcional: report.ubicacionTextOpcional,
@@ -77,14 +95,6 @@ class ViewReportUserScreen extends ConsumerWidget {
             hour: report.horaCreacion,
           ),
           const SizedBox(height: 30),
-          TextNoteBrigadier(
-            title: 'Nota Brigadista',
-            description: report.detallesFinalizacion.isNotEmpty
-                ? report.detallesFinalizacion
-                : 'Sin nota',
-          ),
-          if (report.detallesFinalizacion.isNotEmpty)
-            const SizedBox(height: 30),
         ],
       ),
     );
