@@ -8,6 +8,7 @@ import 'package:reportes_unimayor/screens/brigadier/search_person_brigadier_scre
 import 'package:reportes_unimayor/screens/brigadier/view_report_brigadier_screen.dart';
 import 'package:reportes_unimayor/screens/brigadier/view_report_process_brigadier_screen.dart';
 import 'package:reportes_unimayor/screens/splash/splash_screen.dart';
+import 'package:reportes_unimayor/screens/terms/terms_and_conditions_screen.dart';
 import 'package:reportes_unimayor/screens/users/create_report_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/history_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/main_user_screen.dart';
@@ -18,7 +19,6 @@ import 'package:reportes_unimayor/screens/users/settings/general_information/gen
 import 'package:reportes_unimayor/screens/users/settings/medical_information/form_medical_information_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/settings/medical_information/medical_information_user_screen.dart';
 import 'package:reportes_unimayor/screens/users/view_report_user_screen.dart';
-import 'package:reportes_unimayor/utils/local_storage.dart';
 import 'package:reportes_unimayor/widgets/users/qr_scanner.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -31,6 +31,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/splash',
         builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: '/terms-and-conditions',
+        builder: (context, state) => const TermsAndConditionsScreen(),
       ),
       GoRoute(
         path: '/auth',

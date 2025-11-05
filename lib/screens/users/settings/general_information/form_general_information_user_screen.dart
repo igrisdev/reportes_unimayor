@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -139,6 +140,10 @@ class _FormGeneralInformationUserScreenState
                         decoration: TextDecoration.underline,
                         fontWeight: FontWeight.w600,
                       ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          context.push('/terms-and-conditions');
+                        },
                     ),
                     const TextSpan(
                       text: 'sobre el tratamiento de mis datos personales.',
@@ -152,7 +157,6 @@ class _FormGeneralInformationUserScreenState
                   _aceptaTerminos = value ?? false;
                   _showErrorTerminos = false;
                 });
-
                 FocusScope.of(context).unfocus();
               },
               controlAffinity: ListTileControlAffinity.leading,

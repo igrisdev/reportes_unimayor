@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -260,6 +261,10 @@ class _FormEmergencyContactsUserScreenState
                         decoration: TextDecoration.underline,
                         fontWeight: FontWeight.w600,
                       ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          context.push('/terms-and-conditions');
+                        },
                     ),
                     const TextSpan(
                       text: 'sobre el tratamiento de mis datos personales.',
@@ -273,7 +278,6 @@ class _FormEmergencyContactsUserScreenState
                   _aceptaTerminos = value ?? false;
                   _showErrorTerminos = false;
                 });
-
                 FocusScope.of(context).unfocus();
               },
               controlAffinity: ListTileControlAffinity.leading,
