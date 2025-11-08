@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:reportes_unimayor/providers/settings_provider.dart';
 import 'package:reportes_unimayor/widgets/general/confirm_dialog.dart';
+import 'package:reportes_unimayor/widgets/general/show_message_snack_bar_.dart';
 
 class FormGeneralInformationUserScreen extends ConsumerStatefulWidget {
   const FormGeneralInformationUserScreen({super.key});
@@ -71,26 +72,16 @@ class _FormGeneralInformationUserScreenState
       if (ok) {
         ref.invalidate(personalDataProvider);
         context.pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '✅ Datos personales actualizados correctamente',
-              style: GoogleFonts.poppins(),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.tertiary,
-            behavior: SnackBarBehavior.floating,
-          ),
+        showMessageSnackBar(
+          context,
+          message: 'Datos personales actualizados correctamente',
+          type: SnackBarType.success,
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '⚠️ Error al actualizar los datos personales',
-              style: GoogleFonts.poppins(),
-            ),
-            backgroundColor: Colors.orange,
-            behavior: SnackBarBehavior.floating,
-          ),
+        showMessageSnackBar(
+          context,
+          message: 'Error al actualizar los datos personales',
+          type: SnackBarType.error,
         );
       }
     }

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/services/api_auth_with_google.dart';
-import 'package:reportes_unimayor/utils/show_message.dart';
+import 'package:reportes_unimayor/widgets/general/show_message_snack_bar_.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key});
@@ -27,26 +27,27 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         break;
 
       case GoogleSignInResult.wrongDomain:
-        showMessage(
+        showMessageSnackBar(
           context,
-          'Solo puedes acceder con una cuenta de correo @unimayor.edu.co',
-          Theme.of(context).colorScheme.error,
+          message:
+              'Solo puedes acceder con una cuenta de correo @unimayor.edu.co',
+          type: SnackBarType.error,
         );
         break;
 
       case GoogleSignInResult.networkError:
-        showMessage(
+        showMessageSnackBar(
           context,
-          'Error de conexión. Revisa tu WiFi o datos móviles.',
-          Theme.of(context).colorScheme.error,
+          message: 'Error de conexión. Revisa tu WiFi o datos móviles',
+          type: SnackBarType.error,
         );
         break;
 
       case GoogleSignInResult.apiError:
-        showMessage(
+        showMessageSnackBar(
           context,
-          'No se pudo iniciar sesión. Inténtalo de nuevo más tarde.',
-          Theme.of(context).colorScheme.error,
+          message: 'No se pudo iniciar sesión. Inténtalo de nuevo más tarde',
+          type: SnackBarType.error,
         );
         break;
 

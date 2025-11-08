@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/emergency_contact.dart';
 import 'package:reportes_unimayor/providers/settings_provider.dart';
 import 'package:reportes_unimayor/widgets/general/confirm_dialog.dart';
+import 'package:reportes_unimayor/widgets/general/show_message_snack_bar_.dart';
 
 class FormEmergencyContactsUserScreen extends ConsumerStatefulWidget {
   final String? contactId;
@@ -70,16 +71,11 @@ class _FormEmergencyContactsUserScreenState
         _emailController.text = contact.email ?? '';
       }
     } catch (e) {
-      print('Error al cargar contacto: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '❌ Error al cargar el contacto.',
-              style: GoogleFonts.poppins(),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
+        showMessageSnackBar(
+          context,
+          message: "Error al cargar el contacto",
+          type: SnackBarType.error,
         );
       }
     } finally {
@@ -142,15 +138,12 @@ class _FormEmergencyContactsUserScreenState
       if (mounted) {
         if (success) {
           context.pop();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                '✅ Contacto ${_isEditing ? 'actualizado' : 'guardado'} con éxito: ${newContact.nombre}',
-                style: GoogleFonts.poppins(color: Colors.white),
-              ),
-              backgroundColor: Theme.of(context).colorScheme.tertiary,
-              behavior: SnackBarBehavior.floating,
-            ),
+
+          showMessageSnackBar(
+            context,
+            message:
+                'Contacto ${_isEditing ? 'actualizado' : 'guardado'} con éxito: ${newContact.nombre}',
+            type: SnackBarType.success,
           );
 
           if (!_isEditing) {
@@ -175,30 +168,20 @@ class _FormEmergencyContactsUserScreenState
             });
           }
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                '⚠️ Error al ${_isEditing ? 'actualizar' : 'guardar'} el contacto.',
-                style: GoogleFonts.poppins(),
-              ),
-              backgroundColor: Colors.orange,
-              behavior: SnackBarBehavior.floating,
-            ),
+          showMessageSnackBar(
+            context,
+            message:
+                'Error al ${_isEditing ? 'actualizar' : 'guardar'} el contacto.',
+            type: SnackBarType.error,
           );
         }
       }
     } catch (e) {
       if (mounted) {
-        print('Error al guardar contacto: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '❌ Error de conexión o API: ${e.toString()}',
-              style: GoogleFonts.poppins(),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.error,
-            behavior: SnackBarBehavior.floating,
-          ),
+        showMessageSnackBar(
+          context,
+          message: 'Error de conexión al servidor',
+          type: SnackBarType.error,
         );
       }
     } finally {

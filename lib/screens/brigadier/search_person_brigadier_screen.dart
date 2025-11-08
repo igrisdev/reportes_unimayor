@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/person_model.dart';
 import 'package:reportes_unimayor/services/api_reports_service.dart';
-import 'package:reportes_unimayor/utils/show_message.dart';
+import 'package:reportes_unimayor/widgets/general/show_message_snack_bar_.dart';
 
 class SearchPerson extends ConsumerStatefulWidget {
   const SearchPerson({super.key});
@@ -55,11 +55,10 @@ class _AuthScreenState extends ConsumerState<SearchPerson> {
       });
     } catch (e) {
       if (!mounted) return;
-      print(e);
-      showMessage(
+      showMessageSnackBar(
         context,
-        'Error al consultar al usuario. Intenta nuevamente.',
-        Theme.of(context).colorScheme.error,
+        message: 'Error al consultar al usuario',
+        type: SnackBarType.error,
       );
     } finally {
       if (mounted) {

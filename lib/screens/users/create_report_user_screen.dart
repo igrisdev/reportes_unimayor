@@ -7,8 +7,8 @@ import 'package:reportes_unimayor/models/location_tree.dart';
 import 'package:reportes_unimayor/providers/audio_player_notifier.dart';
 import 'package:reportes_unimayor/providers/location_providers.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
-import 'package:reportes_unimayor/utils/show_message.dart';
 import 'package:reportes_unimayor/widgets/general/confirm_dialog.dart';
+import 'package:reportes_unimayor/widgets/general/show_message_snack_bar_.dart';
 import 'package:reportes_unimayor/widgets/users/audio_player_widget.dart';
 import 'package:reportes_unimayor/widgets/users/audio_recorder_widget.dart';
 
@@ -62,10 +62,10 @@ class _CreateReportUserScreenState
       });
     } else {
       if (mounted) {
-        showMessage(
+        showMessageSnackBar(
           context,
-          'Se necesita permiso para usar el micrófono.',
-          Theme.of(context).colorScheme.error,
+          message: 'Se necesita permiso para usar el micrófono',
+          type: SnackBarType.error,
         );
       }
     }
@@ -151,10 +151,10 @@ class _CreateReportUserScreenState
     if (formParaMi == null ||
         (formDescription == null && _recordingPath == null)) {
       if (mounted) {
-        showMessage(
+        showMessageSnackBar(
           context,
-          'Faltan datos de Contenido o Destino.',
-          Theme.of(context).colorScheme.error,
+          message: 'Faltan datos de Contenido o Destino',
+          type: SnackBarType.error,
         );
       }
       return;
@@ -176,19 +176,19 @@ class _CreateReportUserScreenState
         context.pop();
       } else {
         if (mounted) {
-          showMessage(
+          showMessageSnackBar(
             context,
-            'No se pudo enviar el reporte. Intente de nuevo.',
-            Theme.of(context).colorScheme.error,
+            message: 'No se pudo enviar el reporte',
+            type: SnackBarType.error,
           );
         }
       }
     } catch (e) {
       if (mounted) {
-        showMessage(
+        showMessageSnackBar(
           context,
-          'Error:${e.toString().split(':').last}',
-          Theme.of(context).colorScheme.error,
+          message: 'Error de conexión con el servidor',
+          type: SnackBarType.error,
         );
       }
     }
@@ -977,10 +977,10 @@ class _CreateReportUserScreenState
       if (isError && !wasError) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            showMessage(
+            showMessageSnackBar(
               context,
-              'Error cargando ubicaciones',
-              Theme.of(context).colorScheme.error,
+              message: 'Error al cargar ubicaciones',
+              type: SnackBarType.error,
             );
           }
         });

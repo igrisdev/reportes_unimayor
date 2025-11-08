@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:reportes_unimayor/models/emergency_contact.dart';
 import 'package:reportes_unimayor/providers/settings_provider.dart';
 import 'package:reportes_unimayor/widgets/general/confirm_dialog.dart';
+import 'package:reportes_unimayor/widgets/general/show_message_snack_bar_.dart';
 
 class EmergencyContactsUserScreen extends ConsumerWidget {
   const EmergencyContactsUserScreen({super.key});
@@ -126,14 +127,16 @@ class _ContactListItem extends ConsumerWidget {
             );
 
             if (result) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Condición eliminada")),
+              showMessageSnackBar(
+                context,
+                message: "Condición eliminada",
+                type: SnackBarType.success,
               );
             } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("No se pudo eliminar la condición"),
-                ),
+              showMessageSnackBar(
+                context,
+                message: "No se pudo eliminar la condición",
+                type: SnackBarType.error,
               );
             }
           },

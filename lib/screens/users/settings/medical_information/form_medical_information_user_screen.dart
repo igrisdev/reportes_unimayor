@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/providers/settings_provider.dart';
 import 'package:reportes_unimayor/widgets/general/confirm_dialog.dart';
+import 'package:reportes_unimayor/widgets/general/show_message_snack_bar_.dart';
 
 class FormMedicalInformationUserScreen extends ConsumerStatefulWidget {
   final String? conditionId;
@@ -57,15 +58,10 @@ class _FormMedicalInformationUserScreenState
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '❌ Error al cargar: ${e.toString()}',
-              style: GoogleFonts.poppins(),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.error,
-            behavior: SnackBarBehavior.floating,
-          ),
+        showMessageSnackBar(
+          context,
+          message: 'Error al cargar la condición',
+          type: SnackBarType.error,
         );
       }
     } finally {
@@ -126,15 +122,12 @@ class _FormMedicalInformationUserScreenState
       if (mounted) {
         if (success) {
           context.pop();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                '✅ Condición ${_isEditing ? 'actualizada' : 'guardada'} con éxito',
-                style: GoogleFonts.poppins(color: Colors.white),
-              ),
-              backgroundColor: Theme.of(context).colorScheme.tertiary,
-              behavior: SnackBarBehavior.floating,
-            ),
+
+          showMessageSnackBar(
+            context,
+            message:
+                'Condición ${_isEditing ? 'actualizada' : 'guardada'} con éxito',
+            type: SnackBarType.success,
           );
 
           if (!_isEditing) {
@@ -149,29 +142,20 @@ class _FormMedicalInformationUserScreenState
             });
           }
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                '⚠️ Error al ${_isEditing ? 'actualizar' : 'guardar'} la condición',
-                style: GoogleFonts.poppins(),
-              ),
-              backgroundColor: Colors.orange,
-              behavior: SnackBarBehavior.floating,
-            ),
+          showMessageSnackBar(
+            context,
+            message:
+                'Error al ${_isEditing ? 'actualizar' : 'guardar'} la condición',
+            type: SnackBarType.error,
           );
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '❌ Error: ${e.toString()}',
-              style: GoogleFonts.poppins(),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.error,
-            behavior: SnackBarBehavior.floating,
-          ),
+        showMessageSnackBar(
+          context,
+          message: 'Error de conexión al servidor',
+          type: SnackBarType.error,
         );
       }
     } finally {

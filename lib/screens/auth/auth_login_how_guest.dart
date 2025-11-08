@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/providers/is_brigadier_provider.dart';
 import 'package:reportes_unimayor/services/api_auth_service.dart';
 import 'package:reportes_unimayor/utils/local_storage.dart';
-import 'package:reportes_unimayor/utils/show_message.dart';
+import 'package:reportes_unimayor/widgets/general/show_message_snack_bar_.dart';
 
 class AuthLoginHowGuest extends ConsumerStatefulWidget {
   const AuthLoginHowGuest({super.key});
@@ -204,19 +204,20 @@ class _AuthScreenState extends ConsumerState<AuthLoginHowGuest> {
           .login(email, password);
 
       if (token == null && mounted) {
-        showMessage(
+        showMessageSnackBar(
           context,
-          'Credenciales incorrectas',
-          Theme.of(context).colorScheme.error,
+          message: 'Credenciales incorrectas',
+          type: SnackBarType.error,
         );
         return;
       }
     } catch (e) {
       if (!mounted) return;
-      showMessage(
+
+      showMessageSnackBar(
         context,
-        'Error de conexión. Intenta nuevamente.',
-        Theme.of(context).colorScheme.error,
+        message: 'Error de conexión con el servidor',
+        type: SnackBarType.error,
       );
     } finally {
       if (mounted) {

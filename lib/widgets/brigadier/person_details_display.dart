@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/person_model.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/services/api_reports_service.dart';
-import 'package:reportes_unimayor/utils/show_message.dart';
+import 'package:reportes_unimayor/widgets/general/show_message_snack_bar_.dart';
 
 class PersonDetailsDisplay extends ConsumerStatefulWidget {
   final bool paraMi;
@@ -53,11 +53,10 @@ class _PersonDetailsDisplayState extends ConsumerState<PersonDetailsDisplay> {
       });
     } catch (e) {
       if (!mounted) return;
-      print(e);
-      showMessage(
+      showMessageSnackBar(
         context,
-        'Error al cargar la información detallada del usuario.',
-        Theme.of(context).colorScheme.error,
+        message: 'Error al cargar la información detallada del usuario',
+        type: SnackBarType.error,
       );
     } finally {
       if (mounted) {

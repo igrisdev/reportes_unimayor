@@ -13,6 +13,7 @@ import 'package:reportes_unimayor/widgets/general/description_report_container.d
 import 'package:reportes_unimayor/widgets/general/big_badge_view_progress.dart';
 import 'package:reportes_unimayor/widgets/general/date_and_hour_container.dart';
 import 'package:reportes_unimayor/widgets/brigadier/drawer_brigadier.dart';
+import 'package:reportes_unimayor/widgets/general/show_message_snack_bar_.dart';
 import 'package:reportes_unimayor/widgets/general/text_health_assistance.dart';
 import 'package:reportes_unimayor/widgets/general/text_no_reports.dart';
 import 'package:reportes_unimayor/widgets/general/view_location.dart';
@@ -105,8 +106,8 @@ class MainBrigadierScreen extends ConsumerWidget {
                     primaryColor: colorScheme.primary,
                     onPrimaryColor: colorScheme.onPrimary,
                   ),
-                  // Pequeña separación vertical entre botones
 
+                  // Pequeña separación vertical entre botones
                   FloatingActionButton.extended(
                     heroTag: 'consultarButtonTag',
                     onPressed: () {
@@ -174,16 +175,16 @@ class MainBrigadierScreen extends ConsumerWidget {
                     );
 
                     if (result) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("Reporte finalizado correctamente"),
-                        ),
+                      showMessageSnackBar(
+                        context,
+                        message: "Reporte finalizado correctamente",
+                        type: SnackBarType.success,
                       );
                     } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("No se pudo finalizar el reporte"),
-                        ),
+                      showMessageSnackBar(
+                        context,
+                        message: "No se pudo finalizar el reporte",
+                        type: SnackBarType.success,
                       );
                     }
                   },
@@ -295,12 +296,10 @@ class MainBrigadierScreen extends ConsumerWidget {
 
                                   if (result) {
                                   } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          "No se pudo aceptar el reporte",
-                                        ),
-                                      ),
+                                    showMessageSnackBar(
+                                      context,
+                                      message: "No se pudo aceptar el reporte",
+                                      type: SnackBarType.success,
                                     );
                                   }
                                 },

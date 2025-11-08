@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:reportes_unimayor/widgets/general/show_message_snack_bar_.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:reportes_unimayor/utils/show_message.dart';
 
 class CallFloatingButton extends StatelessWidget {
   final String? phoneNumber;
@@ -17,10 +17,10 @@ class CallFloatingButton extends StatelessWidget {
 
   void _makeCall(BuildContext context) async {
     if (phoneNumber == null || phoneNumber!.isEmpty) {
-      showMessage(
+      showMessageSnackBar(
         context,
-        'Número de teléfono no disponible.',
-        Theme.of(context).colorScheme.error,
+        message: 'Número de teléfono no disponible',
+        type: SnackBarType.error,
       );
       return;
     }
@@ -31,17 +31,18 @@ class CallFloatingButton extends StatelessWidget {
       if (await canLaunchUrl(phoneUri)) {
         await launchUrl(phoneUri);
       } else {
-        showMessage(
+        showMessageSnackBar(
           context,
-          'No se pudo abrir la aplicación de teléfono para llamar a $phoneNumber.',
-          Theme.of(context).colorScheme.error,
+          message:
+              'No se pudo abrir la aplicación de teléfono para llamar a $phoneNumber',
+          type: SnackBarType.error,
         );
       }
     } catch (e) {
-      showMessage(
+      showMessageSnackBar(
         context,
-        'Error al intentar realizar la llamada: $e',
-        Theme.of(context).colorScheme.error,
+        message: 'Error de conexión con el servidor',
+        type: SnackBarType.error,
       );
     }
   }

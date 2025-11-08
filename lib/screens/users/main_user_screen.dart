@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reportes_unimayor/models/reports_model.dart';
 import 'package:reportes_unimayor/providers/report_providers.dart';
+import 'package:reportes_unimayor/widgets/general/show_message_snack_bar_.dart';
 import 'package:reportes_unimayor/widgets/users/cancel_dialog.dart';
 import 'package:reportes_unimayor/widgets/general/text_health_assistance.dart';
 import 'package:reportes_unimayor/widgets/users/app_bar_user.dart';
@@ -344,17 +345,16 @@ class _MainUserScreenState extends ConsumerState<MainUserScreen> {
                       );
 
                       if (result && context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text("Reporte cancelado con éxito"),
-                          ),
+                        showMessageSnackBar(
+                          context,
+                          message: "Reporte cancelado con éxito",
+                          type: SnackBarType.success,
                         );
                       } else if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text("No se pudo cancelar el reporte"),
-                            backgroundColor: Colors.red,
-                          ),
+                        showMessageSnackBar(
+                          context,
+                          message: "No se pudo cancelar el reporte",
+                          type: SnackBarType.error,
                         );
                       }
                     },

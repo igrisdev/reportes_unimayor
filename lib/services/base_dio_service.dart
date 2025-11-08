@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:reportes_unimayor/providers/auth_notifier_provider.dart';
 import 'package:reportes_unimayor/utils/local_storage.dart';
 
 final baseDioServiceProvider = Provider((ref) => BaseDioService(ref));
@@ -30,6 +31,9 @@ class BaseDioService {
           return handler.next(options);
         },
         onError: (DioException e, handler) async {
+          if (e.response?.data == 'Refresh token inválido o expirado') {
+            return handler.reject(e);
+          }
           if (e.response?.statusCode == 401) {
             final refreshToken = await readStorage('refresh_token');
 
@@ -53,7 +57,9 @@ class BaseDioService {
                 final cloneResponse = await dio.fetch(retryRequest);
                 return handler.resolve(cloneResponse);
               } catch (refreshError) {
-                await deleteAllStorage();
+                // await deleteAllStorage();
+                print('Error al refrescar token: $refreshError');
+                _ref.read(authNotifierProvider.notifier).logout();
                 return handler.reject(e);
               }
             }
